@@ -31,3 +31,33 @@
     margin-top: 20px;
     text-shadow: 0 0 10px rgba(118, 255, 51, 0.5);
 }
+
+.combo-controls {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.tm-btn-primary {
+    background-color: #76ff33; /* ירוק טנקי */
+    color: #000;
+    border: none;
+    padding: 15px 30px;
+    font-size: 18px;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    box-shadow: 0 0 10px rgba(118, 255, 51, 0.3);
+    clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%); /* צורה גיאומטרית מגניבה */
+    transition: all 0.2s ease;
+}
+
+.tm-btn-primary:hover {
+    background-color: #5acc1e;
+    box-shadow: 0 0 20px rgba(118, 255, 51, 0.6);
+    transform: scale(1.05);
+}
+
+.tm-btn-primary:active {
+    transform: scale(0.95);
+}
