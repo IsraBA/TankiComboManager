@@ -1,0 +1,40 @@
+// main.js
+
+// המנצח על התזמורת - מוודא שהמשחק נטען ואז מפעיל הכל
+(function () {
+    'use strict';
+
+    console.log("Tanki Combo Manager: Main Script Loaded");
+
+    function waitForGameLoad() {
+        const observer = new MutationObserver((mutations) => {
+            const DOM = window.TankiComboManager?.DOM;
+            const ViewRenderer = window.TankiComboManager?.ViewRenderer;
+            const MenuInjector = window.TankiComboManager?.MenuInjector;
+
+            if (!DOM || !MenuInjector || !ViewRenderer) return;
+
+            // בדיקה האם הכפתור נעלם (כדי לאפס את הדגל injected)
+            MenuInjector.checkAlive();
+
+            const menuContainer = document.querySelector(DOM.MENU_CONTAINER);
+            if (menuContainer) {
+                // ננסה לאתחל בכל פעם שמזהים שינוי ב-DOM
+                // הפונקציות בפנים חכמות מספיק כדי לא לעשות כפילויות
+                ViewRenderer.init();
+                MenuInjector.inject();
+
+                // אנחנו ממשיכים להאזין לנצח
+                // obs.disconnect()
+            }
+        });
+
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+    }
+
+    // הפעלה
+    waitForGameLoad();
+})();

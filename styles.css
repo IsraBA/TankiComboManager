@@ -1,0 +1,33 @@
+/* styles.css */
+
+#combo-manager-view {
+    position: absolute;
+    /* מכיוון שאנחנו עכשיו בתוך המוסך, המיקום הוא יחסי אליו */
+    /* גובה התפריט במשחק הוא בערך 5-6em. נכוון שזה יתחיל מתחתיו */
+    top: 7em; 
+    left: 0;
+    width: 100%;
+    /* הגובה הוא 100% פחות הגובה של התפריט */
+    height: calc(100% - 7em);
+    
+    z-index: 10; /* מספיק גבוה כדי להיות מעל התוכן, אבל לא מוגזם */
+    
+    /* הסתרה ברירת מחדל (גיבוי ל-JS) */
+    display: none; 
+    
+    /* סידור התוכן בפנים */
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
+    color: white;
+}
+
+#combo-manager-view h1 {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    color: #76ff33; /* ירוק טנקי */
+    text-transform: uppercase;
+    font-size: 24px;
+    margin-top: 20px;
+    text-shadow: 0 0 10px rgba(118, 255, 51, 0.5);
+}
