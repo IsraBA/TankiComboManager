@@ -2,44 +2,67 @@
 
 // זה הקובץ שעושה את הקסם. הוא עובר כל כרטיסייה, מחכה, בודק מה מצויד, נכנס לאוגמנטים, שומר, וחוזר.
 // core/combo_saver.js
-(function() {
+(function () {
     'use strict';
 
     const DOM = window.TankiComboManager.DOM;
     const Utils = window.TankiComboManager.Utils;
 
     window.TankiComboManager.ComboSaver = {
-        
+
         // פונקציה ראשית שנקראת בלחיצת כפתור
         async saveCurrentCombo() {
-            Utils.log("Starting to scan equipment...");
-            
             // אובייקט שיחזיק את התוצאות
             const currentCombo = {
                 turret: null,
                 turretAugment: null,
-                // hull: null,      // נפעיל כשיהיה HTML
-                // hullAugment: null
+                hull: null,
+                hullAugment: null,
+                grenade: null,
+                drone: null,
+                protection: null,
+                paint: null
             };
 
             try {
-                // 1. סריקת תותח (אנחנו מניחים שזה הטאב הראשון או שאנחנו מנווטים אליו)
-                await this.navigateToTab('Turrets');
-                currentCombo.turret = this.scanMainItem();
-                
-                // 2. סריקת אוגמנט תותח
-                currentCombo.turretAugment = await this.scanAugment();
+                // TODO: לצמצם חלק מהקוד של הסריקות למשהו יותר גנרי 
+                // TODO: לתקן באג שהתוסף ממשיך להיראות אחרי שיוצאים מתצוגת הכרטיסיות למסך הראשי של המוסך
 
-                // כאן בעתיד נוסיף:
-                // await this.navigateToTab('Hulls');
-                // currentCombo.hull = this.scanMainItem();
-                // currentCombo.hullAugment = await this.scanAugment();
+                // 1. סריקת תותח
+                await this.navigateToTab('Turrets');
+                currentCombo.turret = window.TankiComboManager.TurretScanner.scanTurret();
+
+                // 2. סריקת אוגמנט תותח
+                currentCombo.turretAugment = await window.TankiComboManager.TurretAugmentScanner.scanTurretAugment();
+
+                // 3. סריקת גוף
+                await this.navigateToTab('Hulls');
+                currentCombo.hull = window.TankiComboManager.HullScanner.scanHull();
+
+                // 4. סריקת אוגמנט גוף
+                currentCombo.hullAugment = await window.TankiComboManager.HullAugmentScanner.scanHullAugment();
+
+                // 5. סריקת רימון
+                await this.navigateToTab('Grenades');
+                currentCombo.grenade = window.TankiComboManager.GrenadeScanner.scanGrenade();
+
+                // 6. סריקת דרון
+                await this.navigateToTab('Drones');
+                currentCombo.drone = window.TankiComboManager.DroneScanner.scanDrone();
+
+                // 7. סריקת הגנה
+                await this.navigateToTab('Protection');
+                currentCombo.protection = window.TankiComboManager.ProtectionScanner.scanProtection();
+
+                // 8. סריקת צבע
+                await this.navigateToTab('Paints');
+                currentCombo.paint = window.TankiComboManager.PaintScanner.scanPaint();
 
                 // שמירה ל-localStorage
                 this.saveToStorage(currentCombo);
-                
-                Utils.log("Scan complete!", currentCombo);
-                alert("Combo Saved! Check Console for details.");
+
+                // חזרה לכרטיסיית COMBOS
+                await this.navigateToComboTab();
 
             } catch (error) {
                 console.error("[ComboManager] Error during save:", error);
@@ -47,93 +70,74 @@
             }
         },
 
+        // חזרה לכרטיסיית COMBOS
+        async navigateToComboTab() {
+            const menuContainer = document.querySelector(DOM.MENU_CONTAINER);
+            if (!menuContainer) return;
+
+            // חיפוש הטאב COMBOS
+            const comboTab = Array.from(menuContainer.children).find(el => el.innerText === "COMBOS");
+            if (comboTab) {
+                // מציאת הקו התחתון של הטאב
+                const underline = comboTab.querySelector(`.${DOM.ACTIVE_UNDERLINE_CLASS}`);
+                
+                // הפעלת הטאב דרך MenuInjector
+                if (window.TankiComboManager.MenuInjector) {
+                    window.TankiComboManager.MenuInjector.activateComboTab(comboTab, menuContainer, underline);
+                } else {
+                    // אם MenuInjector לא זמין, פשוט נקרא ל-click
+                    comboTab.click();
+                }
+                await Utils.sleep(50);
+            }
+        },
+
         // מעבר לטאב לפי טקסט
         async navigateToTab(tabName) {
-            const tabs = document.querySelectorAll(DOM.TAB_ITEM_CLASS);
+            const tabs = document.querySelectorAll(`.${DOM.TAB_ITEM_CLASS}`);
             let targetTab = null;
 
             for (let tab of tabs) {
-                if (tab.innerText.toLowerCase().includes(tabName.toLowerCase())) {
-                    targetTab = tab;
-                    break;
+                // שימוש ב-textContent במקום innerText - יותר אמין
+                const tabText = tab.textContent ? tab.textContent.trim() : '';
+                const tabTextLower = tabText.toLowerCase();
+                const searchNameLower = tabName.toLowerCase();
+
+                // בדיקה מדויקת קודם, ואז בדיקה חלקית
+                if (tabTextLower === searchNameLower || tabTextLower.includes(searchNameLower)) {
+                    // ודא שזה לא הטאב שלנו (COMBOS)
+                    if (!tabTextLower.includes('combo')) {
+                        targetTab = tab;
+                        break;
+                    }
                 }
             }
 
             if (targetTab) {
-                targetTab.click();
-                Utils.log(`Mapsd to ${tabName}, waiting for render...`);
-                // המתנה קריטית לטעינת ה-HTML של הטאב
-                await Utils.sleep(1500); // שניה וחצי זה זמן בטוח להתחלה
-            } else {
-                throw new Error(`Tab ${tabName} not found!`);
-            }
-        },
-
-        // פונקציה לזיהוי פריט ראשי (תותח/גוף)
-        scanMainItem() {
-            // אנחנו בודקים אם הכפתור "Equipped" קיים בדף
-            const equippedBtn = document.querySelector(DOM.ITEM_IS_EQUIPPED_BTN);
-            
-            if (equippedBtn) {
-                // אם הכפתור קיים, סימן שהפריט שמוצג כרגע הוא המצויד
-                const nameEl = document.querySelector(DOM.ITEM_NAME_TEXT);
-                if (nameEl) {
-                    return Utils.cleanItemName(nameEl.innerText);
-                }
-            }
-            // הערה: הלוגיקה הזו נכונה אם המשחק מציג תמיד את הפריט המצויד כשנכנסים לטאב.
-            // אם לא, נצטרך לרוץ על הגריד למטה. לפי מה שאני מכיר בטנקי, כשנכנסים לטאב הוא מראה את מה שעליך.
-            return "Unknown/Not Found";
-        },
-
-        // פונקציה לזיהוי אוגמנט (דורשת כניסה לתפריט משנה)
-        async scanAugment() {
-            const openBtn = document.querySelector(DOM.OPEN_AUGMENTS_BTN);
-            if (!openBtn) {
-                Utils.log("No augment button found (maybe user has no augments?)");
-                return "None";
-            }
-
-            // כניסה למסך אוגמנטים
-            openBtn.click();
-            await Utils.sleep(300); // המתנה לפתיחת החלון
-
-            let equippedAugmentName = "None";
-
-            // חיפוש האייקון של "Equipped" בתוך הגריד
-            const mountIcon = document.querySelector(DOM.AUGMENT_EQUIPPED_ICON);
-            
-            if (mountIcon) {
-                // מצאנו את האייקון, עכשיו צריך למצוא את השם שנמצא באותו "תא"
-                // אנחנו עולים למעלה לאבא המשותף (התא) ואז מחפשים את השם
-                const parentCell = mountIcon.closest(DOM.AUGMENT_CELL); // שימוש ב-closest זה הכי בטוח
-                if (parentCell) {
-                    const nameEl = parentCell.querySelector(DOM.AUGMENT_NAME);
-                    if (nameEl) {
-                        equippedAugmentName = nameEl.innerText;
+                // אם אנחנו על טאב COMBOS, נסתיר אותו קודם
+                if (window.TankiComboManager.ViewRenderer && window.TankiComboManager.ViewRenderer.viewElement) {
+                    const comboView = window.TankiComboManager.ViewRenderer.viewElement;
+                    if (comboView.style.display !== 'none') {
+                        window.TankiComboManager.ViewRenderer.hide();
+                        await Utils.sleep(50); // המתנה קצרה להסתרה
                     }
                 }
+
+                targetTab.click();
+                // המתנה קריטית לטעינת ה-HTML של הטאב
+                await Utils.sleep(50);
             } else {
-                // אם לא מצאנו אייקון mount, אולי "Standard settings" נבחר?
-                // בדרך כלל לסטנדרט אין אייקון mount, אז נניח שזה זה.
-                equippedAugmentName = "Standard";
+                const allTabTexts = Array.from(tabs).map(t => t.textContent?.trim() || '').join(', ');
+                throw new Error(`Tab ${tabName} not found! Available tabs: ${allTabTexts}`);
             }
-
-            // יציאה ממסך האוגמנטים (חזרה לתותח)
-            const backBtn = document.querySelector(DOM.BACK_BUTTON);
-            if (backBtn) {
-                backBtn.click();
-                await Utils.sleep(300); // המתנה קצרה ליציאה
-            }
-
-            return equippedAugmentName;
         },
+
 
         saveToStorage(comboData) {
             // שליפת קומבואים קיימים
             chrome.storage.local.get(['savedCombos'], (result) => {
                 let combos = result.savedCombos || [];
-                
+
                 const newCombo = {
                     id: Date.now(), // מזהה ייחודי
                     name: `Combo ${combos.length + 1}`,
@@ -144,7 +148,7 @@
                 combos.push(newCombo);
 
                 chrome.storage.local.set({ savedCombos: combos }, () => {
-                    Utils.log("Combo saved to localStorage:", newCombo);
+                    console.log("[ComboManager] Combo saved to localStorage:", newCombo);
                 });
             });
         }
