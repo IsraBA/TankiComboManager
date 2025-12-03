@@ -62,8 +62,8 @@
             // הסתרת כל האלמנטים המפריעים
             const elementsToHide = document.querySelectorAll(DOM.ELEMENTS_TO_HIDE);
             elementsToHide.forEach(el => el.style.display = 'none');
-            const tankCanvas = document.querySelector(DOM.TANK_PREVIEW_CANVAS);
-            if (tankCanvas) tankCanvas.style.display = 'none';
+            // const tankCanvas = document.querySelector(DOM.TANK_PREVIEW_CANVAS);
+            // if (tankCanvas) tankCanvas.style.display = 'none';
         },
 
         hide() {
@@ -73,7 +73,9 @@
             const elementsToRestore = document.querySelectorAll(DOM.ELEMENTS_TO_HIDE);
             elementsToRestore.forEach(el => el.style.display = '');
             const tankCanvas = document.querySelector(DOM.TANK_PREVIEW_CANVAS);
-            if (tankCanvas) tankCanvas.style.display = '';
+            if (tankCanvas) {
+                tankCanvas.style.removeProperty('display');
+            }
         }
     };
 })();

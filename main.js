@@ -25,15 +25,16 @@
                 // בדיקה האם הכפתור נעלם (כדי לאפס את הדגל injected)
                 MenuInjector.checkAlive();
 
+                ViewRenderer.init();
+                
                 const menuContainer = document.querySelector(DOM.MENU_CONTAINER);
                 if (menuContainer) {
                     // ננסה לאתחל בכל פעם שמזהים שינוי ב-DOM
                     // הפונקציות בפנים חכמות מספיק כדי לא לעשות כפילויות
-                    ViewRenderer.init();
                     MenuInjector.inject();
-
-                    // אנחנו ממשיכים להאזין לנצח
-                    // obs.disconnect()
+                } else {
+                    // גם כשאין menuContainer, נוסיף את ה-listeners לכפתורי היציאה
+                    MenuInjector.addExitButtonsListener();
                 }
             });
 

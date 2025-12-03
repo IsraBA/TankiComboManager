@@ -9,6 +9,9 @@
 
     window.TankiComboManager.MenuInjector = {
         injected: false,
+        exitButtonsListenerAdded: false,
+        comboTab: null,
+        comboTabUnderline: null,
 
         inject() {
             const menuContainer = document.querySelector(DOM.MENU_CONTAINER);
@@ -31,12 +34,16 @@
             comboTab.style.order = "99";
             comboTab.style.cursor = "pointer";
 
+            // שמירת reference לטאב שלנו
+            this.comboTab = comboTab;
+
             // הוספת DIV פנימי שיהיה הקו התחתון שלנו (כמו במשחק)
             // ניתן לו ID ייחודי כדי שנוכל למצוא ולמחוק אותו בקלות
             const myUnderline = document.createElement('div');
             myUnderline.className = DOM.ACTIVE_UNDERLINE_CLASS;
             myUnderline.style.display = 'none'; // מוסתר בהתחלה
             comboTab.appendChild(myUnderline);
+            this.comboTabUnderline = myUnderline;
 
             comboTab.onclick = (e) => {
                 e.stopPropagation();
@@ -52,6 +59,94 @@
 
             menuContainer.appendChild(comboTab);
             this.injected = true;
+
+            // האזנה לכפתורים שיכולים לסגור את המוסך, לחזור ללובי, או לניווט (Q/E)
+            // כדי להסתיר את התצוגה מיד כשלוחצים עליהם (לפני שה-DOM משתנה)
+            this.addExitButtonsListener();
+            
+            // TODO: ניווט עם Q ו-E - מוער כרגע
+            // אתחול TabNavigator עם reference לטאב שלנו
+            // if (window.TankiComboManager.TabNavigator) {
+            //     window.TankiComboManager.TabNavigator.init(comboTab, myUnderline);
+            // }
+        },
+
+        // האזנה לכפתורים שיכולים לסגור את המוסך, לחזור ללובי, או לניווט (Q/E)
+        // כדי להסיר את ההשפעה של הכרטיסיית קומבואים מיד לפני שה-DOM משתנה
+        addExitButtonsListener() {
+            if (this.exitButtonsListenerAdded) return;
+
+            const hideComboView = () => {
+                const ViewRenderer = window.TankiComboManager?.ViewRenderer;
+                if (ViewRenderer && ViewRenderer.viewElement) {
+                    const comboViewStyle = window.getComputedStyle(ViewRenderer.viewElement);
+                    if (comboViewStyle.display !== 'none') {
+                        ViewRenderer.hide();
+                    }
+                }
+            };
+
+            // פונקציה ל-Q ו-E - גם מסתירה וגם מכבה את הטאב
+            const hideAndDeactivateComboTab = () => {
+                const menuContainer = document.querySelector(DOM.MENU_CONTAINER);
+                if (menuContainer && this.comboTab && this.comboTabUnderline) {
+                    // אם הטאב שלנו פעיל, נכבה אותו
+                    if (this.comboTab.classList.contains(DOM.ACTIVE_TAB_CLASS)) {
+                        this.deactivateComboTab(this.comboTab, menuContainer, this.comboTabUnderline);
+                    } else {
+                        // אם לא, רק נסתיר את התצוגה
+                        hideComboView();
+                    }
+                } else {
+                    hideComboView();
+                }
+            };
+
+            // כפתור חזרה
+            const backButton = document.querySelector(DOM.BACK_BUTTON);
+            if (backButton) {
+                backButton.addEventListener('click', hideComboView);
+            }
+
+            // כפתור סגירה של המוסך
+            const exitButton = document.querySelector(DOM.EXIT_GARAGE_BUTTON);
+            if (exitButton) {
+                exitButton.addEventListener('click', hideComboView);
+            }
+
+            // כפתורי Q ו-E ב-UI
+            const qeContainer = document.querySelector(DOM.QE_BUTTONS_CONTAINER);
+            if (qeContainer) {
+                const buttons = qeContainer.querySelectorAll(`.${DOM.QE_BUTTON_CLASS}`);
+                if (buttons.length >= 2) {
+                    // הראשון הוא Q, השני הוא E
+                    buttons[0].addEventListener('click', hideAndDeactivateComboTab);
+                    buttons[1].addEventListener('click', hideAndDeactivateComboTab);
+                }
+            }
+
+            // האזנה למקשים במקלדת - רק אם אנחנו במוסך
+            const keydownHandler = (e) => {
+                const menuContainer = document.querySelector(DOM.MENU_CONTAINER);
+                if (!menuContainer) return;
+
+                // רק אם לא לוחצים על input או textarea
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                    return;
+                }
+
+                // שימוש ב-key code במקום האות (יותר אמין, לא תלוי בשפה)
+                const keyCode = e.code || e.keyCode;
+                if (keyCode === 'KeyQ' || keyCode === 81 || keyCode === 'KeyE' || keyCode === 69) {
+                    hideAndDeactivateComboTab();
+                }
+            };
+
+            document.addEventListener('keydown', keydownHandler);
+
+            if (backButton || exitButton || qeContainer) {
+                this.exitButtonsListenerAdded = true;
+            }
         },
 
         activateComboTab(myTab, container, myUnderline) {
@@ -95,6 +190,7 @@
             }
         },
 
+
         // פונקציה לבדיקה אם הכפתור נמחק (קורה במעבר בין מסכים)
         checkAlive() {
             const menuContainer = document.querySelector(DOM.MENU_CONTAINER);
@@ -102,9 +198,23 @@
                 const existingBtn = Array.from(menuContainer.children).find(el => el.innerText === "COMBOS");
                 if (!existingBtn) {
                     this.injected = false; // הכפתור נמחק, צריך להזריק שוב
+                    this.exitButtonsListenerAdded = false; // צריך להוסיף מחדש את ה-listener
+                    this.comboTab = null;
+                    this.comboTabUnderline = null;
+                    // TODO: ניווט עם Q ו-E - מוער כרגע
+                    // if (window.TankiComboManager.TabNavigator) {
+                    //     window.TankiComboManager.TabNavigator.reset();
+                    // }
                 }
             } else {
                 this.injected = false; // התפריט נעלם, אז בטח גם הכפתור
+                this.exitButtonsListenerAdded = false;
+                this.comboTab = null;
+                this.comboTabUnderline = null;
+                // TODO: ניווט עם Q ו-E - מוער כרגע
+                // if (window.TankiComboManager.TabNavigator) {
+                //     window.TankiComboManager.TabNavigator.reset();
+                // }
             }
         }
     };
