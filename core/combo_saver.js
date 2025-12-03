@@ -25,29 +25,29 @@
             };
 
             try {
-                // TODO: לצמצם חלק מהקוד של הסריקות למשהו יותר גנרי 
-
                 // 1. סריקת תותח
                 await this.navigateToTab('Turrets');
-                currentCombo.turret = window.TankiComboManager.TurretScanner.scanTurret();
+                currentCombo.turret = window.TankiComboManager.BaseItemScanner.scanItem();
 
                 // 2. סריקת אוגמנט תותח
-                currentCombo.turretAugment = await window.TankiComboManager.TurretAugmentScanner.scanTurretAugment();
+                currentCombo.turretAugment = await window.TankiComboManager.AugmentScanner.scanAugment();
 
                 // 3. סריקת גוף
                 await this.navigateToTab('Hulls');
-                currentCombo.hull = window.TankiComboManager.HullScanner.scanHull();
+                currentCombo.hull = window.TankiComboManager.BaseItemScanner.scanItem();
 
                 // 4. סריקת אוגמנט גוף
-                currentCombo.hullAugment = await window.TankiComboManager.HullAugmentScanner.scanHullAugment();
+                currentCombo.hullAugment = await window.TankiComboManager.AugmentScanner.scanAugment();
 
                 // 5. סריקת רימון
                 await this.navigateToTab('Grenades');
-                currentCombo.grenade = window.TankiComboManager.GrenadeScanner.scanGrenade();
+                currentCombo.grenade = window.TankiComboManager.BaseItemScanner.scanItem();
 
-                // 6. סריקת דרון
+                // 6. סריקת דרון (עם פונקציית ניקוי מיוחדת)
                 await this.navigateToTab('Drones');
-                currentCombo.drone = window.TankiComboManager.DroneScanner.scanDrone();
+                currentCombo.drone = window.TankiComboManager.BaseItemScanner.scanItem(
+                    window.TankiComboManager.BaseItemScanner.cleanDroneName.bind(window.TankiComboManager.BaseItemScanner)
+                );
 
                 // 7. סריקת הגנה
                 await this.navigateToTab('Protection');

@@ -54,11 +54,16 @@
                 const clickedTab = e.target.closest(`.${DOM.TAB_ITEM_CLASS}`);
                 if (clickedTab && clickedTab !== comboTab) {
                     this.deactivateComboTab(comboTab, menuContainer, myUnderline);
+                    // עדכון נראות לאחר לחיצה על טאב אחר (למקרה שעברנו למסך augments/skins)
+                    setTimeout(() => this.updateTabVisibility(), 50);
                 }
             });
 
             menuContainer.appendChild(comboTab);
             this.injected = true;
+
+            // עדכון נראות הטאב לפי המסך הנוכחי
+            this.updateTabVisibility();
 
             // האזנה לכפתורים שיכולים לסגור את המוסך, לחזור ללובי, או לניווט (Q/E)
             // כדי להסתיר את התצוגה מיד כשלוחצים עליהם (לפני שה-DOM משתנה)
@@ -190,6 +195,32 @@
             }
         },
 
+        // בדיקה אם אנחנו במסך של augments/skins/Shot color (שם הטאב לא צריך להיראות)
+        isOnAugmentsOrSkinsScreen() {
+            // מסך האוגמנטים/סקינים מאופיין בנוכחות של אלמנט עם הקלאס Common-flexSpaceBetweenAlignStartColumn
+            return !!document.querySelector(DOM.AUGMENTS_SKINS_INDICATOR);
+        },
+
+        // עדכון נראות הטאב לפי המסך הנוכחי
+        updateTabVisibility() {
+            if (!this.comboTab) return;
+            
+            const shouldHide = this.isOnAugmentsOrSkinsScreen();
+            if (shouldHide) {
+                // הסתרת הטאב
+                this.comboTab.style.display = 'none';
+                // אם הטאב פעיל, נכבה אותו
+                if (this.comboTab.classList.contains(DOM.ACTIVE_TAB_CLASS)) {
+                    const menuContainer = document.querySelector(DOM.MENU_CONTAINER);
+                    if (menuContainer && this.comboTabUnderline) {
+                        this.deactivateComboTab(this.comboTab, menuContainer, this.comboTabUnderline);
+                    }
+                }
+            } else {
+                // הצגת הטאב
+                this.comboTab.style.display = '';
+            }
+        },
 
         // פונקציה לבדיקה אם הכפתור נמחק (קורה במעבר בין מסכים)
         checkAlive() {
@@ -205,6 +236,9 @@
                     // if (window.TankiComboManager.TabNavigator) {
                     //     window.TankiComboManager.TabNavigator.reset();
                     // }
+                } else {
+                    // הכפתור קיים, נבדוק אם צריך להסתיר אותו
+                    this.updateTabVisibility();
                 }
             } else {
                 this.injected = false; // התפריט נעלם, אז בטח גם הכפתור

@@ -1,5 +1,6 @@
-// core/scanners/hull_augment_scanner.js
-// סורק אוגמנטים לגוף - מזהה את האוגמנט המצויד ואת התמונה שלו
+// core/scanners/augment_scanner.js
+// סורק אוגמנטים - מזהה את האוגמנט המצויד ואת התמונה שלו
+// משותף לאוגמנטים של תותח וגוף (הלוגיקה זהה)
 
 (function () {
     'use strict';
@@ -7,14 +8,14 @@
     const DOM = window.TankiComboManager.DOM;
     const Utils = window.TankiComboManager.Utils;
 
-    window.TankiComboManager.HullAugmentScanner = {
-
-        // פונקציה לזיהוי אוגמנט גוף מצויד
-        async scanHullAugment() {
+    window.TankiComboManager.AugmentScanner = {
+        
+        // פונקציה לזיהוי אוגמנט מצויד (תותח או גוף)
+        async scanAugment() {
             // קודם כל, נקח את התמונה של האוגמנט מהמסך הראשי (לפני שנכנסים למסך האוגמנטים)
             // התמונה נמצאת ב-img עם class DeviceButtonComponentStyle-deviceIcon
             const augmentImage = Utils.findImageBySelector(`${DOM.OPEN_AUGMENTS_BTN}`);
-
+            
             const openBtn = document.querySelector(DOM.OPEN_AUGMENTS_BTN);
             if (!openBtn) {
                 return null;
@@ -28,7 +29,7 @@
 
             // חיפוש האייקון של "Equipped" בתוך הגריד
             const mountIcon = document.querySelector(DOM.AUGMENT_EQUIPPED_ICON);
-
+            
             if (mountIcon) {
                 // מצאנו את האייקון, עכשיו צריך למצוא את השם שנמצא באותו "תא"
                 // אנחנו עולים למעלה לאבא המשותף (התא) ואז מחפשים את השם
@@ -45,7 +46,7 @@
                 equippedAugmentName = "STANDARD";
             }
 
-            // יציאה ממסך האוגמנטים (חזרה לגוף)
+            // יציאה ממסך האוגמנטים (חזרה לתותח/גוף)
             const backBtn = document.querySelector(DOM.BACK_BUTTON);
             if (backBtn) {
                 backBtn.click();
