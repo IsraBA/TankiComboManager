@@ -68,7 +68,7 @@
             // האזנה לכפתורים שיכולים לסגור את המוסך, לחזור ללובי, או לניווט (Q/E)
             // כדי להסתיר את התצוגה מיד כשלוחצים עליהם (לפני שה-DOM משתנה)
             this.addExitButtonsListener();
-            
+
             // TODO: ניווט עם Q ו-E - מוער כרגע
             // אתחול TabNavigator עם reference לטאב שלנו
             // if (window.TankiComboManager.TabNavigator) {
@@ -201,11 +201,34 @@
             return !!document.querySelector(DOM.AUGMENTS_SKINS_INDICATOR);
         },
 
+        // בדיקה אם אנחנו במסך המשימות (שם הטאב לא צריך להיראות)
+        isOnMissionsScreen() {
+            // מסך המשימות מאופיין בנוכחות של אלמנט עם הקלאס QuestsComponentStyle-content
+            return !!document.querySelector(DOM.MISSIONS_INDICATOR);
+        },
+
+        // בדיקה אם אנחנו במסך הקלאן (שם הטאב לא צריך להיראות)
+        isOnClanScreen() {
+            // מסך הקלאן מאופיין בנוכחות של אלמנט עם הקלאס ClanCommonStyle-content
+            return !!document.querySelector(DOM.CLAN_INDICATOR);
+        },
+
+        // בדיקה אם אנחנו במסך החברים (שם הטאב לא צריך להיראות)
+        isOnFriendsScreen() {
+            // מסך החברים מאופיין בנוכחות של אלמנט עם הקלאס FriendListComponentStyle-containerFriends
+            return !!document.querySelector(DOM.FRIENDS_INDICATOR);
+        },
+
         // עדכון נראות הטאב לפי המסך הנוכחי
         updateTabVisibility() {
             if (!this.comboTab) return;
-            
-            const shouldHide = this.isOnAugmentsOrSkinsScreen();
+
+            // הטאב צריך להיות מוסתר במסך augments/skins, במסך המשימות, במסך הקלאן, או במסך החברים
+            const shouldHide = this.isOnAugmentsOrSkinsScreen()
+                || this.isOnMissionsScreen()
+                || this.isOnClanScreen()
+                || this.isOnFriendsScreen();
+
             if (shouldHide) {
                 // הסתרת הטאב
                 this.comboTab.style.display = 'none';

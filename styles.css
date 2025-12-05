@@ -12,7 +12,6 @@
     display: none;
     color: white;
 }
-
 .cme_main {
     width: 100%;
     height: 100%;
@@ -54,6 +53,7 @@
 }
 
 .cme_blockPaints {
+    min-height: 19.375em;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -61,7 +61,6 @@
     width: 100%;
     height: auto;
     z-index: 1;
-    min-height: 19.375em;
     -webkit-box-orient: vertical;
     -webkit-box-direction: normal;
     -webkit-box-align: center;
@@ -183,6 +182,7 @@
     right: 0px;
     width: 22.5em;
     height: max-content;
+    min-height: 6em;
     z-index: 2;
     margin-top: 1.5em;
     -webkit-box-orient: vertical;
@@ -219,21 +219,48 @@
     width: inherit;
     height: inherit;
     z-index: 2;
+}
+
+.cme_TanksPartComponentStyle-tankPartUpgrades {
+    margin-top: 4em;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    right: 0px;
+    width: 22.5em;
+    height: max-content;
+    z-index: 2;
+    margin-top: 1.5em;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: start;
+    -webkit-box-pack: start;
+    animation: 200ms ease-out 0s 1 normal none running ksc-keyframe-53;
+    backdrop-filter: blur(3.125em);
+}
+
+/* הטמעת CSS של הקלאסים המג'ונרטים (ksc-152.ksc-152.ksc-152) */
+#cme_save-combo-btn.cme_commonBlockButton.cme_commonBlockButton.cme_commonBlockButton {
+    height: 6em;
+}
+
+#cme_save-combo-btn.cme_commonBlockButton.cme_commonBlockButton {
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 0.75em;
     box-sizing: border-box;
     cursor: pointer;
-    background: radial-gradient(50% 100% at 50% 0%, rgba(118, 255, 51, 0.25) 0%, rgba(118, 255, 51, 0) 100%) transparent;
-    box-shadow: rgba(118, 255, 51, 0.25) 0em 0em 0em 0.063em;
+    position: relative;
+    background-color: rgb(118, 255, 51);
     -webkit-box-align: center;
     -webkit-box-pack: center;
 }
 
-.cme_commonBlockButton:hover {
-    background: radial-gradient(50% 100% at 50% 0%, rgba(118, 255, 51, 0.35) 0%, rgba(118, 255, 51, 0) 100%) transparent;
-    box-shadow: rgba(118, 255, 51, 0.4) 0em 0em 0em 0.063em;
+#cme_save-combo-btn.cme_commonBlockButton.cme_commonBlockButton:hover {
+    background-color: rgb(118, 255, 51);
+    box-shadow: rgb(255, 255, 255) 0em 0em 0em 0.125em;
 }
 
 .cme_flexCenterAlignCenter {
@@ -254,7 +281,7 @@
     background-repeat: no-repeat;
     background-size: 100%;
     background-position: center center;
-    background-image: url(/play/static/images/ic_mount.4175dc0c.svg);
+    background-image: url(/play/static/images/ic_mountBlack.101d5e3f.svg);
     background-size: contain;
     width: 4em;
     height: 4em;
@@ -278,7 +305,7 @@
     font-weight: 500;
     text-transform: uppercase;
     font-size: 1em;
-    color: rgb(118, 255, 51);
+    color: rgb(0, 25, 38);
     font-weight: 700;
     line-height: 1.25em;
     padding: 0.438em 0.5em 0.438em 0.438em;
@@ -306,14 +333,14 @@
 }
 
 @keyframes cme_keyframe_appear_bottom {
-    from {
+    0% {
         opacity: 0;
-        transform: translateY(1em);
+        transform: translateX(5vw);
     }
 
-    to {
+    100% {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateX(0);
     }
 }
 
@@ -514,7 +541,6 @@
     -webkit-box-align: stretch;
     -webkit-box-pack: center;
 }
-
 .cme_combo-content {
     flex: 1;
     padding: 0 0.5em;
@@ -635,3 +661,4 @@
     color: #76ff33;
     font-style: italic;
 }
+

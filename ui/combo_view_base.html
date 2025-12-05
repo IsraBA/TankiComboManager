@@ -1,44 +1,39 @@
 <!-- ui/combo_view_base.html -->
-<!-- טמפלייט בסיס לתצוגת הקומבואים - משתמש רק בקלאסים של התוסף -->
-<div class="cme_container">
-    <!-- Header עם כפתור שמירה -->
-    <div class="cme_commonBlockForDescriptionAndButton">
-        <div id="cme_tankPreviewContainer" class="cme_tankPreview"></div>
-        <div class="cme_descriptionBlockCollection">
-            <div class="cme_commonBlockDescriptionCollection cme_animatedBlurredLeftBlock">
-                <div class="cme_headline">
-                    <h1>Combo Manager</h1>
-                    <h3 class="cme_styleCategory">Manage your saved combos</h3>
-                </div>
-            </div>
-        </div>
-        <div class="cme_tankPartUpgrades cme_animatedBlurredRightBlock">
-            <div id="cme_save-combo-btn" class="cme_commonBlockButton cme_bigActionButton" style="cursor: pointer;">
-                <div class="cme_flexCenterAlignCenter cme_flexCenterAlignCenter_inner">
-                    <div class="cme_backgroundImage"></div>
-                </div>
-                <div class="cme_flexEndAlignEnd">
-                    <span class="Font-bold">SAVE CURRENT</span>
-                </div>
+<div class="cme_commonBlockForDescriptionAndButton">
+    <div id="cme_tankPreviewContainer" class="cme_tankPreview"></div>
+    <div class="cme_descriptionBlockCollection">
+        <div class="cme_commonBlockDescriptionCollection cme_animatedBlurredLeftBlock">
+            <div class="cme_headline">
+                <h1>Combo Manager</h1>
+                <h3 class="cme_styleCategory">Manage your saved combos</h3>
             </div>
         </div>
     </div>
+    <div class="cme_TanksPartComponentStyle-tankPartUpgrades">
+        <div id="cme_save-combo-btn" class="cme_commonBlockButton cme_bigActionButton" style="cursor: pointer;">
+            <div class="cme_flexCenterAlignCenter cme_flexCenterAlignCenter_inner">
+                <div class="cme_backgroundImage"></div>
+            </div>
+            <div class="cme_flexEndAlignEnd">
+                <span class="Font-bold">SAVE CURRENT COMBO</span>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <!-- Combos List Container -->
-    <div class="cme_blockPaints">
-        <div class="cme_itemsListContainer cme_appearFromBottom">
-            <!-- Navigation Arrows (for future scrolling) -->
-            <div class="cme_arrowLeft cme_flexCenterAlignCenter" style="opacity: 0;">
-                <img src="/play/static/images/arrow.2552fe80.svg">
-            </div>
-            <div class="cme_arrowRight cme_flexCenterAlignCenter" style="opacity: 0;">
-                <img src="/play/static/images/arrow.2552fe80.svg">
-            </div>
+<!-- Combos List Container -->
+<div class="cme_blockPaints">
+    <div class="cme_itemsListContainer cme_appearFromBottom">
+        <!-- Navigation Arrows (for future scrolling) -->
+        <div class="cme_arrowLeft cme_flexCenterAlignCenter" style="opacity: 0;">
+            <img src="/play/static/images/arrow.2552fe80.svg">
+        </div>
+        <div class="cme_arrowRight cme_flexCenterAlignCenter" style="opacity: 0;">
+            <img src="/play/static/images/arrow.2552fe80.svg">
+        </div>
 
-            <!-- Combos Grid Container -->
-            <div id="combos-grid-container" class="cme_itemsContainer">
-                <!-- כאן יוזרקו הקומבואים דינמית -->
-            </div>
+        <!-- Combos Grid Container -->
+        <div id="combos-grid-container" class="cme_itemsContainer">
         </div>
     </div>
 </div>

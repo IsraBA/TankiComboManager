@@ -21,18 +21,12 @@
 
             this.viewElement = document.createElement('div');
             this.viewElement.id = 'combo-manager-view';
-            this.viewElement.className = 'combo-manager-main';
+            this.viewElement.className = 'cme_container';
             this.viewElement.style.display = 'none';
 
             // טעינת ה-HTML מהקובץ הנפרד
-            try {
-                const htmlContent = await this.loadViewHTML();
-                this.viewElement.innerHTML = htmlContent;
-            } catch (error) {
-                console.error('[ComboManager] Error loading view HTML:', error);
-                // fallback - טעינת HTML מובנה
-                this.viewElement.innerHTML = this.createViewHTMLFallback();
-            }
+            const htmlContent = await this.loadViewHTML();
+            this.viewElement.innerHTML = htmlContent;
 
             garageWrapper.appendChild(this.viewElement);
 
@@ -52,48 +46,6 @@
                 throw new Error(`Failed to load HTML: ${response.status}`);
             }
             return await response.text();
-        },
-
-        // Fallback - HTML מובנה במקרה של כשל בטעינה
-        createViewHTMLFallback() {
-            return `
-                <div class="cme_container">
-                    <div class="cme_commonBlockForDescriptionAndButton">
-                        <div id="cme_tankPreviewContainer" class="cme_tankPreview"></div>
-                        <div class="cme_descriptionBlockCollection">
-                            <div class="cme_commonBlockDescriptionCollection cme_animatedBlurredLeftBlock">
-                                <div class="cme_headline">
-                                    <h1>Combo Manager</h1>
-                                    <h3 class="cme_styleCategory">Manage your saved combos</h3>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="cme_tankPartUpgrades cme_animatedBlurredRightBlock">
-                            <div id="cme_save-combo-btn" class="cme_commonBlockButton cme_bigActionButton" style="cursor: pointer;">
-                                <div class="cme_flexCenterAlignCenter cme_flexCenterAlignCenter_inner">
-                                    <div class="cme_backgroundImage"></div>
-                                </div>
-                                <div class="cme_flexEndAlignEnd">
-                                    <span class="Font-bold">SAVE CURRENT</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="cme_blockPaints">
-                        <div class="cme_itemsListContainer cme_appearFromBottom">
-                            <div class="cme_arrowLeft cme_flexCenterAlignCenter" style="opacity: 0;">
-                                <img src="/play/static/images/arrow.2552fe80.svg">
-                            </div>
-                            <div class="cme_arrowRight cme_flexCenterAlignCenter" style="opacity: 0;">
-                                <img src="/play/static/images/arrow.2552fe80.svg">
-                            </div>
-                            <div id="combos-grid-container" class="cme_itemsContainer">
-                                <!-- כאן יוזרקו הקומבואים דינמית -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
         },
 
         bindEvents() {
