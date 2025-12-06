@@ -79,7 +79,7 @@
                         const comboTab = Array.from(menuContainer.children).find(el => el.innerText === "COMBOS");
                         if (comboTab) {
                             const underline = comboTab.querySelector(`.${DOM.ACTIVE_UNDERLINE_CLASS}`);
-                            await window.TankiComboManager.MenuInjector.safeActivateComboTab(comboTab, menuContainer, underline);
+                            await window.TankiComboManager.MenuInjector.safeActivateComboTab(comboTab, menuContainer, underline, 150);
                         }
                     }
                 }
