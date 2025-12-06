@@ -47,7 +47,7 @@
 
             comboTab.onclick = (e) => {
                 e.stopPropagation();
-                this.activateComboTab(comboTab, menuContainer, myUnderline);
+                this.safeActivateComboTab(comboTab, menuContainer, myUnderline);
             };
 
             menuContainer.addEventListener('click', (e) => {
@@ -151,6 +151,56 @@
 
             if (backButton || exitButton || qeContainer) {
                 this.exitButtonsListenerAdded = true;
+            }
+        },
+
+        // פונקציה בטוחה לפתיחת כרטיסיית הקומבואים - עוברת דרך Paints קודם
+        // paintsDelay - זמן המתנה אחרי לחיצה על Paints (ברירת מחדל: 1ms)
+        async safeActivateComboTab(myTab, container, myUnderline, paintsDelay = 1) {
+            const Utils = window.TankiComboManager?.Utils;
+            
+            // קודם כל נכנסים לכרטיסיית Paints
+            const allTabs = container.querySelectorAll(`.${DOM.TAB_ITEM_CLASS}`);
+            let paintsTab = null;
+            
+            for (let tab of allTabs) {
+                const tabText = tab.textContent ? tab.textContent.trim() : '';
+                const tabTextLower = tabText.toLowerCase();
+                // חיפוש טאב Paints
+                if (tabTextLower === 'paints' || tabTextLower.includes('paint')) {
+                    // ודא שזה לא הטאב שלנו (COMBOS)
+                    if (!tabTextLower.includes('combo')) {
+                        paintsTab = tab;
+                        break;
+                    }
+                }
+            }
+
+            // אם מצאנו את טאב Paints, נלחץ עליו קודם
+            if (paintsTab) {
+                paintsTab.click();
+                // המתנה לפי הפרמטר (1ms בדרך כלל, 150ms אחרי equipCombo)
+                if (Utils && Utils.sleep) {
+                    await Utils.sleep(paintsDelay);
+                }
+            }
+
+            // אחר כך נפעיל את טאב הקומבואים
+            this.activateComboTab(myTab, container, myUnderline);
+            
+            // וידוא נוסף שהסתרת אלמנטי Paints (רק אם יש המתנה ארוכה, כלומר אחרי equipCombo)
+            if (paintsDelay > 1 && Utils && Utils.sleep) {
+                await Utils.sleep(50);
+                // הסתרה מפורשת של אלמנטי Paints
+                const paintsElements = document.querySelectorAll(`
+                    .PaintsCollectionComponentStyle-containerPaints,
+                    .PaintsCollectionComponentStyle-blockPaints
+                `);
+                paintsElements.forEach(el => {
+                    if (el) {
+                        el.style.display = 'none';
+                    }
+                });
             }
         },
 

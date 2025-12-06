@@ -105,8 +105,8 @@
 
 /* תמונת רימון - 60% גובה ורוחב */
 .cme_combo-grenade-image {
-    max-width: 60%;
-    max-height: 60%;
+    max-width: 68%;
+    max-height: 68%;
 }
 
 /* מלבן (שורה שניה ושלישית) */
@@ -138,7 +138,7 @@
 /* תמונת hull - 90% גובה ורוחב */
 .cme_combo-hull-image {
     max-width: 90%;
-    max-height: 90%;
+    max-height: 100%;
     width: auto;
     height: auto;
     object-fit: contain;
@@ -170,20 +170,21 @@
     justify-content: center;
     position: relative;
     min-width: 0;
+    height: 100%;
     -webkit-box-align: center;
     -webkit-box-pack: center;
 }
 
 .cme_combo-protection-item img {
     width: auto;
-    height: auto;
+    height: 100%;
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
 }
 
-/* ריבוע עם תמונת הצבע */
-.cme_combo-paint-square {
+/* ריבוע עם תמונת הצבע - בוטל */
+/* .cme_combo-paint-square {
     flex: 0 0 auto;
     width: 3em;
     position: relative;
@@ -194,7 +195,7 @@
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    padding: 0.375em;
+    padding: 0.275em;
     -webkit-box-align: center;
     -webkit-box-pack: center;
 }
@@ -205,7 +206,7 @@
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
-}
+} */
 
 /* תג augment בפינה השמאלית התחתונה */
 .cme_combo-augment-badge {

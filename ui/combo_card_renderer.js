@@ -103,10 +103,11 @@
                 </div>
             `;
 
-            // שורה רביעית: מלבן עם 4 ההגנות וריבוע עם תמונת הצבע
+            // שורה רביעית: מלבן עם 4 ההגנות (ללא ריבוע צבע)
             const protections = data.protection && Array.isArray(data.protection) ? data.protection : [];
-            const paintImage = data.paint && data.paint.image ? data.paint.image : null;
-            const paintName = data.paint && data.paint.name ? data.paint.name : null;
+            // בוטל - פונקציונליות הצבע הוסרה
+            // const paintImage = data.paint && data.paint.image ? data.paint.image : null;
+            // const paintName = data.paint && data.paint.name ? data.paint.name : null;
 
             // יצירת 4 פריטי הגנה (אם יש פחות מ-4, נוסיף ריקים)
             const protectionItems = [];
@@ -127,11 +128,16 @@
                     <div class="cme_combo-protections">
                         ${protectionsHTML}
                     </div>
-                    <div class="cme_combo-paint-square">
-                        ${paintImage ? `<img src="${paintImage}" alt="${paintName || 'Paint'}" onerror="this.style.display='none';">` : ''}
-                    </div>
                 </div>
             `;
+            // <div class="cme_combo-row cme_combo-row-4">
+            //     <div class="cme_combo-protections">
+            //         ${protectionsHTML}
+            //     </div>
+            //     <div class="cme_combo-paint-square">
+            //         ${paintImage ? `<img src="${paintImage}" alt="${paintName || 'Paint'}" onerror="this.style.display='none';">` : ''}
+            //     </div>
+            // </div>
 
             return row1HTML + row2HTML + row3HTML + row4HTML;
         },

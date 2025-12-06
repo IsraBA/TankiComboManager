@@ -5,6 +5,7 @@
     'use strict';
 
     const DOM = window.TankiComboManager.DOM;
+    const Utils = window.TankiComboManager.Utils;
     window.TankiComboManager = window.TankiComboManager || {};
 
     window.TankiComboManager.TabNavigator = {
@@ -70,25 +71,25 @@
         },
 
         // מעבר לכרטיסייה הקודמת
-        navigateToPreviousTab() {
+        async navigateToPreviousTab() {
             const tabs = this.getAllTabsInOrder();
             if (tabs.length === 0) return;
 
             const currentIndex = this.getCurrentTabIndex(tabs);
             const previousIndex = currentIndex === 0 ? tabs.length - 1 : currentIndex - 1;
 
-            this.activateTab(tabs[previousIndex]);
+            await this.activateTab(tabs[previousIndex]);
         },
 
         // מעבר לכרטיסייה הבאה
-        navigateToNextTab() {
+        async navigateToNextTab() {
             const tabs = this.getAllTabsInOrder();
             if (tabs.length === 0) return;
 
             const currentIndex = this.getCurrentTabIndex(tabs);
             const nextIndex = currentIndex === tabs.length - 1 ? 0 : currentIndex + 1;
 
-            this.activateTab(tabs[nextIndex]);
+            await this.activateTab(tabs[nextIndex]);
         },
 
         // קבלת כל הכרטיסיות בסדר הנכון (לפי הסדר ב-DOM)
@@ -141,7 +142,7 @@
         },
 
         // הפעלת כרטיסייה (כולל כרטיסיית הקומבואים)
-        activateTab(tab) {
+        async activateTab(tab) {
             if (!tab) return;
 
             const menuContainer = document.querySelector(DOM.MENU_CONTAINER);
@@ -152,7 +153,7 @@
 
             // אם זה כרטיסיית הקומבואים שלנו
             if (tab === this.comboTab) {
-                MenuInjector.activateComboTab(this.comboTab, menuContainer, this.comboTabUnderline);
+                await MenuInjector.safeActivateComboTab(this.comboTab, menuContainer, this.comboTabUnderline);
             } else {
                 // אם אנחנו על כרטיסיית הקומבואים, נכבה אותה קודם
                 if (this.comboTab && this.comboTab.classList.contains(DOM.ACTIVE_TAB_CLASS)) {
@@ -160,6 +161,45 @@
                 }
                 // הפעלת הכרטיסייה הרגילה
                 tab.click();
+            }
+        },
+
+        // מעבר לטאב לפי טקסט
+        async navigateToTab(tabName) {
+            const tabs = document.querySelectorAll(`.${DOM.TAB_ITEM_CLASS}`);
+            let targetTab = null;
+
+            for (let tab of tabs) {
+                // שימוש ב-textContent במקום innerText - יותר אמין
+                const tabText = tab.textContent ? tab.textContent.trim() : '';
+                const tabTextLower = tabText.toLowerCase();
+                const searchNameLower = tabName.toLowerCase();
+
+                // בדיקה מדויקת קודם, ואז בדיקה חלקית
+                if (tabTextLower === searchNameLower || tabTextLower.includes(searchNameLower)) {
+                    // ודא שזה לא הטאב שלנו (COMBOS)
+                    if (!tabTextLower.includes('combo')) {
+                        targetTab = tab;
+                        break;
+                    }
+                }
+            }
+
+            if (targetTab) {
+                // אם אנחנו על טאב COMBOS, נסתיר אותו קודם
+                if (window.TankiComboManager.ViewRenderer && window.TankiComboManager.ViewRenderer.viewElement) {
+                    const comboView = window.TankiComboManager.ViewRenderer.viewElement;
+                    if (comboView.style.display !== 'none') {
+                        window.TankiComboManager.ViewRenderer.hide();
+                    }
+                }
+
+                targetTab.click();
+                // המתנה קריטית לטעינת ה-HTML של הטאב
+                await Utils.sleep(50);
+            } else {
+                const allTabTexts = Array.from(tabs).map(t => t.textContent?.trim() || '').join(', ');
+                console.error(`[ComboManager] Tab ${tabName} not found! Available tabs: ${allTabTexts}`);
             }
         },
 

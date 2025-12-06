@@ -149,11 +149,14 @@
             });
         },
 
-        // הצטיידות בקומבו (TODO: להוסיף לוגיקה)
-        equipCombo(combo) {
+        // הצטיידות בקומבו
+        async equipCombo(combo) {
             console.log('[ComboManager] Equipping combo:', combo);
-            alert('Equip functionality coming soon!');
-            // TODO: להוסיף לוגיקה להצטיידות בקומבו
+            if (window.TankiComboManager.ComboLoader) {
+                await window.TankiComboManager.ComboLoader.equipCombo(combo);
+            } else {
+                console.error("ComboLoader not loaded!");
+            }
         },
 
         show() {

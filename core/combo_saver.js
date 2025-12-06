@@ -20,48 +20,69 @@
                 hullAugment: null,
                 grenade: null,
                 drone: null,
-                protection: null,
-                paint: null
+                protection: null
+                // paint: null,  // בוטל - פונקציונליות הצבע הוסרה
             };
 
             try {
                 // 1. סריקת תותח
-                await this.navigateToTab('Turrets');
+                if (window.TankiComboManager.TabNavigator) {
+                    await window.TankiComboManager.TabNavigator.navigateToTab('Turrets');
+                }
                 currentCombo.turret = window.TankiComboManager.BaseItemScanner.scanItem();
 
                 // 2. סריקת אוגמנט תותח
                 currentCombo.turretAugment = await window.TankiComboManager.AugmentScanner.scanAugment();
 
                 // 3. סריקת גוף
-                await this.navigateToTab('Hulls');
+                if (window.TankiComboManager.TabNavigator) {
+                    await window.TankiComboManager.TabNavigator.navigateToTab('Hulls');
+                }
                 currentCombo.hull = window.TankiComboManager.BaseItemScanner.scanItem();
 
                 // 4. סריקת אוגמנט גוף
                 currentCombo.hullAugment = await window.TankiComboManager.AugmentScanner.scanAugment();
 
                 // 5. סריקת רימון
-                await this.navigateToTab('Grenades');
+                if (window.TankiComboManager.TabNavigator) {
+                    await window.TankiComboManager.TabNavigator.navigateToTab('Grenades');
+                }
                 currentCombo.grenade = window.TankiComboManager.BaseItemScanner.scanItem();
 
                 // 6. סריקת דרון (עם פונקציית ניקוי מיוחדת)
-                await this.navigateToTab('Drones');
+                if (window.TankiComboManager.TabNavigator) {
+                    await window.TankiComboManager.TabNavigator.navigateToTab('Drones');
+                }
                 currentCombo.drone = window.TankiComboManager.BaseItemScanner.scanItem(
                     window.TankiComboManager.BaseItemScanner.cleanDroneName.bind(window.TankiComboManager.BaseItemScanner)
                 );
 
                 // 7. סריקת הגנה
-                await this.navigateToTab('Protection');
+                if (window.TankiComboManager.TabNavigator) {
+                    await window.TankiComboManager.TabNavigator.navigateToTab('Protection');
+                }
                 currentCombo.protection = window.TankiComboManager.ProtectionScanner.scanProtection();
 
-                // 8. סריקת צבע
-                await this.navigateToTab('Paints');
-                currentCombo.paint = window.TankiComboManager.PaintScanner.scanPaint();
+                // 8. סריקת צבע - בוטל
+                // if (window.TankiComboManager.TabNavigator) {
+                //     await window.TankiComboManager.TabNavigator.navigateToTab('Paints');
+                // }
+                // currentCombo.paint = window.TankiComboManager.PaintScanner.scanPaint();
 
                 // שמירה ל-localStorage
                 this.saveToStorage(currentCombo);
 
                 // חזרה לכרטיסיית COMBOS
-                await this.navigateToComboTab();
+                if (window.TankiComboManager.MenuInjector) {
+                    const menuContainer = document.querySelector(DOM.MENU_CONTAINER);
+                    if (menuContainer) {
+                        const comboTab = Array.from(menuContainer.children).find(el => el.innerText === "COMBOS");
+                        if (comboTab) {
+                            const underline = comboTab.querySelector(`.${DOM.ACTIVE_UNDERLINE_CLASS}`);
+                            await window.TankiComboManager.MenuInjector.safeActivateComboTab(comboTab, menuContainer, underline);
+                        }
+                    }
+                }
 
             } catch (error) {
                 console.error("[ComboManager] Error during save:", error);
@@ -69,67 +90,7 @@
             }
         },
 
-        // חזרה לכרטיסיית COMBOS
-        async navigateToComboTab() {
-            const menuContainer = document.querySelector(DOM.MENU_CONTAINER);
-            if (!menuContainer) return;
 
-            // חיפוש הטאב COMBOS
-            const comboTab = Array.from(menuContainer.children).find(el => el.innerText === "COMBOS");
-            if (comboTab) {
-                // מציאת הקו התחתון של הטאב
-                const underline = comboTab.querySelector(`.${DOM.ACTIVE_UNDERLINE_CLASS}`);
-                
-                // הפעלת הטאב דרך MenuInjector
-                if (window.TankiComboManager.MenuInjector) {
-                    window.TankiComboManager.MenuInjector.activateComboTab(comboTab, menuContainer, underline);
-                } else {
-                    // אם MenuInjector לא זמין, פשוט נקרא ל-click
-                    comboTab.click();
-                }
-                await Utils.sleep(50);
-            }
-        },
-
-        // מעבר לטאב לפי טקסט
-        async navigateToTab(tabName) {
-            const tabs = document.querySelectorAll(`.${DOM.TAB_ITEM_CLASS}`);
-            let targetTab = null;
-
-            for (let tab of tabs) {
-                // שימוש ב-textContent במקום innerText - יותר אמין
-                const tabText = tab.textContent ? tab.textContent.trim() : '';
-                const tabTextLower = tabText.toLowerCase();
-                const searchNameLower = tabName.toLowerCase();
-
-                // בדיקה מדויקת קודם, ואז בדיקה חלקית
-                if (tabTextLower === searchNameLower || tabTextLower.includes(searchNameLower)) {
-                    // ודא שזה לא הטאב שלנו (COMBOS)
-                    if (!tabTextLower.includes('combo')) {
-                        targetTab = tab;
-                        break;
-                    }
-                }
-            }
-
-            if (targetTab) {
-                // אם אנחנו על טאב COMBOS, נסתיר אותו קודם
-                if (window.TankiComboManager.ViewRenderer && window.TankiComboManager.ViewRenderer.viewElement) {
-                    const comboView = window.TankiComboManager.ViewRenderer.viewElement;
-                    if (comboView.style.display !== 'none') {
-                        window.TankiComboManager.ViewRenderer.hide();
-                        await Utils.sleep(50); // המתנה קצרה להסתרה
-                    }
-                }
-
-                targetTab.click();
-                // המתנה קריטית לטעינת ה-HTML של הטאב
-                await Utils.sleep(50);
-            } else {
-                const allTabTexts = Array.from(tabs).map(t => t.textContent?.trim() || '').join(', ');
-                throw new Error(`Tab ${tabName} not found! Available tabs: ${allTabTexts}`);
-            }
-        },
 
 
         saveToStorage(comboData) {

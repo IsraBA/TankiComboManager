@@ -23,7 +23,7 @@
 
             // כניסה למסך אוגמנטים
             openBtn.click();
-            await Utils.sleep(300); // המתנה לפתיחת החלון
+            await Utils.sleep(50); // המתנה לפתיחת החלון
 
             let equippedAugmentName = null;
 
@@ -50,7 +50,7 @@
             const backBtn = document.querySelector(DOM.BACK_BUTTON);
             if (backBtn) {
                 backBtn.click();
-                await Utils.sleep(300); // המתנה קצרה ליציאה
+                await Utils.sleep(50); // המתנה קצרה ליציאה
             }
 
             if (equippedAugmentName) {
