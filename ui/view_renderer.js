@@ -11,13 +11,30 @@
         viewElement: null,
 
         async init() {
-            if (document.getElementById('combo-manager-view')) {
-                this.viewElement = document.getElementById('combo-manager-view');
+            const garageMenuContainer = document.querySelector(DOM.GARAGE_MENU_CONTAINER);
+            if (!garageMenuContainer) return;
+
+            // בדיקה אם האלמנט כבר קיים
+            let existingElement = document.getElementById('combo-manager-view');
+            
+            if (existingElement) {
+                this.viewElement = existingElement;
+                // בדיקה אם האלמנט נמצא במקום הנכון (אחרי garageMenuContainer)
+                const parent = garageMenuContainer.parentNode;
+                if (parent && existingElement.parentNode === parent) {
+                    // בדיקה אם הסדר נכון
+                    const menuIndex = Array.from(parent.children).indexOf(garageMenuContainer);
+                    const viewIndex = Array.from(parent.children).indexOf(existingElement);
+                    if (viewIndex <= menuIndex) {
+                        // האלמנט לא במקום הנכון - הזז אותו
+                        garageMenuContainer.insertAdjacentElement('afterend', existingElement);
+                    }
+                } else {
+                    // האלמנט לא באותו parent - הזז אותו
+                    garageMenuContainer.insertAdjacentElement('afterend', existingElement);
+                }
                 return;
             }
-
-            const garageWrapper = document.querySelector(DOM.GARAGE_WRAPPER);
-            if (!garageWrapper) return;
 
             this.viewElement = document.createElement('div');
             this.viewElement.id = 'combo-manager-view';
@@ -28,11 +45,8 @@
             const htmlContent = await this.loadViewHTML();
             this.viewElement.innerHTML = htmlContent;
 
-            garageWrapper.appendChild(this.viewElement);
-
-            if (window.getComputedStyle(garageWrapper).position === 'static') {
-                garageWrapper.style.position = 'relative';
-            }
+            // הוספת ה-viewElement מתחת ל-garageMenuContainer
+            garageMenuContainer.insertAdjacentElement('afterend', this.viewElement);
 
             // חיבור האירועים
             this.bindEvents();
@@ -89,206 +103,21 @@
                 return;
             }
 
-            // יצירת columns (כל column מכיל 2 קומבואים)
-            let currentColumn = null;
+            // יצירת column לכל קומבו (כל קומבו ב-column נפרד)
             combos.forEach((combo, index) => {
-                // יצירת column חדש כל 2 קומבואים
-                if (index % 2 === 0) {
-                    currentColumn = document.createElement('div');
-                    currentColumn.className = 'cme_flexSpaceBetweenAlignCenterColumn';
-                    container.appendChild(currentColumn);
-                }
+                // יצירת column חדש לכל קומבו
+                const currentColumn = document.createElement('div');
+                currentColumn.className = 'cme_flexSpaceBetweenAlignCenterColumn';
+                container.appendChild(currentColumn);
 
-                // יצירת כרטיס קומבו
-                const comboCard = this.createComboCard(combo, index);
-                currentColumn.appendChild(comboCard);
+                // יצירת כרטיס קומבו באמצעות ComboCardRenderer
+                if (window.TankiComboManager.ComboCardRenderer) {
+                    const comboCard = window.TankiComboManager.ComboCardRenderer.createComboCard(combo, index, this);
+                    currentColumn.appendChild(comboCard);
+                } else {
+                    console.error("ComboCardRenderer not loaded!");
+                }
             });
-        },
-
-        // יצירת כרטיס קומבו בודד - בסגנון כרטיסי הצבעים
-        createComboCard(combo, index) {
-            const card = document.createElement('div');
-            card.className = 'cme_itemStyle';
-            card.dataset.comboId = combo.id;
-
-            // פירוק המידע מהקומבו
-            const data = combo.data;
-
-            card.innerHTML = `
-                <!-- Header - שם קומבו וכפתורים -->
-                <div class="cme_flexSpaceBetweenAlignStretch cme_combo-header">
-                    <div class="cme_combo-name-container">
-                        <h3 contenteditable="true" class="cme_combo-name">${combo.name}</h3>
-                        <span class="cme_combo-date">${combo.date || ''}</span>
-                    </div>
-                    <div class="cme_combo-actions">
-                        <button class="cme_action-btn cme_delete-btn" title="Delete">×</button>
-                    </div>
-                </div>
-
-                <!-- Preview - תצוגת הפריטים -->
-                <div class="cme_flexCenterAlignStretch cme_combo-content">
-                    <div class="cme_itemPreview cme_combo-preview">
-                        ${this.createComboPreviewHTML(data)}
-                    </div>
-                </div>
-
-                <!-- Footer - מידע נוסף -->
-                <div class="cme_flexEndAlignCenter cme_whiteSpaceNoWrap cme_combo-footer">
-                    <span class="cme_combo-id">#${combo.id}</span>
-                </div>
-
-                <!-- Info Tooltip (מופיע ב-hover) -->
-                <div class="cme_combo-info">
-                    ${this.createComboInfoHTML(data)}
-                </div>
-            `;
-
-            // חיבור אירועים
-            this.bindComboCardEvents(card, combo);
-
-            return card;
-        },
-
-        // יצירת HTML לתצוגה מקדימה של הקומבו
-        createComboPreviewHTML(data) {
-            // הצגת התמונות העיקריות (turret, hull, paint)
-            const items = [];
-
-            if (data.turret?.imageUrl) {
-                items.push(`<img src="${data.turret.imageUrl}" class="cme_combo-item-img" alt="${data.turret.name}">`);
-            }
-            if (data.hull?.imageUrl) {
-                items.push(`<img src="${data.hull.imageUrl}" class="cme_combo-item-img" alt="${data.hull.name}">`);
-            }
-            if (data.paint?.imageUrl) {
-                items.push(`<img src="${data.paint.imageUrl}" class="cme_combo-item-img-small" alt="${data.paint.name}">`);
-            }
-
-            // אם אין פריטים, נציג placeholder
-            if (items.length === 0) {
-                return '<span style="color: rgba(255,255,255,0.5); font-size: 0.75em;">Empty Combo</span>';
-            }
-
-            return items.join('');
-        },
-
-        // יצירת HTML למידע המפורט (נראה ב-hover)
-        createComboInfoHTML(data) {
-            const rows = [];
-
-            if (data.turret?.name) {
-                rows.push(`
-                    <div class="cme_info-row">
-                        <span class="cme_info-label">Turret:</span>
-                        <span class="cme_info-value">${data.turret.name}</span>
-                    </div>
-                `);
-                if (data.turretAugment?.name) {
-                    rows.push(`
-                        <div class="cme_info-row">
-                            <span class="cme_info-label">└ Augment:</span>
-                            <span class="cme_info-augment">${data.turretAugment.name}</span>
-                        </div>
-                    `);
-                }
-            }
-
-            if (data.hull?.name) {
-                rows.push(`
-                    <div class="cme_info-row">
-                        <span class="cme_info-label">Hull:</span>
-                        <span class="cme_info-value">${data.hull.name}</span>
-                    </div>
-                `);
-                if (data.hullAugment?.name) {
-                    rows.push(`
-                        <div class="cme_info-row">
-                            <span class="cme_info-label">└ Augment:</span>
-                            <span class="cme_info-augment">${data.hullAugment.name}</span>
-                        </div>
-                    `);
-                }
-            }
-
-            if (data.paint?.name) {
-                rows.push(`
-                    <div class="cme_info-row">
-                        <span class="cme_info-label">Paint:</span>
-                        <span class="cme_info-value">${data.paint.name}</span>
-                    </div>
-                `);
-            }
-
-            if (data.protection?.name) {
-                rows.push(`
-                    <div class="cme_info-row">
-                        <span class="cme_info-label">Protection:</span>
-                        <span class="cme_info-value">${data.protection.name}</span>
-                    </div>
-                `);
-            }
-
-            if (data.drone?.name) {
-                rows.push(`
-                    <div class="cme_info-row">
-                        <span class="cme_info-label">Drone:</span>
-                        <span class="cme_info-value">${data.drone.name}</span>
-                    </div>
-                `);
-            }
-
-            if (data.grenade?.name) {
-                rows.push(`
-                    <div class="cme_info-row">
-                        <span class="cme_info-label">Grenade:</span>
-                        <span class="cme_info-value">${data.grenade.name}</span>
-                    </div>
-                `);
-            }
-
-            return rows.join('');
-        },
-
-        // חיבור אירועים לכרטיס קומבו
-        bindComboCardEvents(card, combo) {
-            // כפתור מחיקה
-            const deleteBtn = card.querySelector('.cme_delete-btn');
-            if (deleteBtn) {
-                deleteBtn.onclick = (e) => {
-                    e.stopPropagation();
-                    this.deleteCombo(combo.id);
-                };
-            }
-
-            // לחיצה על הכרטיס עצמו - equip (בעתיד)
-            card.onclick = (e) => {
-                // אם לחצו על כפתור, לא נעשה כלום
-                if (e.target.closest('.cme_delete-btn') || e.target.closest('.cme_combo-name')) {
-                    return;
-                }
-                this.equipCombo(combo);
-            };
-
-            // עריכת שם
-            const nameElement = card.querySelector('.cme_combo-name');
-            if (nameElement) {
-                nameElement.onblur = (e) => {
-                    const newName = e.target.textContent.trim();
-                    if (newName && newName !== combo.name) {
-                        this.renameCombo(combo.id, newName);
-                    }
-                };
-                nameElement.onkeydown = (e) => {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                        e.target.blur();
-                    }
-                };
-                nameElement.onclick = (e) => {
-                    e.stopPropagation();
-                };
-            }
         },
 
         // מחיקת קומבו
@@ -329,7 +158,7 @@
 
         show() {
             if (this.viewElement) {
-                this.viewElement.style.display = 'block';
+                this.viewElement.style.display = 'flex';
 
                 // טעינת הקומבואים כשמציגים את התצוגה
                 this.loadAndRenderCombos();

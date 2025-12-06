@@ -3,15 +3,11 @@
 
 /* === Main Container === */
 #combo-manager-view {
-    position: absolute;
-    top: 7em;
-    left: 0;
     width: 100%;
-    height: calc(100% - 7em);
-    z-index: 10;
     display: none;
     color: white;
 }
+
 .cme_main {
     width: 100%;
     height: 100%;
@@ -33,13 +29,6 @@
 }
 
 /* === Common Block For Description And Button === */
-@media screen and (min-width: 1280px),
-(min-height: 950px) {
-    .cme_commonBlockForDescriptionAndButton {
-        width: calc(100% - 12em);
-    }
-}
-
 .cme_commonBlockForDescriptionAndButton {
     display: flex;
     align-items: stretch;
@@ -52,19 +41,11 @@
     -webkit-box-flex: 1;
 }
 
-.cme_blockPaints {
-    min-height: 19.375em;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    width: 100%;
-    height: auto;
-    z-index: 1;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-    -webkit-box-align: center;
-    -webkit-box-pack: start;
+@media screen and (min-width: 1280px),
+(min-height: 950px) {
+    .cme_commonBlockForDescriptionAndButton {
+        width: calc(100% - 12em);
+    }
 }
 
 /* === Tank Preview === */
@@ -77,13 +58,6 @@
 }
 
 /* === Description Block Collection === */
-@media screen and (min-width: 1280px),
-(min-height: 950px) {
-    .cme_descriptionBlockCollection {
-        margin-top: 4em;
-    }
-}
-
 .cme_descriptionBlockCollection {
     display: flex;
     flex-direction: column;
@@ -98,6 +72,13 @@
     -webkit-box-direction: normal;
     -webkit-box-align: start;
     -webkit-box-pack: start;
+}
+
+@media screen and (min-width: 1280px),
+(min-height: 950px) {
+    .cme_descriptionBlockCollection {
+        margin-top: 4em;
+    }
 }
 
 .cme_commonBlockDescriptionCollection {
@@ -118,19 +99,18 @@
 }
 
 .cme_animatedBlurredLeftBlock {
-    animation: 200ms ease-out 0s 1 normal none running cme_keyframe_appear;
+    animation: 200ms ease-out 0s 1 normal none running cme_keyframe_appear_right;
     backdrop-filter: blur(3.125em);
 }
 
-@keyframes cme_keyframe_appear {
-    from {
+@keyframes cme_keyframe_appear_right {
+    0% {
         opacity: 0;
-        transform: translateX(-1em);
+        transform: translateX(-5vw);
     }
 
-    to {
+    100% {
         opacity: 1;
-        transform: translateX(0);
     }
 }
 
@@ -148,12 +128,17 @@
 }
 
 .cme_headline h1 {
-    font-size: 1em;
-    color: rgb(255, 255, 255);
-    margin: 0;
+    font-family: BaseFontMedium, FallbackFontMedium;
+    font-style: normal;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 1.5em;
+    padding: 0px;
+    margin: 0px;
 }
 
-.cme_styleCategory {
+.cme_headline h3 {
+    color: rgb(254, 102, 102);
     font-family: BaseFontMedium, FallbackFontMedium;
     font-style: normal;
     font-weight: 500;
@@ -163,7 +148,20 @@
     letter-spacing: 0.125em;
     margin: 0px 0.75em 0px 0px;
     white-space: nowrap;
-    color: rgb(0, 212, 255);
+}
+
+.cme_PaintsCollectionComponentStyle-fullDescriptionPaint {
+    width: 22.5em;
+    height: auto;
+    padding-right: 0.625em;
+}
+
+.cme_PaintsCollectionComponentStyle-fullDescriptionPaint h3 {
+    font-family: BaseFontRegular, FallbackFontRegular;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 1em;
+    margin: 0px;
 }
 
 /* === Tank Part Upgrades (Button Section) === */
@@ -192,19 +190,18 @@
 }
 
 .cme_animatedBlurredRightBlock {
-    animation: 200ms ease-out 0s 1 normal none running cme_keyframe_appear_right;
+    animation: 200ms ease-out 0s 1 normal none running cme_keyframe_appear_bottom;
     backdrop-filter: blur(3.125em);
 }
 
-@keyframes cme_keyframe_appear_right {
-    from {
+@keyframes cme_keyframe_appear_bottom {
+    0% {
         opacity: 0;
-        transform: translateX(1em);
+        transform: translateY(5vh);
     }
 
-    to {
+    100% {
         opacity: 1;
-        transform: translateX(0);
     }
 }
 
@@ -222,7 +219,6 @@
 }
 
 .cme_TanksPartComponentStyle-tankPartUpgrades {
-    margin-top: 4em;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -236,8 +232,15 @@
     -webkit-box-direction: normal;
     -webkit-box-align: start;
     -webkit-box-pack: start;
-    animation: 200ms ease-out 0s 1 normal none running ksc-keyframe-53;
+    animation: 200ms ease-out 0s 1 normal none running cme_keyframe_appear_left;
     backdrop-filter: blur(3.125em);
+}
+
+@media screen and (min-width: 1280px),
+(min-height: 950px) {
+    .cme_TanksPartComponentStyle-tankPartUpgrades {
+        margin-top: 4em;
+    }
 }
 
 /* הטמעת CSS של הקלאסים המג'ונרטים (ksc-152.ksc-152.ksc-152) */
@@ -317,13 +320,12 @@
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    bottom: 0px;
     width: 100%;
     position: relative;
     height: auto;
     background: linear-gradient(rgba(0, 25, 38, 0) 0%, rgb(0, 25, 38) 100%);
     z-index: 1;
-    min-height: 22.375em;
+    height: 22.375em;
     -webkit-box-align: center;
     -webkit-box-pack: start;
 }
@@ -332,7 +334,7 @@
     animation: 200ms ease-out 0s 1 normal none running cme_keyframe_appear_bottom;
 }
 
-@keyframes cme_keyframe_appear_bottom {
+@keyframes cme_keyframe_appear_left {
     0% {
         opacity: 0;
         transform: translateX(5vw);
@@ -386,17 +388,17 @@
 
 /* === Items Container === */
 .cme_itemsContainer {
+    height: 100%;
     overflow: auto hidden;
     scrollbar-width: none;
     display: flex;
     flex-flow: row;
-    height: auto;
-    padding: 1.5em;
     z-index: 3;
     -webkit-box-orient: horizontal;
     -webkit-box-direction: normal;
     user-select: none;
-    padding-right: 3em !important;
+    padding: 1.5em;
+    box-sizing: border-box;
 }
 
 .cme_itemsContainer::-webkit-scrollbar {
@@ -410,6 +412,7 @@
     align-items: center;
     justify-content: space-between;
     width: 12.5em;
+    flex-shrink: 0;
     margin-right: 0.625em;
     -webkit-box-orient: vertical;
     -webkit-box-direction: normal;
@@ -421,244 +424,33 @@
     margin-right: 0;
 }
 
-/* === Item Style (Combo Card) === */
-.cme_itemStyle {
-    background-color: rgba(191, 213, 255, 0.15);
-    box-shadow: rgba(191, 213, 255, 0.3) 0em 0em 0em 0.063em;
-    border-radius: 0.5em;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    justify-content: flex-start;
-    width: 12.5em;
-    height: 9.375em;
-    position: relative;
-    overflow: hidden;
-    cursor: pointer;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-    -webkit-box-align: stretch;
-    -webkit-box-pack: start;
-}
-
-.cme_itemStyle:hover {
-    background-color: rgba(191, 213, 255, 0.25);
-    box-shadow: rgba(191, 213, 255, 0.5) 0em 0em 0em 0.063em;
-}
-
-.cme_itemStyle.cme_selected {
-    background-color: rgba(118, 255, 51, 0.15);
-    box-shadow: rgb(255, 255, 255) 0em 0em 0em 0.125em;
-}
-
-/* === Card Header === */
-.cme_flexSpaceBetweenAlignStretch {
-    display: flex;
-    align-items: stretch;
-    justify-content: space-between;
-    width: inherit;
-    height: auto;
-    -webkit-box-align: stretch;
-    -webkit-box-pack: justify;
-}
-
-.cme_combo-header {
-    padding: 0.5em;
-}
-
-.cme_combo-name-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    flex: 1;
-}
-
-.cme_combo-name {
-    color: #ffffff;
-    font-size: 0.875em;
-    font-weight: bold;
-    text-transform: uppercase;
-    margin: 0;
-    padding: 0.25em 0;
-    cursor: text;
-    outline: none;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.cme_combo-date {
-    color: rgba(255, 255, 255, 0.5);
-    font-size: 0.625em;
-    margin-top: 0.25em;
-}
-
-.cme_combo-actions {
-    display: flex;
-    gap: 0.25em;
-    align-items: flex-start;
-}
-
-.cme_action-btn {
-    background: rgba(118, 255, 51, 0.2);
-    border: 0.063em solid rgba(118, 255, 51, 0.3);
-    color: #76ff33;
-    padding: 0.25em 0.5em;
-    font-size: 0.625em;
-    font-weight: bold;
-    text-transform: uppercase;
-    cursor: pointer;
-    border-radius: 0.25em;
-    transition: all 0.2s ease;
-}
-
-.cme_action-btn:hover {
-    background: rgba(118, 255, 51, 0.3);
-    border-color: rgba(118, 255, 51, 0.5);
-}
-
-.cme_delete-btn {
-    background: rgba(255, 50, 50, 0.2);
-    border-color: rgba(255, 50, 50, 0.3);
-    color: #ff3232;
-    padding: 0.125em 0.375em;
-    font-size: 1em;
-    line-height: 1;
-}
-
-.cme_delete-btn:hover {
-    background: rgba(255, 50, 50, 0.4);
-    border-color: rgba(255, 50, 50, 0.5);
-}
-
-/* === Card Content === */
-.cme_flexCenterAlignStretch {
-    display: flex;
-    align-items: stretch;
-    justify-content: center;
-    margin-top: -1.25em;
-    -webkit-box-align: stretch;
-    -webkit-box-pack: center;
-}
-.cme_combo-content {
-    flex: 1;
-    padding: 0 0.5em;
-}
-
-.cme_itemPreview {
-    display: flex;
-    justify-content: center;
-    align-self: center;
-    position: relative;
-    width: 8.125em;
-    height: 6.25em;
-    -webkit-box-pack: center;
-}
-
-.cme_combo-preview {
-    width: 100%;
-    height: 100%;
-    align-items: center;
-    gap: 0.25em;
-}
-
-.cme_combo-item-img {
-    width: auto;
-    height: 6.25em;
-    position: absolute;
-    object-fit: contain;
-}
-
-.cme_combo-item-img-small {
-    width: auto;
-    height: 3em;
-    position: absolute;
-    object-fit: contain;
-}
-
-/* === Card Footer === */
-.cme_flexEndAlignCenter {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    -webkit-box-align: center;
-    -webkit-box-pack: end;
-}
-
-.cme_whiteSpaceNoWrap {
-    white-space: nowrap;
-}
-
-.cme_combo-footer {
-    padding: 0 0.5em 0.5em;
-    height: auto;
-}
-
-.cme_combo-id {
-    color: rgba(255, 255, 255, 0.3);
-    font-size: 0.5625em;
-    font-family: monospace;
-}
-
 /* === Empty State === */
 .cme_empty-state {
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3em 1.5em;
     text-align: center;
-    padding: 4em 1.5em;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
 }
 
 .cme_empty-state h2 {
-    color: #76ff33;
-    font-size: 1.75em;
-    margin-bottom: 1em;
-    text-transform: uppercase;
+    font-family: BaseFontMedium, FallbackFontMedium;
+    font-size: 1.5em;
+    font-weight: 500;
+    color: white;
+    margin: 0 0 0.5em 0;
 }
 
 .cme_empty-state p {
-    color: rgba(255, 255, 255, 0.7);
+    font-family: BaseFontRegular, FallbackFontRegular;
     font-size: 1em;
-}
-
-/* === Info Display (for detailed view on hover) === */
-.cme_combo-info {
-    position: absolute;
-    bottom: 2em;
-    left: 0;
-    right: 0;
-    background: rgba(0, 25, 38, 0.95);
-    backdrop-filter: blur(0.5em);
-    padding: 0.75em;
-    display: none;
-    flex-direction: column;
-    gap: 0.5em;
-    z-index: 10;
-    border-top: 0.063em solid rgba(118, 255, 51, 0.3);
-}
-
-.cme_itemStyle:hover .cme_combo-info {
-    display: flex;
-}
-
-.cme_info-row {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.625em;
-    color: rgba(255, 255, 255, 0.8);
-}
-
-.cme_info-label {
-    color: rgba(255, 255, 255, 0.5);
-    text-transform: uppercase;
-}
-
-.cme_info-value {
-    color: #ffffff;
-    font-weight: bold;
-}
-
-.cme_info-augment {
-    color: #76ff33;
-    font-style: italic;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
 }
 

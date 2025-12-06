@@ -15,7 +15,8 @@
         "*://*.tankionline.com/*"
       ],
       "css": [
-        "styles.css"
+        "styles.css",
+        "combo_card.css"
       ],
       "js": [
         "lib/constants.js",
@@ -29,6 +30,7 @@
         "core/combo_saver.js",
         "core/combo_loader.js",
         "ui/menu_injector.js",
+        "ui/combo_card_renderer.js",
         "ui/view_renderer.js",
         "main.js"
       ],
