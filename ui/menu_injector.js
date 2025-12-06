@@ -26,7 +26,7 @@
                 return;
             }
 
-            console.log("Tanki Combos: Injecting Menu Button...");
+            // console.log("Tanki Combos: Injecting Menu Button...");
 
             const comboTab = document.createElement('div');
             comboTab.className = DOM.TAB_ITEM_CLASS;

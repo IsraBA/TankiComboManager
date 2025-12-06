@@ -120,25 +120,25 @@
     align-items: center;
     justify-content: flex-end;
     overflow: hidden;
-    padding: 0.375em;
-    padding-right: 1.8em;
+    padding: 0.575em;
+    padding-left: 1.3em;
     -webkit-box-align: center;
     -webkit-box-pack: end;
 }
 
-/* תמונת תותח - 80% גובה ורוחב */
+/* תמונת תותח */
 .cme_combo-turret-image {
-    max-width: 85%;
-    max-height: 85%;
+    max-width: 60%;
+    max-height: 60%;
     width: auto;
     height: auto;
     object-fit: contain;
 }
 
-/* תמונת hull - 90% גובה ורוחב */
+/* תמונת hull */
 .cme_combo-hull-image {
-    max-width: 90%;
-    max-height: 100%;
+    max-width: 60%;
+    max-height: 60%;
     width: auto;
     height: auto;
     object-fit: contain;
@@ -171,8 +171,14 @@
     position: relative;
     min-width: 0;
     height: 100%;
+    border-radius: 0.125em;
     -webkit-box-align: center;
     -webkit-box-pack: center;
+}
+
+/* ריבוע ריק - מציג border */
+.cme_combo-protection-item-empty {
+    border: 0.0625em dashed rgba(255, 255, 255, 0.2);
 }
 
 .cme_combo-protection-item img {
@@ -309,4 +315,113 @@
     width: 0.675em;
     height: 0.675em;
     color: white;
+}
+
+/* === Item Removal Styles === */
+/* עטיפה לתמונות שניתן להסיר */
+.cme_combo-item-removable {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+/* פילטר אדום בעת hover */
+.cme_combo-item-removable:hover img {
+    filter: brightness(0.5) sepia(1) hue-rotate(0deg) saturate(2);
+    transition: filter 0.2s ease;
+}
+
+/* SVG איקס - מוסתר כברירת מחדל */
+.cme_combo-item-remove-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    z-index: 10;
+    pointer-events: none;
+    width: 0;
+    height: 0;
+    filter: drop-shadow(0 0 0.125em rgba(0, 0, 0, 0.8));
+}
+
+/* גודל האיקס - חצי מהקונטיינר (שגודלו כגודל התמונה) בעת hover */
+.cme_combo-item-removable:hover .cme_combo-item-remove-icon {
+    opacity: 1;
+    width: 50%;
+    height: 50%;
+}
+
+/* גודל איקס גדול - תותח וגוף (70%) */
+.cme_combo-item-removable:hover .cme_combo-item-remove-icon-large {
+    width: 70%;
+    height: 70%;
+}
+
+/* גודל איקס קטן - רימון ודרון (30%) */
+.cme_combo-item-removable:hover .cme_combo-item-remove-icon-small {
+    width: 30%;
+    height: 30%;
+}
+
+/* התאמה לפריטים בתוך ריבועים ומלבנים */
+.cme_combo-square .cme_combo-item-removable {
+    width: 100%;
+    height: 100%;
+}
+
+/* במלבנים, ה-wrapper צריך להיות בגודל התמונה ולא למלא את כל הרוחב */
+.cme_combo-rectangle .cme_combo-item-removable {
+    display: inline-flex;
+    width: auto;
+    height: auto;
+    max-width: 85%;
+    max-height: 85%;
+    flex-shrink: 0;
+    vertical-align: middle;
+}
+
+.cme_combo-rectangle .cme_combo-item-removable {
+    max-width: 90%;
+    max-height: 100%;
+}
+
+/* התאמה לפריטי הגנה */
+.cme_combo-protection-item .cme_combo-item-removable {
+    width: 100%;
+    height: 100%;
+}
+
+/* התאמה לתג augment */
+.cme_combo-augment-badge .cme_combo-item-removable {
+    width: 100%;
+    height: 100%;
+}
+
+.cme_combo-augment-badge .cme_combo-item-removable img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* טקסט "NO X" כשאין פריט */
+.cme_combo-no-item {
+    font-family: BaseFontMedium, FallbackFontMedium;
+    font-size: 0.75em;
+    font-weight: 500;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.5);
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
 }

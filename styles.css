@@ -420,10 +420,6 @@
     -webkit-box-pack: justify;
 }
 
-.cme_itemsContainer .cme_flexSpaceBetweenAlignCenterColumn:last-child {
-    margin-right: 0;
-}
-
 /* === Empty State === */
 .cme_empty-state {
     width: 100%;

@@ -13,8 +13,8 @@
             card.className = 'cme_combo-card';
             card.setAttribute('data-combo-id', combo.id);
 
-            // יצירת 4 השורות
-            const rowsHTML = this.createRowsHTML(combo.data);
+            // יצירת 4 השורות (עם בדיקת פריטים מוסרים)
+            const rowsHTML = this.createRowsHTML(combo.data, combo.removedItems || {});
 
             // כפתור מחיקה
             const deleteBtnHTML = `
@@ -49,36 +49,43 @@
         },
 
         // יצירת 4 השורות
-        createRowsHTML(data) {
+        createRowsHTML(data, removedItems = {}) {
             // שורה ראשונה: 2 ריבועים - drone ו-grenade
-            const droneImage = data.drone && data.drone.image ? data.drone.image : null;
-            const grenadeImage = data.grenade && data.grenade.image ? data.grenade.image : null;
+            const droneImage = data.drone && data.drone.image && !removedItems.drone ? data.drone.image : null;
+            const grenadeImage = data.grenade && data.grenade.image && !removedItems.grenade ? data.grenade.image : null;
+            const hasDroneButNoImage = data.drone && !removedItems.drone && !droneImage;
+            const hasGrenadeButNoImage = data.grenade && !removedItems.grenade && !grenadeImage;
+            const isDroneRemoved = removedItems.drone;
+            const isGrenadeRemoved = removedItems.grenade;
 
             const row1HTML = `
                 <div class="cme_combo-row cme_combo-row-1">
                     <div class="cme_combo-square">
-                        ${data.drone && data.drone.name ? `<span class="cme_combo-item-name">${data.drone.name}</span>` : ''}
-                        ${droneImage ? `<img src="${droneImage}" alt="${data.drone.name || 'Drone'}" class="cme_combo-drone-image" onerror="this.style.display='none';">` : ''}
+                        ${isDroneRemoved ? `<span class="cme_combo-item-name">NO DRONE</span>` : (data.drone && data.drone.name && !removedItems.drone ? `<span class="cme_combo-item-name">${data.drone.name}</span>` : '')}
+                        ${droneImage ? this.createRemovableItemHTML('drone', droneImage, data.drone.name || 'Drone', 'cme_combo-drone-image') : (hasDroneButNoImage ? '<span class="cme_combo-no-item">NO DRONE</span>' : '')}
                     </div>
                     <div class="cme_combo-square">
-                        ${data.grenade && data.grenade.name ? `<span class="cme_combo-item-name">${data.grenade.name}</span>` : ''}
-                        ${grenadeImage ? `<img src="${grenadeImage}" alt="${data.grenade.name || 'Grenade'}" class="cme_combo-grenade-image" onerror="this.style.display='none';">` : ''}
+                        ${isGrenadeRemoved ? `<span class="cme_combo-item-name">NO GRENADE</span>` : (data.grenade && data.grenade.name && !removedItems.grenade ? `<span class="cme_combo-item-name">${data.grenade.name}</span>` : '')}
+                        ${grenadeImage ? this.createRemovableItemHTML('grenade', grenadeImage, data.grenade.name || 'Grenade', 'cme_combo-grenade-image') : (hasGrenadeButNoImage ? '<span class="cme_combo-no-item">NO GRENADE</span>' : '')}
                     </div>
                 </div>
             `;
 
             // שורה שניה: מלבן עם turret, ובפינה השמאלית התחתונה - turretAugment
-            const turretImage = data.turret && data.turret.image ? data.turret.image : null;
-            const turretAugmentImage = data.turretAugment && data.turretAugment.image ? data.turretAugment.image : null;
+            const turretImage = data.turret && data.turret.image && !removedItems.turret ? data.turret.image : null;
+            // אם turret הוסר, גם האוגמנט צריך להיות מוסר
+            const turretAugmentImage = !removedItems.turret && data.turretAugment && data.turretAugment.image && !removedItems.turretAugment ? data.turretAugment.image : null;
+            const hasTurretButNoImage = data.turret && !removedItems.turret && !turretImage;
+            const isTurretRemoved = removedItems.turret;
 
             const row2HTML = `
                 <div class="cme_combo-row cme_combo-row-2">
                     <div class="cme_combo-rectangle">
-                        ${data.turret && data.turret.name ? `<span class="cme_combo-item-name">${data.turret.name}</span>` : ''}
-                        ${turretImage ? `<img src="${turretImage}" alt="${data.turret.name || 'Turret'}" class="cme_combo-turret-image" onerror="this.style.display='none';">` : ''}
+                        ${isTurretRemoved ? `<span class="cme_combo-item-name">NO TURRET</span>` : (data.turret && data.turret.name && !removedItems.turret ? `<span class="cme_combo-item-name">${data.turret.name}</span>` : '')}
+                        ${turretImage ? this.createRemovableItemHTML('turret', turretImage, data.turret.name || 'Turret', 'cme_combo-turret-image') : (hasTurretButNoImage ? '<span class="cme_combo-no-item">NO TURRET</span>' : '')}
                         ${turretAugmentImage ? `
                             <div class="cme_combo-augment-badge">
-                                <img src="${turretAugmentImage}" alt="${data.turretAugment.name || 'Turret Augment'}" onerror="this.style.display='none';">
+                                ${this.createRemovableItemHTML('turretAugment', turretAugmentImage, data.turretAugment.name || 'Turret Augment', '')}
                             </div>
                         ` : ''}
                     </div>
@@ -86,17 +93,20 @@
             `;
 
             // שורה שלישית: מלבן עם hull, ובפינה השמאלית התחתונה - hullAugment
-            const hullImage = data.hull && data.hull.image ? data.hull.image : null;
-            const hullAugmentImage = data.hullAugment && data.hullAugment.image ? data.hullAugment.image : null;
+            const hullImage = data.hull && data.hull.image && !removedItems.hull ? data.hull.image : null;
+            // אם hull הוסר, גם האוגמנט צריך להיות מוסר
+            const hullAugmentImage = !removedItems.hull && data.hullAugment && data.hullAugment.image && !removedItems.hullAugment ? data.hullAugment.image : null;
+            const hasHullButNoImage = data.hull && !removedItems.hull && !hullImage;
+            const isHullRemoved = removedItems.hull;
 
             const row3HTML = `
                 <div class="cme_combo-row cme_combo-row-3">
                     <div class="cme_combo-rectangle">
-                        ${data.hull && data.hull.name ? `<span class="cme_combo-item-name">${data.hull.name}</span>` : ''}
-                        ${hullImage ? `<img src="${hullImage}" alt="${data.hull.name || 'Hull'}" class="cme_combo-hull-image" onerror="this.style.display='none';">` : ''}
+                        ${isHullRemoved ? `<span class="cme_combo-item-name">NO HULL</span>` : (data.hull && data.hull.name && !removedItems.hull ? `<span class="cme_combo-item-name">${data.hull.name}</span>` : '')}
+                        ${hullImage ? this.createRemovableItemHTML('hull', hullImage, data.hull.name || 'Hull', 'cme_combo-hull-image') : (hasHullButNoImage ? '<span class="cme_combo-no-item">NO HULL</span>' : '')}
                         ${hullAugmentImage ? `
                             <div class="cme_combo-augment-badge">
-                                <img src="${hullAugmentImage}" alt="${data.hullAugment.name || 'Hull Augment'}" onerror="this.style.display='none';">
+                                ${this.createRemovableItemHTML('hullAugment', hullAugmentImage, data.hullAugment.name || 'Hull Augment', '')}
                             </div>
                         ` : ''}
                     </div>
@@ -109,19 +119,30 @@
             // const paintImage = data.paint && data.paint.image ? data.paint.image : null;
             // const paintName = data.paint && data.paint.name ? data.paint.name : null;
 
-            // יצירת 4 פריטי הגנה (אם יש פחות מ-4, נוסיף ריקים)
-            const protectionItems = [];
-            for (let i = 0; i < 4; i++) {
-                const protection = protections[i] || null;
-                const protectionImage = protection && protection.image ? protection.image : null;
-                const protectionName = protection && protection.name ? protection.name : null;
-                protectionItems.push(`
-                    <div class="cme_combo-protection-item">
-                        ${protectionImage ? `<img src="${protectionImage}" alt="${protectionName || `Protection ${i + 1}`}" onerror="this.style.display='none';">` : ''}
-                    </div>
-                `);
+            // יצירת 4 פריטי הגנה
+            const removedProtections = removedItems.protection || [];
+            
+            let protectionsHTML = '';
+            if (protections.length === 0) {
+                // אין הגנות בכלל - מציגים "NO PROTECTIONS"
+                protectionsHTML = '<span class="cme_combo-no-item">NO PROTECTIONS</span>';
+            } else {
+                // יש הגנות - מציגים ריבועים (ריקים אם הוסרו)
+                const protectionItems = [];
+                for (let i = 0; i < 4; i++) {
+                    const protection = protections[i] || null;
+                    const isRemoved = removedProtections.includes(i);
+                    const protectionImage = protection && protection.image && !isRemoved ? protection.image : null;
+                    const protectionName = protection && protection.name ? protection.name : null;
+                    const isEmpty = !protectionImage;
+                    protectionItems.push(`
+                        <div class="cme_combo-protection-item ${isEmpty ? 'cme_combo-protection-item-empty' : ''}">
+                            ${protectionImage ? this.createRemovableItemHTML(`protection_${i}`, protectionImage, protectionName || `Protection ${i + 1}`, '') : ''}
+                        </div>
+                    `);
+                }
+                protectionsHTML = protectionItems.join('');
             }
-            const protectionsHTML = protectionItems.join('');
 
             const row4HTML = `
                 <div class="cme_combo-row cme_combo-row-4">
@@ -140,6 +161,26 @@
             // </div>
 
             return row1HTML + row2HTML + row3HTML + row4HTML;
+        },
+
+        // יצירת HTML לפריט שניתן להסיר
+        createRemovableItemHTML(itemType, imageSrc, altText, imageClass) {
+            // קביעת גודל האיקס לפי סוג הפריט
+            let iconSizeClass = '';
+            if (itemType === 'turret' || itemType === 'hull') {
+                iconSizeClass = 'cme_combo-item-remove-icon-large';
+            } else if (itemType === 'drone' || itemType === 'grenade') {
+                iconSizeClass = 'cme_combo-item-remove-icon-small';
+            }
+            
+            return `
+                <div class="cme_combo-item-removable" data-item-type="${itemType}">
+                    <img src="${imageSrc}" alt="${altText}" class="${imageClass}" onerror="this.style.display='none';">
+                    <svg class="cme_combo-item-remove-icon ${iconSizeClass}" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 4L4 12M4 4L12 12" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+            `;
         },
 
         // חיבור אירועים לכרטיס קומבו
@@ -173,10 +214,24 @@
                 };
             }
 
+            // טיפול בלחיצה על פריטים להסרה
+            const removableItems = card.querySelectorAll('.cme_combo-item-removable');
+            removableItems.forEach(item => {
+                item.onclick = (e) => {
+                    e.stopPropagation();
+                    const itemType = item.getAttribute('data-item-type');
+                    if (itemType) {
+                        viewRenderer.removeItemFromCombo(combo.id, itemType);
+                    }
+                };
+            });
+
             // לחיצה על הכרטיס עצמו - equip (בעתיד)
             card.onclick = (e) => {
-                // אם לחצו על כפתור או כותרת, לא נעשה כלום
-                if (e.target.closest('.cme_delete-btn') || e.target.closest('.cme_combo-title h1')) {
+                // אם לחצו על כפתור, כותרת, או פריט להסרה, לא נעשה כלום
+                if (e.target.closest('.cme_delete-btn') || 
+                    e.target.closest('.cme_combo-title h1') || 
+                    e.target.closest('.cme_combo-item-removable')) {
                     return;
                 }
                 viewRenderer.equipCombo(combo);

@@ -16,7 +16,7 @@
 
             // בדיקה אם האלמנט כבר קיים
             let existingElement = document.getElementById('combo-manager-view');
-            
+
             if (existingElement) {
                 this.viewElement = existingElement;
                 // בדיקה אם האלמנט נמצא במקום הנכון (אחרי garageMenuContainer)
@@ -75,6 +75,57 @@
                     }
                 };
             }
+
+            // הוספת גלילה אופקית עם גלגלת העכבר
+            const combosContainer = this.viewElement.querySelector('#combos-grid-container');
+            const arrowLeft = this.viewElement.querySelector('.cme_arrowLeft');
+            const arrowRight = this.viewElement.querySelector('.cme_arrowRight');
+
+            // גלילה אופקית אוטומטית עם גלגלת העכבר
+            if (combosContainer) {
+                // הוספת גלילה אופקית עם גלגלת העכבר
+                combosContainer.addEventListener('wheel', (e) => {
+                    // אם יש גלילה אופקית, נאפשר אותה כרגיל
+                    if (e.deltaX !== 0) {
+                        return;
+                    }
+                    // אם יש גלילה אנכית, נמיר אותה לאופקית
+                    if (e.deltaY !== 0) {
+                        e.preventDefault();
+                        combosContainer.scrollLeft += e.deltaY;
+                        this.updateArrowsVisibility(combosContainer, arrowLeft, arrowRight);
+                    }
+                }, { passive: false });
+
+                // עדכון נראות החיצים כשגוללים
+                combosContainer.addEventListener('scroll', () => {
+                    this.updateArrowsVisibility(combosContainer, arrowLeft, arrowRight);
+                });
+
+                // עדכון נראות החיצים כשמשנים גודל החלון
+                window.addEventListener('resize', () => {
+                    this.updateArrowsVisibility(combosContainer, arrowLeft, arrowRight);
+                });
+            }
+
+            // לחיצה על החצים
+            if (arrowLeft) {
+                arrowLeft.onclick = () => {
+                    if (combosContainer) {
+                        const scrollAmount = combosContainer.clientWidth * 0.5;
+                        combosContainer.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+                    }
+                };
+            }
+
+            if (arrowRight) {
+                arrowRight.onclick = () => {
+                    if (combosContainer) {
+                        const scrollAmount = combosContainer.clientWidth * 0.5;
+                        combosContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+                    }
+                };
+            }
         },
 
         // טעינת הקומבואים מ-storage והצגתם
@@ -100,6 +151,10 @@
                         <p>Click "SAVE CURRENT" to save your first combo!</p>
                     </div>
                 `;
+                // עדכון נראות החיצים - אין תוכן לגלול
+                const arrowLeft = this.viewElement.querySelector('.cme_arrowLeft');
+                const arrowRight = this.viewElement.querySelector('.cme_arrowRight');
+                this.updateArrowsVisibility(container, arrowLeft, arrowRight);
                 return;
             }
 
@@ -118,6 +173,34 @@
                     console.error("ComboCardRenderer not loaded!");
                 }
             });
+
+            // עדכון נראות החיצים אחרי הרינדור
+            const arrowLeft = this.viewElement.querySelector('.cme_arrowLeft');
+            const arrowRight = this.viewElement.querySelector('.cme_arrowRight');
+            // נשתמש ב-setTimeout כדי לוודא שהרינדור הסתיים
+            setTimeout(() => {
+                this.updateArrowsVisibility(container, arrowLeft, arrowRight);
+            }, 0);
+        },
+
+        // עדכון נראות החיצים בהתאם למיקום הגלילה
+        updateArrowsVisibility(container, arrowLeft, arrowRight) {
+            if (!container) return;
+
+            const scrollLeft = container.scrollLeft;
+            const scrollWidth = container.scrollWidth;
+            const clientWidth = container.clientWidth;
+            const maxScrollLeft = scrollWidth - clientWidth;
+
+            // חץ שמאלה - מופיע אם יש תוכן משמאל
+            if (arrowLeft) {
+                arrowLeft.style.opacity = scrollLeft > 10 ? '1' : '0';
+            }
+
+            // חץ ימינה - מופיע אם יש תוכן מימין
+            if (arrowRight) {
+                arrowRight.style.opacity = scrollLeft < maxScrollLeft - 10 ? '1' : '0';
+            }
         },
 
         // מחיקת קומבו
@@ -151,12 +234,56 @@
 
         // הצטיידות בקומבו
         async equipCombo(combo) {
-            console.log('[ComboManager] Equipping combo:', combo);
+            // console.log('[ComboManager] Equipping combo:', combo);
             if (window.TankiComboManager.ComboLoader) {
                 await window.TankiComboManager.ComboLoader.equipCombo(combo);
             } else {
                 console.error("ComboLoader not loaded!");
             }
+        },
+
+        // הסרת פריט מקומבו
+        removeItemFromCombo(comboId, itemType) {
+            chrome.storage.local.get(['savedCombos'], (result) => {
+                let combos = result.savedCombos || [];
+                const combo = combos.find(c => c.id === comboId);
+                if (!combo) return;
+
+                // יצירת removedItems אם לא קיים
+                if (!combo.removedItems) {
+                    combo.removedItems = {};
+                }
+
+                // סימון הפריט כהוסר
+                // טיפול בפריטי הגנה - itemType הוא protection_0, protection_1 וכו'
+                if (itemType.startsWith('protection_')) {
+                    const protectionIndex = parseInt(itemType.split('_')[1]);
+                    if (!combo.removedItems.protection) {
+                        combo.removedItems.protection = [];
+                    }
+                    if (!combo.removedItems.protection.includes(protectionIndex)) {
+                        combo.removedItems.protection.push(protectionIndex);
+                    }
+                } else {
+                    // פריטים רגילים
+                    combo.removedItems[itemType] = true;
+
+                    // אם מסירים turret, גם האוגמנט שלו צריך להיות מוסר
+                    if (itemType === 'turret') {
+                        combo.removedItems.turretAugment = true;
+                    }
+
+                    // אם מסירים hull, גם האוגמנט שלו צריך להיות מוסר
+                    if (itemType === 'hull') {
+                        combo.removedItems.hullAugment = true;
+                    }
+                }
+
+                chrome.storage.local.set({ savedCombos: combos }, () => {
+                    // console.log(`[ComboManager] Item ${itemType} removed from combo ${comboId}`);
+                    this.loadAndRenderCombos();
+                });
+            });
         },
 
         show() {
