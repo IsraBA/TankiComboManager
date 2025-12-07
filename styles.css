@@ -314,6 +314,46 @@
     padding: 0.438em 0.5em 0.438em 0.438em;
 }
 
+.cme_flexStartAlignStart {
+    height: 100%;
+    position: absolute;
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    -webkit-box-align: start;
+    -webkit-box-pack: start;
+}
+
+.cme_hotkey {
+    padding: 0.125em 0.375em 0px;
+    background-color: rgb(255, 255, 255);
+    border-radius: 0.1875em;
+    box-sizing: border-box;
+    color: rgb(0, 25, 38);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: BaseFontMedium, FallbackFontMedium;
+    font-style: normal;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 1em;
+    height: auto;
+    left: 0.5em;
+    margin: 0px;
+    min-height: 1.5em;
+    min-width: 1.5em;
+    position: absolute;
+    text-align: center;
+    top: 0.5em;
+    width: auto;
+    padding-left: 0.3em;
+    padding-right: 0.3em;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
 /* === Items List Container === */
 .cme_itemsListContainer {
     align-self: center;
@@ -449,4 +489,3 @@
     color: rgba(255, 255, 255, 0.7);
     margin: 0;
 }
-

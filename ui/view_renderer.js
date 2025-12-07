@@ -9,6 +9,7 @@
 
     window.TankiComboManager.ViewRenderer = {
         viewElement: null,
+        enterKeyHandler: null,
 
         async init() {
             const garageMenuContainer = document.querySelector(DOM.GARAGE_MENU_CONTAINER);
@@ -126,6 +127,33 @@
                     }
                 };
             }
+
+            // הוספת מאזין Enter לכפתור שמירה
+            this.enterKeyHandler = (e) => {
+                // בדיקה שהתצוגה גלויה
+                if (!this.viewElement || this.viewElement.style.display === 'none') {
+                    return;
+                }
+
+                // בדיקה שהמשתמש לא בעריכה של שם קומבו
+                const activeElement = document.activeElement;
+                if (activeElement && activeElement.isContentEditable) {
+                    return;
+                }
+
+                // אם לחצו Enter, שמירת הקומבו
+                if (e.key === 'Enter') {
+                    const saveBtn = this.viewElement.querySelector('#cme_save-combo-btn');
+                    if (saveBtn) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        saveBtn.click();
+                    }
+                }
+            };
+
+            // הוספת המאזין לדוקומנט
+            document.addEventListener('keydown', this.enterKeyHandler);
         },
 
         // טעינת הקומבואים מ-storage והצגתם
@@ -311,6 +339,9 @@
             if (tankCanvas) {
                 tankCanvas.style.removeProperty('display');
             }
+
+            // הסרת מאזין Enter (אבל לא ממש מסירים אותו כי הוא צריך לעבוד גם כשה-view מוסתר)
+            // המאזין בודק בעצמו אם ה-view גלוי
         }
     };
 })();
