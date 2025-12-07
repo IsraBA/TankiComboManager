@@ -25,13 +25,13 @@
 
             const itemElement = ComboLoader.findItemInList(item.name);
             if (!itemElement) {
-                console.warn(`[ComboManager] ${itemType} ${item.name} not found in garage`);
+                // console.warn(`[ComboManager] ${itemType} ${item.name} not found in garage`);
                 return;
             }
 
             // בדיקה אם הפריט נרכש (אם יש תמונה והוא לא מוסתר)
             if (!ComboLoader.isItemPurchased(itemElement)) {
-                console.warn(`[ComboManager] ${itemType} ${item.name} not purchased`);
+                // console.warn(`[ComboManager] ${itemType} ${item.name} not purchased`);
                 return;
             }
 
@@ -50,7 +50,7 @@
 
             // בדיקה נוספת אחרי הלחיצה - אם אין כפתור equip, הפריט לא נרכש
             if (!ComboLoader.isItemPurchased(null)) {
-                console.warn(`[ComboManager] ${itemType} ${item.name} not purchased (no equip button)`);
+                // console.warn(`[ComboManager] ${itemType} ${item.name} not purchased (no equip button)`);
                 return;
             }
 

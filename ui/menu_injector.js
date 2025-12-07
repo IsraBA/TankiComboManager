@@ -135,8 +135,10 @@
                 const menuContainer = document.querySelector(DOM.MENU_CONTAINER);
                 if (!menuContainer) return;
 
-                // רק אם לא לוחצים על input או textarea
-                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                // רק אם לא לוחצים על input, textarea, או אלמנט contenteditable
+                if (e.target.tagName === 'INPUT' || 
+                    e.target.tagName === 'TEXTAREA' || 
+                    e.target.isContentEditable) {
                     return;
                 }
 

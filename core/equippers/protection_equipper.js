@@ -10,7 +10,7 @@
     window.TankiComboManager.ProtectionEquipper = {
         async equipProtection(protections, removedProtectionIndices = []) {
             if (!protections || !Array.isArray(protections)) {
-                console.warn('[ComboManager] Invalid protections data');
+                // console.warn('[ComboManager] Invalid protections data');
                 return;
             }
 
@@ -82,7 +82,7 @@
 
 
             if (!ProtectionScanner) {
-                console.warn('[ComboManager] ProtectionScanner not available');
+                // console.warn('[ComboManager] ProtectionScanner not available');
                 return currentState;
             }
 
@@ -103,7 +103,7 @@
                 if (protectionData) {
                     currentState[i] = protectionData;
                 } else {
-                    console.warn(`[ComboManager] Slot ${i}: Could not find protection data for icon: ${iconImg.src}`);
+                    // console.warn(`[ComboManager] Slot ${i}: Could not find protection data for icon: ${iconImg.src}`);
                     // ננסה לחלץ את הנתונים ישירות מה-DOM
                     const iconFileName = ProtectionScanner.extractIconFileName(iconImg.src);
                     if (iconFileName) {
@@ -280,7 +280,7 @@
         // הצטיידות בהגנה ב-חריץ מסוים
         async equipProtectionAtSlot(protection, slotIndex) {
             if (!protection || !protection.name) {
-                console.warn(`[ComboManager] Invalid protection data for slot ${slotIndex}`);
+                // console.warn(`[ComboManager] Invalid protection data for slot ${slotIndex}`);
                 return;
             }
 
@@ -288,7 +288,7 @@
             // חיפוש ההגנה ברשימה לפי שם או תמונה
             const protectionItem = this.findProtectionInList(protection);
             if (!protectionItem) {
-                console.warn(`[ComboManager] Protection ${protection.name} not found in garage`);
+                // console.warn(`[ComboManager] Protection ${protection.name} not found in garage`);
                 return;
             }
 
@@ -342,7 +342,7 @@
                         const spanText = span.innerText || '';
                     }
                 }
-                console.warn(`[ComboManager] Protection ${protection.name} not purchased (no equip button)`);
+                // console.warn(`[ComboManager] Protection ${protection.name} not purchased (no equip button)`);
                 return;
             }
 
@@ -363,13 +363,13 @@
             const ProtectionScanner = window.TankiComboManager.ProtectionScanner;
 
             if (!ProtectionScanner) {
-                console.warn('[ComboManager] ProtectionScanner not available');
+                // console.warn('[ComboManager] ProtectionScanner not available');
                 return;
             }
 
             const protectionIconFileName = ProtectionScanner.extractIconFileName(protection.image);
             if (!protectionIconFileName) {
-                console.warn('[ComboManager] Could not extract icon filename from:', protection.image);
+                // console.warn('[ComboManager] Could not extract icon filename from:', protection.image);
                 return;
             }
 
@@ -506,7 +506,7 @@
                 }
             }
 
-            console.warn(`[ComboManager] Protection not found in list!`);
+            // console.warn(`[ComboManager] Protection not found in list!`);
             return null;
         }
     };

@@ -24,7 +24,7 @@
             // פתיחת מסך האוגמנטים
             const openBtn = document.querySelector(DOM.OPEN_AUGMENTS_BTN);
             if (!openBtn) {
-                console.warn('[ComboManager] Could not open augments screen');
+                // console.warn('[ComboManager] Could not open augments screen');
                 return;
             }
 
@@ -34,7 +34,7 @@
             // חיפוש האוגמנט ברשימה
             const augmentCell = ComboLoader.findAugmentInList(augment.name);
             if (!augmentCell) {
-                console.warn(`[ComboManager] Augment ${augment.name} not found`);
+                // console.warn(`[ComboManager] Augment ${augment.name} not found`);
                 // יציאה ממסך האוגמנטים
                 const backBtn = document.querySelector(DOM.BACK_BUTTON);
                 if (backBtn) {
@@ -46,7 +46,7 @@
 
             // בדיקה אם האוגמנט נרכש
             if (!ComboLoader.isAugmentPurchased(augmentCell)) {
-                console.warn(`[ComboManager] Augment ${augment.name} not purchased`);
+                // console.warn(`[ComboManager] Augment ${augment.name} not purchased`);
                 // יציאה ממסך האוגמנטים
                 const backBtn = document.querySelector(DOM.BACK_BUTTON);
                 if (backBtn) {

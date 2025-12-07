@@ -132,7 +132,9 @@
         loadAndRenderCombos() {
             chrome.storage.local.get(['savedCombos'], (result) => {
                 const combos = result.savedCombos || [];
-                this.renderCombos(combos);
+                // מיון מהחדש לישן לפי id (timestamp)
+                const sortedCombos = combos.sort((a, b) => (b.id || 0) - (a.id || 0));
+                this.renderCombos(sortedCombos);
             });
         },
 

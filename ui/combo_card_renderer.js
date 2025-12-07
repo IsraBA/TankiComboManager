@@ -197,20 +197,89 @@
             // עריכת שם הקומבו
             const titleElement = card.querySelector('.cme_combo-title h1');
             if (titleElement) {
+                const MAX_NAME_LENGTH = 15;
+                
+                // פונקציה לבדיקת אורך השם
+                const enforceMaxLength = (element) => {
+                    const text = element.textContent;
+                    if (text.length > MAX_NAME_LENGTH) {
+                        element.textContent = text.substring(0, MAX_NAME_LENGTH);
+                        // החזרת הקורסור לסוף הטקסט
+                        const range = document.createRange();
+                        const selection = window.getSelection();
+                        range.selectNodeContents(element);
+                        range.collapse(false);
+                        selection.removeAllRanges();
+                        selection.addRange(range);
+                    }
+                };
+                
                 titleElement.onblur = (e) => {
-                    const newName = e.target.textContent.trim();
+                    const newName = e.target.textContent.trim().substring(0, MAX_NAME_LENGTH);
                     if (newName && newName !== combo.name) {
                         viewRenderer.renameCombo(combo.id, newName);
                     }
+                    // עדכון הטקסט אם הוא חתוך
+                    if (e.target.textContent.trim().length > MAX_NAME_LENGTH) {
+                        e.target.textContent = newName;
+                    }
                 };
                 titleElement.onkeydown = (e) => {
+                    // מונע מהמשחק לקבל את אירועי המקלדת
+                    e.stopPropagation();
                     if (e.key === 'Enter') {
                         e.preventDefault();
                         e.target.blur();
                     }
+                    // מונע הקלדה אם הגענו למקסימום (חוץ מכפתורי בקרה)
+                    const text = e.target.textContent;
+                    if (text.length >= MAX_NAME_LENGTH && 
+                        !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 
+                          'Home', 'End', 'Tab', 'Enter', 'Escape'].includes(e.key) &&
+                        !e.ctrlKey && !e.metaKey) {
+                        e.preventDefault();
+                    }
+                };
+                // מונע התפשטות של כל אירועי המקלדת למשחק
+                titleElement.onkeyup = (e) => {
+                    e.stopPropagation();
+                };
+                titleElement.onkeypress = (e) => {
+                    e.stopPropagation();
                 };
                 titleElement.onclick = (e) => {
                     e.stopPropagation();
+                };
+                // מונע התפשטות גם באירועי focus ו-input
+                titleElement.onfocus = (e) => {
+                    e.stopPropagation();
+                };
+                titleElement.oninput = (e) => {
+                    e.stopPropagation();
+                    enforceMaxLength(e.target);
+                };
+                // מונע הדבקה של טקסט ארוך מדי
+                titleElement.onpaste = (e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+                    const currentText = e.target.textContent;
+                    const selection = window.getSelection();
+                    const range = selection.rangeCount > 0 ? selection.getRangeAt(0) : null;
+                    
+                    if (range) {
+                        range.deleteContents();
+                        const textNode = document.createTextNode(pastedText.substring(0, MAX_NAME_LENGTH - currentText.length + range.toString().length));
+                        range.insertNode(textNode);
+                        range.setStartAfter(textNode);
+                        range.collapse(true);
+                        selection.removeAllRanges();
+                        selection.addRange(range);
+                    } else {
+                        const newText = (currentText + pastedText).substring(0, MAX_NAME_LENGTH);
+                        e.target.textContent = newText;
+                    }
+                    enforceMaxLength(e.target);
                 };
             }
 
