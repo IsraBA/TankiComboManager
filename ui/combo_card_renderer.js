@@ -144,8 +144,19 @@
                 protectionsHTML = protectionItems.join('');
             }
 
+            // כפתור EQUIP NOW
+            const equipButtonHTML = `
+                <div class="cme_combo-equip-btn">
+                    <div class="cme_combo-equip-btn-inner">
+                        <div class="cme_combo-equip-icon"></div>
+                        <span class="cme_combo-equip-text">EQUIP</span>
+                    </div>
+                </div>
+            `;
+
             const row4HTML = `
                 <div class="cme_combo-row cme_combo-row-4">
+                    ${equipButtonHTML}
                     <div class="cme_combo-protections">
                         ${protectionsHTML}
                     </div>
