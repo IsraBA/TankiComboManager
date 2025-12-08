@@ -19,6 +19,7 @@
                 const DOM = window.TankiComboManager?.DOM;
                 const ViewRenderer = window.TankiComboManager?.ViewRenderer;
                 const MenuInjector = window.TankiComboManager?.MenuInjector;
+                const LobbyButtonInjector = window.TankiComboManager?.LobbyButtonInjector;
 
                 if (!DOM || !MenuInjector || !ViewRenderer) return;
 
@@ -35,6 +36,12 @@
                 } else {
                     // גם כשאין menuContainer, נוסיף את ה-listeners לכפתורי היציאה
                     MenuInjector.addExitButtonsListener();
+                }
+
+                // הזרקת כפתור בלובי (אם קיים LobbyButtonInjector)
+                if (LobbyButtonInjector) {
+                    LobbyButtonInjector.checkAlive();
+                    LobbyButtonInjector.inject();
                 }
             });
 

@@ -1,0 +1,124 @@
+/* ui/lobby_button.css - Lobby Button Styles */
+
+/* === Lobby Combo Button === */
+.cme_lobby-combo-button {
+    width: 22.5em;
+    height: 4.17em;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    margin-top: 0px;
+    cursor: pointer;
+    margin-bottom: 0.625em;
+    border-radius: 0.5em;
+    /* background-color: transparent; */
+    box-shadow: rgba(255, 255, 255, 0.25) 0em 0em 0em 1px;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    user-select: none;
+}
+
+.cme_lobby-combo-button:hover {
+    box-shadow: rgb(191, 213, 255) 0em 0em 0em 2px;
+}
+
+/* === Title Container === */
+.cme_MountedItemsStyle-tankPartNameContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+    height: 2.0625em;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    -webkit-box-pack: start;
+    -webkit-box-align: start;
+}
+
+.cme_MountedItemsStyle-tankPartNameContainer h1 {
+    color: rgb(191, 213, 255);
+    font-family: BaseFontBold, FallbackFontBold;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 1em;
+    line-height: 1em;
+    margin: 0.75em 0.25em 0px 0.75em;
+    text-align: left;
+    text-transform: uppercase;
+}
+
+/* === Horizontal Container (Title + Images) === */
+.cme_lobby-combo-horizontal-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex: 1;
+    height: 100%;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+}
+
+/* === Images Container === */
+.cme_lobby-combo-images-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    gap: 0.5em;
+    flex: 1;
+    padding: 0.25em 0.5em;
+    min-height: 0;
+    height: 100%;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+}
+
+.cme_lobby-combo-image-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    height: 100%;
+    flex-shrink: 0;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+/* תמונת דרון - 95% גובה ורוחב (כמו בקומבו קארד) */
+.cme_lobby-combo-image-drone {
+    max-width: 95%;
+    max-height: 95%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    pointer-events: none;
+    display: block;
+}
+
+/* תמונת תותח - 90% גובה ורוחב (כמו בקומבו קארד) */
+.cme_lobby-combo-image-turret {
+    max-width: 90%;
+    max-height: 90%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    pointer-events: none;
+    display: block;
+}
+
+/* תמונת hull - 90% גובה ורוחב (כמו בקומבו קארד) */
+.cme_lobby-combo-image-hull {
+    max-width: 90%;
+    max-height: 90%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    pointer-events: none;
+    display: block;
+}
+
+/* מרווח נוסף ל-wrapper של ה-hull */
+.cme_lobby-combo-image-wrapper-hull {
+    margin-left: 0.6em;
+    margin-right: 0.5em;
+}

@@ -16,7 +16,8 @@
       ],
       "css": [
         "styles.css",
-        "combo_card.css"
+        "combo_card.css",
+        "ui/lobby_button.css"
       ],
       "js": [
         "lib/constants.js",
@@ -33,6 +34,7 @@
         "core/equippers/protection_equipper.js",
         "core/combo_loader.js",
         "ui/menu_injector.js",
+        "ui/lobby_button_injector.js",
         "ui/combo_card_renderer.js",
         "ui/view_renderer.js",
         "main.js"
