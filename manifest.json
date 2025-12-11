@@ -33,8 +33,10 @@
         "core/equippers/augment_equipper.js",
         "core/equippers/protection_equipper.js",
         "core/combo_loader.js",
+        "core/navigation_helpers.js",
         "ui/menu_injector.js",
         "ui/lobby_button_injector.js",
+        "ui/lobby_shortcut_handler.js",
         "ui/combo_card_renderer.js",
         "ui/view_renderer.js",
         "main.js"

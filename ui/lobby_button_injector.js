@@ -5,7 +5,7 @@
     'use strict';
 
     const DOM = window.TankiComboManager.DOM;
-    const Utils = window.TankiComboManager.Utils;
+    const NavigationHelpers = window.TankiComboManager.NavigationHelpers;
     window.TankiComboManager = window.TankiComboManager || {};
 
     window.TankiComboManager.LobbyButtonInjector = {
@@ -41,12 +41,12 @@
             // מציאת כל התמונות עם הקלאס MountedItemsStyle-itemPreview (4 תמונות: drone, grenade, turret, hull)
             const allPreviews = container.querySelectorAll(`${DOM.LOBBY_ITEM_PREVIEW}`);
             const imageData = [];
-            
+
             // סדר התמונות: drone (0), grenade (1), turret (2), hull (3)
             // אנחנו רוצים רק: drone, turret, hull (מדלגים על grenade)
             const wantedIndices = [0, 2, 3]; // drone, turret, hull
             const itemTypes = ['drone', 'turret', 'hull'];
-            
+
             wantedIndices.forEach((wantedIndex, typeIndex) => {
                 const preview = allPreviews[wantedIndex];
                 if (preview && preview.src) {
@@ -109,30 +109,22 @@
 
         // ניווט לקומבואים דרך תותחים
         async navigateToCombos() {
-            const MenuInjector = window.TankiComboManager?.MenuInjector;
-
-            if (!MenuInjector) return;
-
-            // קודם כל, נלחץ על התותחים כדי לעבור לכרטיסיית turrets
-            const turretsBlock = document.querySelector(DOM.LOBBY_TURRETS_BLOCK);
-            if (turretsBlock) {
-                turretsBlock.click();
-
-                // המתנה לטעינת כרטיסיית turrets
-                if (Utils && Utils.sleep) {
-                    await Utils.sleep(100);
-                }
+            // עכשיו נלחץ על התותחים כדי לפתוח את תפריט המוסך
+            const turretsBlock = await NavigationHelpers.waitForElementAndClick(DOM.LOBBY_TURRETS_BLOCK);
+            if (!turretsBlock) {
+                console.error("[ComboManager] Turrets block not found");
+                return;
             }
 
-            // עכשיו נעבור ישר לכרטיסיית קומבואים
-            const menuContainer = document.querySelector(DOM.MENU_CONTAINER);
-            if (MenuInjector.comboTab && menuContainer && MenuInjector.comboTabUnderline) {
-                MenuInjector.activateComboTab(
-                    MenuInjector.comboTab,
-                    menuContainer,
-                    MenuInjector.comboTabUnderline
-                );
+            // המתנה לטעינת תפריט המוסך - עם MutationObserver
+            const menuContainer = await NavigationHelpers.waitForElement(DOM.MENU_CONTAINER);
+            if (!menuContainer) {
+                console.error("[ComboManager] Menu container not found");
+                return;
             }
+
+            // ניווט לכרטיסיית הקומבואים (הפונקציה המשותפת)
+            await NavigationHelpers.navigateToCombosTab(menuContainer);
         },
 
         // בדיקה אם הכפתור עדיין קיים

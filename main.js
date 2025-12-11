@@ -18,6 +18,7 @@
             const MenuInjector = manager.MenuInjector;
             const ViewRenderer = manager.ViewRenderer;
             const LobbyButtonInjector = manager.LobbyButtonInjector;
+            const LobbyShortcutHandler = manager.LobbyShortcutHandler;
 
             // נחכה עד שכל החלקים הקריטיים יהיו מוכנים
             if (!DOM || !MenuInjector || !ViewRenderer) {
@@ -39,6 +40,11 @@
 
                 // רק אם אנחנו במסך רלוונטי (מוסך / לובי)
                 if (!isRelevantScreen()) return;
+
+                // עדכון מצב ההאזנה למקש C (רק כש-isRelevantScreen מחזיר true)
+                if (LobbyShortcutHandler) {
+                    LobbyShortcutHandler.updateListenerState();
+                }
 
                 // בדיקה האם הכפתור נעלם (כדי לאפס את הדגל injected)
                 MenuInjector.checkAlive();
@@ -87,6 +93,11 @@
                 if (!shouldObserve && observing) {
                     observer.disconnect();
                     observing = false;
+                    
+                    // לנתק גם את ההאזנה למקש C
+                    if (LobbyShortcutHandler) {
+                        LobbyShortcutHandler.updateListenerState();
+                    }
                 }
             }
 

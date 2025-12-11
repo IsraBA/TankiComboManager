@@ -53,6 +53,39 @@
             this.bindEvents();
         },
 
+        // המתנה לאלמנט בתוך ה-view (למשל #combos-grid-container) בלי sleep
+        waitForElementInView(selector, timeout = 5000) {
+            return new Promise((resolve) => {
+                if (!this.viewElement) {
+                    resolve(null);
+                    return;
+                }
+
+                const existing = this.viewElement.querySelector(selector);
+                if (existing) {
+                    resolve(existing);
+                    return;
+                }
+
+                const observer = new MutationObserver((mutations, obs) => {
+                    if (!this.viewElement) return;
+                    const found = this.viewElement.querySelector(selector);
+                    if (found) {
+                        obs.disconnect();
+                        clearTimeout(timeoutId);
+                        resolve(found);
+                    }
+                });
+
+                observer.observe(this.viewElement, { childList: true, subtree: true });
+
+                const timeoutId = setTimeout(() => {
+                    observer.disconnect();
+                    resolve(null);
+                }, timeout);
+            });
+        },
+
         // טעינת ה-HTML מהקובץ הנפרד
         async loadViewHTML() {
             const htmlUrl = chrome.runtime.getURL('ui/combo_view_base.html');
@@ -157,9 +190,20 @@
         },
 
         // טעינת הקומבואים מ-storage והצגתם
-        loadAndRenderCombos() {
+        async loadAndRenderCombos() {
+            // console.log("[ComboManager] loadAndRenderCombos called");
+            // לפעמים show() נקרא בזמן ש-init עדיין טוען HTML; נחכה שה-container יופיע בתוך ה-view
+            const container = await this.waitForElementInView('#combos-grid-container', 7000);
+            
+            if (!container) {
+                console.error("[ComboManager] combos-grid-container not found in view!");
+                return;
+            }
+
+            // console.log("[ComboManager] Container found, fetching combos from storage...");
             chrome.storage.local.get(['savedCombos'], (result) => {
                 const combos = result.savedCombos || [];
+                // console.log(`[ComboManager] Fetched ${combos.length} combos from storage`);
                 // מיון מהחדש לישן לפי id (timestamp)
                 const sortedCombos = combos.sort((a, b) => (b.id || 0) - (a.id || 0));
                 this.renderCombos(sortedCombos);
@@ -169,7 +213,12 @@
         // רינדור הקומבואים ל-DOM
         renderCombos(combos) {
             const container = this.viewElement.querySelector('#combos-grid-container');
-            if (!container) return;
+            if (!container) {
+                console.error("[ComboManager] renderCombos: Container not found!");
+                return;
+            }
+
+            // console.log(`[ComboManager] Rendering ${combos.length} combos to container`);
 
             // ניקוי התוכן הקיים
             container.innerHTML = '';
@@ -242,7 +291,7 @@
                 combos = combos.filter(c => c.id !== comboId);
 
                 chrome.storage.local.set({ savedCombos: combos }, () => {
-                    console.log(`[ComboManager] Combo ${comboId} deleted`);
+                    // console.log(`[ComboManager] Combo ${comboId} deleted`);
                     this.loadAndRenderCombos();
                 });
             });
@@ -256,7 +305,7 @@
                 if (combo) {
                     combo.name = newName;
                     chrome.storage.local.set({ savedCombos: combos }, () => {
-                        console.log(`[ComboManager] Combo ${comboId} renamed to "${newName}"`);
+                        // console.log(`[ComboManager] Combo ${comboId} renamed to "${newName}"`);
                     });
                 }
             });
