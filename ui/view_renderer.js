@@ -10,6 +10,7 @@
     window.TankiComboManager.ViewRenderer = {
         viewElement: null,
         enterKeyHandler: null,
+        dragHandlerInitialized: false,
 
         async init() {
             const garageMenuContainer = document.querySelector(DOM.GARAGE_MENU_CONTAINER);
@@ -34,6 +35,10 @@
                     // האלמנט לא באותו parent - הזז אותו
                     garageMenuContainer.insertAdjacentElement('afterend', existingElement);
                 }
+                // אתחול drag handler אם עדיין לא אותחל
+                if (!this.dragHandlerInitialized) {
+                    this.initDragHandler();
+                }
                 return;
             }
 
@@ -51,6 +56,12 @@
 
             // חיבור האירועים
             this.bindEvents();
+
+            // אתחול drag handler
+            this.initDragHandler();
+
+            // וידוא שלכל הקומבואים יש order
+            this.ensureAllCombosHaveOrder();
         },
 
         // המתנה לאלמנט בתוך ה-view (למשל #combos-grid-container) בלי sleep
@@ -94,6 +105,81 @@
                 throw new Error(`Failed to load HTML: ${response.status}`);
             }
             return await response.text();
+        },
+
+        // וידוא שלכל הקומבואים יש order
+        ensureAllCombosHaveOrder() {
+            chrome.storage.local.get(['savedCombos'], (result) => {
+                let combos = result.savedCombos || [];
+                let needsUpdate = false;
+
+                // בדיקה אם יש קומבואים בלי order
+                combos.forEach((combo, index) => {
+                    if (combo.order === undefined) {
+                        combo.order = index;
+                        needsUpdate = true;
+                    }
+                });
+
+                // שמירה רק אם היה צורך בעדכון
+                if (needsUpdate) {
+                    chrome.storage.local.set({ savedCombos: combos }, () => {
+                        // console.log('[ComboManager] Updated combos with order field');
+                    });
+                }
+            });
+        },
+
+        // אתחול drag handler
+        initDragHandler() {
+            if (this.dragHandlerInitialized) return;
+            
+            if (window.TankiComboManager.ComboDragHandler) {
+                window.TankiComboManager.ComboDragHandler.init(this);
+                this.dragHandlerInitialized = true;
+            }
+        },
+
+        // חיבור drag events לקונטיינר - נקרא אחרי כל רינדור
+        bindDragEvents(container) {
+            if (!container) {
+                console.warn('[ComboManager] No container provided to bindDragEvents');
+                return;
+            }
+            
+            const dragHandler = window.TankiComboManager.ComboDragHandler;
+            if (!dragHandler) {
+                console.warn('[ComboManager] ComboDragHandler not available');
+                return;
+            }
+
+            // הסרת listeners ישנים אם קיימים (כדי למנוע כפילויות)
+            // שמירת reference ל-handlers כדי שנוכל להסיר אותם
+            if (!container._dragEventsAdded) {
+                const dragOverHandler = (e) => {
+                    dragHandler.handleDragOver(e, container);
+                };
+                const dropHandler = (e) => {
+                    dragHandler.handleDrop(e, container);
+                };
+                const dragEnterHandler = (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                };
+
+                container.addEventListener('dragover', dragOverHandler);
+                container.addEventListener('drop', dropHandler);
+                container.addEventListener('dragenter', dragEnterHandler);
+                container.addEventListener('dragleave', (e) => {
+                    e.preventDefault();
+                });
+                
+                container._dragEventsAdded = true;
+                // console.log('[ComboManager] Drag events bound to container successfully');
+                // console.log('[ComboManager] Container ID:', container.id);
+            } else {
+                // console.log('[ComboManager] Drag events already bound, skipping');
+            }
         },
 
         bindEvents() {
@@ -204,8 +290,20 @@
             chrome.storage.local.get(['savedCombos'], (result) => {
                 const combos = result.savedCombos || [];
                 // console.log(`[ComboManager] Fetched ${combos.length} combos from storage`);
-                // מיון מהחדש לישן לפי id (timestamp)
-                const sortedCombos = combos.sort((a, b) => (b.id || 0) - (a.id || 0));
+                
+                // מיון לפי order (אם קיים), אחרת לפי id (timestamp) מהחדש לישן
+                const sortedCombos = combos.sort((a, b) => {
+                    // אם לשניהם יש order, נמיין לפי order
+                    if (a.order !== undefined && b.order !== undefined) {
+                        return a.order - b.order;
+                    }
+                    // אם רק לאחד יש order, הוא יבוא ראשון
+                    if (a.order !== undefined) return -1;
+                    if (b.order !== undefined) return 1;
+                    // אחרת, מיון לפי id (מהחדש לישן)
+                    return (b.id || 0) - (a.id || 0);
+                });
+                
                 this.renderCombos(sortedCombos);
             });
         },
@@ -252,6 +350,11 @@
                     console.error("ComboCardRenderer not loaded!");
                 }
             });
+
+            // חיבור drag events אחרי הרינדור
+            setTimeout(() => {
+                this.bindDragEvents(container);
+            }, 100);
 
             // עדכון נראות החיצים אחרי הרינדור
             const arrowLeft = this.viewElement.querySelector('.cme_arrowLeft');

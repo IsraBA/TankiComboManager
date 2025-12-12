@@ -90,19 +90,24 @@
             }
         },
 
-
-
-
         saveToStorage(comboData) {
             // שליפת קומבואים קיימים
             chrome.storage.local.get(['savedCombos'], (result) => {
                 let combos = result.savedCombos || [];
 
+                // קומבו חדש יקבל order = 0, וכל השאר יעלו ב-1
+                combos.forEach(combo => {
+                    if (combo.order !== undefined) {
+                        combo.order += 1;
+                    }
+                });
+
                 const newCombo = {
                     id: Date.now(), // מזהה ייחודי
                     name: `Combo ${combos.length + 1}`,
                     data: comboData,
-                    date: new Date().toLocaleDateString()
+                    date: new Date().toLocaleDateString(),
+                    order: 0 // קומבו חדש תמיד ראשון
                 };
 
                 combos.push(newCombo);

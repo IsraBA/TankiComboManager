@@ -162,6 +162,11 @@
     font-weight: normal;
     font-size: 1em;
     margin: 0px;
+    margin-top: 0.5em;
+}
+
+.cme_PaintsCollectionComponentStyle-fullDescriptionPaint h3:first-child{
+    margin-top: 0px;
 }
 
 /* === Tank Part Upgrades (Button Section) === */

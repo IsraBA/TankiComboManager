@@ -45,6 +45,11 @@
             // חיבור אירועים
             this.bindComboCardEvents(card, combo, viewRenderer);
 
+            // הפיכת הכרטיס לניתן לגרירה
+            if (window.TankiComboManager.ComboDragHandler) {
+                window.TankiComboManager.ComboDragHandler.makeCardDraggable(card, combo.id);
+            }
+
             return card;
         },
 
@@ -306,16 +311,26 @@
                 };
             });
 
-            // לחיצה על הכרטיס עצמו - equip (בעתיד)
+            // לחיצה על הכרטיס עצמו - כרגע לא עושה כלום (הוסר בגלל drag and drop)
             card.onclick = (e) => {
-                // אם לחצו על כפתור, כותרת, או פריט להסרה, לא נעשה כלום
-                if (e.target.closest('.cme_delete-btn') || 
+                // אם לחצו על כפתור equip, שם, מחיקה או פריט להסרה, לא נעשה כלום
+                if (e.target.closest('.cme_combo-equip-btn') ||
+                    e.target.closest('.cme_delete-btn') || 
                     e.target.closest('.cme_combo-title h1') || 
                     e.target.closest('.cme_combo-item-removable')) {
                     return;
                 }
-                viewRenderer.equipCombo(combo);
             };
+
+            // לחיצה על כפתור EQUIP
+            const equipBtn = card.querySelector('.cme_combo-equip-btn');
+            if (equipBtn) {
+                equipBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    viewRenderer.equipCombo(combo);
+                };
+            }
         }
     };
 })();

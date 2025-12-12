@@ -479,3 +479,61 @@
     line-height: 1.25em;
     white-space: nowrap;
 }
+
+/* === Drag and Drop Styles === */
+
+/* כרטיס בזמן גרירה - חצי שקיפות */
+.cme_combo-card.cme_dragging {
+    opacity: 0.5;
+    cursor: grabbing !important;
+}
+
+/* הקונטיינר שמכיל את הכרטיסים */
+.cme_flexSpaceBetweenAlignCenterColumn.cme_dragging {
+    opacity: 0.5;
+}
+
+/* אינדיקטור drop - פס בין כרטיסים */
+.cme_drop-indicator {
+    width: 0.25em;
+    height: 100%;
+    background: rgb(118, 255, 51);
+    border-radius: 0.125em;
+    box-shadow: 0 0 0.5em rgba(118, 255, 51, 0.5);
+    flex-shrink: 0;
+    margin: 0 0.25em;
+    animation: pulse-indicator 1s ease-in-out infinite;
+}
+
+@keyframes pulse-indicator {
+    0%, 100% {
+        opacity: 1;
+        transform: scaleX(1);
+    }
+    50% {
+        opacity: 0.6;
+        transform: scaleX(0.8);
+    }
+}
+
+/* cursor בזמן גרירה */
+.cme_combo-card[draggable="true"] {
+    cursor: grab;
+}
+
+.cme_combo-card[draggable="true"]:active {
+    cursor: grabbing;
+}
+
+/* למנוע cursor grab על אלמנטים ספציפיים */
+.cme_combo-card[draggable="true"] .cme_combo-square,
+.cme_combo-card[draggable="true"] .cme_combo-rectangle,
+.cme_combo-card[draggable="true"] .cme_combo-equip-btn,
+.cme_combo-card[draggable="true"] .cme_delete-btn,
+.cme_combo-card[draggable="true"] .cme_combo-item-removable {
+    cursor: pointer;
+}
+
+.cme_combo-card[draggable="true"] .cme_combo-title h1 {
+    cursor: text;
+}
