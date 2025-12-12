@@ -113,6 +113,23 @@
                 backButton.addEventListener('click', hideComboView);
             }
 
+            // לחיצה על ESC - אותה התנהגות כמו כפתור חזרה
+            const escapeKeyHandler = (e) => {
+                // רק אם לא לוחצים על input, textarea, או אלמנט contenteditable
+                if (e.target.tagName === 'INPUT' || 
+                    e.target.tagName === 'TEXTAREA' || 
+                    e.target.isContentEditable) {
+                    return;
+                }
+
+                const keyCode = e.code || e.keyCode;
+                if (keyCode === 'Escape' || keyCode === 27) {
+                    hideComboView();
+                }
+            };
+
+            document.addEventListener('keydown', escapeKeyHandler);
+
             // כפתור סגירה של המוסך
             const exitButton = document.querySelector(DOM.EXIT_GARAGE_BUTTON);
             if (exitButton) {
