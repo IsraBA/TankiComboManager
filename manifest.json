@@ -33,6 +33,7 @@
         "core/equippers/protection_equipper.js",
         "core/combo_loader.js",
         "core/navigation_helpers.js",
+        "core/auto_navigator.js",
         "ui/menu_injector.js",
         "ui/lobby_button_injector.js",
         "ui/lobby_shortcut_handler.js",

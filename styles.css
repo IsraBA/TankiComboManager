@@ -165,8 +165,60 @@
     margin-top: 0.5em;
 }
 
-.cme_PaintsCollectionComponentStyle-fullDescriptionPaint h3:first-child{
+.cme_PaintsCollectionComponentStyle-fullDescriptionPaint h3:first-child {
     margin-top: 0px;
+}
+
+/* === Auto-Open Checkbox === */
+.cme_auto-open-checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    cursor: pointer;
+    margin-top: 0.85em;
+    -webkit-box-align: center;
+}
+
+.cme_auto-open-checkbox {
+    cursor: pointer;
+    width: 1.25em;
+    height: 1.25em;
+    accent-color: rgb(118, 255, 51);
+    flex-shrink: 0;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    border: 0.125em solid rgba(119, 255, 51, 0.5);
+    background: transparent;
+    border-radius: 0.25em;
+    position: relative;
+}
+
+.cme_auto-open-checkbox:checked {
+    background-color: rgb(118, 255, 51);
+    border-color: rgb(118, 255, 51);
+}
+
+.cme_auto-open-checkbox:checked::after {
+    content: '';
+    position: absolute;
+    left: 0.25em;
+    top: 0.05em;
+    width: 0.35em;
+    height: 0.6em;
+    border: solid rgb(0, 25, 38);
+    border-width: 0 0.125em 0.125em 0;
+    transform: rotate(45deg);
+}
+
+.cme_auto-open-checkbox-text {
+    font-family: BaseFontRegular, FallbackFontRegular;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 0.8em;
+    color: white;
+    line-height: 1.5em;
+    user-select: none;
 }
 
 /* === Tank Part Upgrades (Button Section) === */

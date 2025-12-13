@@ -196,6 +196,24 @@
                 };
             }
 
+            // טעינת מצב הצ'קבוקס של פתיחה אוטומטית
+            const autoOpenCheckbox = this.viewElement.querySelector('#cme_auto-open-combos-checkbox');
+            if (autoOpenCheckbox) {
+                // טעינת הערך מהשמירה
+                chrome.storage.local.get(['autoOpenCombosOnGarageEntry'], (result) => {
+                    // אם אין ערך, ברירת מחדל היא true (checked)
+                    const shouldAutoOpen = result.autoOpenCombosOnGarageEntry !== false;
+                    autoOpenCheckbox.checked = shouldAutoOpen;
+                });
+
+                // שמירת הערך כשמשנים את הצ'קבוקס
+                autoOpenCheckbox.addEventListener('change', (e) => {
+                    chrome.storage.local.set({ autoOpenCombosOnGarageEntry: e.target.checked }, () => {
+                        // console.log('[ComboManager] Auto-open combos setting saved:', e.target.checked);
+                    });
+                });
+            }
+
             // הוספת גלילה אופקית עם גלגלת העכבר
             const combosContainer = this.viewElement.querySelector('#combos-grid-container');
             const arrowLeft = this.viewElement.querySelector('.cme_arrowLeft');

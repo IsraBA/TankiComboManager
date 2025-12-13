@@ -19,6 +19,7 @@
             const ViewRenderer = manager.ViewRenderer;
             const LobbyButtonInjector = manager.LobbyButtonInjector;
             const LobbyShortcutHandler = manager.LobbyShortcutHandler;
+            const AutoNavigator = manager.AutoNavigator;
 
             // נחכה עד שכל החלקים הקריטיים יהיו מוכנים
             if (!DOM || !MenuInjector || !ViewRenderer) {
@@ -66,6 +67,11 @@
                     LobbyButtonInjector.checkAlive();
                     LobbyButtonInjector.inject();
                 }
+
+                // התחלת ה-interval לניווט אוטומטי לכרטיסיית הקומבואים (אם קיים AutoNavigator)
+                if (AutoNavigator) {
+                    AutoNavigator.start();
+                }
             }
 
             // ה-observer שמקשיב לשינויים במוסך/לובי
@@ -97,6 +103,11 @@
                     // לנתק גם את ההאזנה למקש C
                     if (LobbyShortcutHandler) {
                         LobbyShortcutHandler.updateListenerState();
+                    }
+                    
+                    // לעצור את AutoNavigator
+                    if (AutoNavigator) {
+                        AutoNavigator.stop();
                     }
                 }
             }
