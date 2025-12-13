@@ -22,15 +22,56 @@
             if (this.qeButtonsListenerAdded) return;
 
             const handleQ = (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                this.navigateToPreviousTab();
+                const tabs = this.getAllTabsInOrder();
+                const ViewRenderer = window.TankiComboManager?.ViewRenderer;
+                const isOnComboTab = ViewRenderer && ViewRenderer.viewElement &&
+                    window.getComputedStyle(ViewRenderer.viewElement).display !== 'none';
+
+                // אם אנחנו על כרטיסיית הקומבואים, עוברים לכרטיסייה האחרונה
+                if (isOnComboTab) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const originalTabs = this.getOriginalTabsInOrder();
+                    if (originalTabs.length > 0) {
+                        this.activateTab(originalTabs[originalTabs.length - 1]);
+                    }
+                    return;
+                }
+
+                // רק אם אנחנו בכרטיסייה הראשונה (Turrets), עוברים ל-COMBOS
+                // בכל מקרה אחר (כולל Paints), נותן למשחק לטפל בזה
+                if (this.isOnFirstOriginalTab(tabs)) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.activateTab(this.comboTab);
+                }
+                // אחרת, נותן למשחק לטפל בזה (לא מונעים כלום)
             };
 
             const handleE = (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                this.navigateToNextTab();
+                const tabs = this.getAllTabsInOrder();
+                const ViewRenderer = window.TankiComboManager?.ViewRenderer;
+                const isOnComboTab = ViewRenderer && ViewRenderer.viewElement &&
+                    window.getComputedStyle(ViewRenderer.viewElement).display !== 'none';
+
+                // אם אנחנו על כרטיסיית הקומבואים, עוברים לכרטיסייה הראשונה
+                if (isOnComboTab) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const originalTabs = this.getOriginalTabsInOrder();
+                    if (originalTabs.length > 0) {
+                        this.activateTab(originalTabs[0]);
+                    }
+                    return;
+                }
+
+                // אם אנחנו בכרטיסייה האחרונה, עוברים ל-COMBOS
+                if (this.isOnLastOriginalTab(tabs)) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.activateTab(this.comboTab);
+                }
+                // אחרת, נותן למשחק לטפל בזה
             };
 
             // האזנה לכפתורים - נמצאים בתוך הקונטיינר
@@ -50,8 +91,8 @@
                 if (!menuContainer) return;
 
                 // רק אם לא לוחצים על input, textarea, או אלמנט contenteditable
-                if (e.target.tagName === 'INPUT' || 
-                    e.target.tagName === 'TEXTAREA' || 
+                if (e.target.tagName === 'INPUT' ||
+                    e.target.tagName === 'TEXTAREA' ||
                     e.target.isContentEditable) {
                     return;
                 }
@@ -59,39 +100,20 @@
                 // שימוש ב-key code במקום האות (יותר אמין, לא תלוי בשפה)
                 const keyCode = e.code || e.keyCode;
                 if (keyCode === 'KeyQ' || keyCode === 81) {
+                    // קוראים לאותה פונקציה כמו הכפתורים ב-UI
                     handleQ(e);
                 } else if (keyCode === 'KeyE' || keyCode === 69) {
+                    // קוראים לאותה פונקציה כמו הכפתורים ב-UI
                     handleE(e);
                 }
             };
 
-            document.addEventListener('keydown', keydownHandler);
+            // האזנה ל-keydown עם capture phase כדי לתפוס את האירוע לפני שהמשחק מטפל בו
+            document.addEventListener('keydown', keydownHandler, true);
 
             if (qeContainer) {
                 this.qeButtonsListenerAdded = true;
             }
-        },
-
-        // מעבר לכרטיסייה הקודמת
-        async navigateToPreviousTab() {
-            const tabs = this.getAllTabsInOrder();
-            if (tabs.length === 0) return;
-
-            const currentIndex = this.getCurrentTabIndex(tabs);
-            const previousIndex = currentIndex === 0 ? tabs.length - 1 : currentIndex - 1;
-
-            await this.activateTab(tabs[previousIndex]);
-        },
-
-        // מעבר לכרטיסייה הבאה
-        async navigateToNextTab() {
-            const tabs = this.getAllTabsInOrder();
-            if (tabs.length === 0) return;
-
-            const currentIndex = this.getCurrentTabIndex(tabs);
-            const nextIndex = currentIndex === tabs.length - 1 ? 0 : currentIndex + 1;
-
-            await this.activateTab(tabs[nextIndex]);
         },
 
         // קבלת כל הכרטיסיות בסדר הנכון (לפי הסדר ב-DOM)
@@ -111,6 +133,51 @@
                 }
                 return 0;
             });
+        },
+
+        // קבלת כל הכרטיסיות המקוריות (בלי COMBOS) בסדר הנכון
+        getOriginalTabsInOrder() {
+            const allTabs = this.getAllTabsInOrder();
+            // מסננים את COMBOS
+            return allTabs.filter(tab => tab !== this.comboTab);
+        },
+
+        // בדיקה אם הכרטיסייה הנוכחית היא האחרונה (Paints)
+        isOnLastOriginalTab(tabs) {
+            const originalTabs = this.getOriginalTabsInOrder();
+            if (originalTabs.length === 0) return false;
+
+            const currentIndex = this.getCurrentTabIndex(tabs);
+            // אם לא מצאנו כרטיסייה פעילה, זה לא הכרטיסייה האחרונה
+            if (currentIndex === -1) return false;
+
+            const currentTab = tabs[currentIndex];
+
+            // אם אנחנו על COMBOS, זה לא הכרטיסייה האחרונה
+            if (currentTab === this.comboTab) return false;
+
+            // נבדוק אם הכרטיסייה הנוכחית היא האחרונה ברשימה המקורית
+            const lastOriginalTab = originalTabs[originalTabs.length - 1];
+            return currentTab === lastOriginalTab;
+        },
+
+        // בדיקה אם הכרטיסייה הנוכחית היא הראשונה (Turrets)
+        isOnFirstOriginalTab(tabs) {
+            const originalTabs = this.getOriginalTabsInOrder();
+            if (originalTabs.length === 0) return false;
+
+            const currentIndex = this.getCurrentTabIndex(tabs);
+            // אם לא מצאנו כרטיסייה פעילה, זה לא הכרטיסייה הראשונה
+            if (currentIndex === -1) return false;
+
+            const currentTab = tabs[currentIndex];
+
+            // אם אנחנו על COMBOS, זה לא הכרטיסייה הראשונה
+            if (currentTab === this.comboTab) return false;
+
+            // נבדוק אם הכרטיסייה הנוכחית היא הראשונה ברשימה המקורית
+            const firstOriginalTab = originalTabs[0];
+            return currentTab === firstOriginalTab;
         },
 
         // מציאת האינדקס של הכרטיסייה הפעילה
@@ -140,7 +207,19 @@
                 }
             }
 
-            return 0; // ברירת מחדל - הכרטיסייה הראשונה
+            // אם לא מצאנו כרטיסייה פעילה, נחפש לפי underline (הקו הירוק)
+            for (let i = 0; i < tabs.length; i++) {
+                if (tabs[i] === this.comboTab) {
+                    continue;
+                }
+                const underline = tabs[i].querySelector(`.${DOM.ACTIVE_UNDERLINE_CLASS}`);
+                if (underline && underline.style.display !== 'none') {
+                    return i;
+                }
+            }
+
+            // אם עדיין לא מצאנו, נחזיר -1 (לא נמצא)
+            return -1;
         },
 
         // הפעלת כרטיסייה (כולל כרטיסיית הקומבואים)
@@ -161,7 +240,11 @@
                 if (this.comboTab && this.comboTab.classList.contains(DOM.ACTIVE_TAB_CLASS)) {
                     MenuInjector.deactivateComboTab(this.comboTab, menuContainer, this.comboTabUnderline);
                 }
-                // הפעלת הכרטיסייה הרגילה
+                // הסרת ה-class מכל הטאבים (לפני החזרתו לטאב הנכון)
+                const allTabs = menuContainer.querySelectorAll(`.${DOM.TAB_ITEM_CLASS}`);
+                allTabs.forEach(t => t.classList.remove(DOM.ACTIVE_TAB_CLASS));
+                // הפעלת הכרטיסייה הרגילה - וידוא שה-class מוחזר
+                tab.classList.add(DOM.ACTIVE_TAB_CLASS);
                 tab.click();
             }
         },

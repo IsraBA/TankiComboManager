@@ -53,7 +53,14 @@
             menuContainer.addEventListener('click', (e) => {
                 const clickedTab = e.target.closest(`.${DOM.TAB_ITEM_CLASS}`);
                 if (clickedTab && clickedTab !== comboTab) {
-                    this.deactivateComboTab(comboTab, menuContainer, myUnderline);
+                    // אם אנחנו על כרטיסיית הקומבואים, נכבה אותה קודם
+                    if (comboTab.classList.contains(DOM.ACTIVE_TAB_CLASS)) {
+                        this.deactivateComboTab(comboTab, menuContainer, myUnderline);
+                    }
+                    // וידוא שה-class מוחזר לטאב שנלחץ עליו
+                    const allTabs = menuContainer.querySelectorAll(`.${DOM.TAB_ITEM_CLASS}`);
+                    allTabs.forEach(t => t.classList.remove(DOM.ACTIVE_TAB_CLASS));
+                    clickedTab.classList.add(DOM.ACTIVE_TAB_CLASS);
                     // עדכון נראות לאחר לחיצה על טאב אחר (למקרה שעברנו למסך augments/skins)
                     setTimeout(() => this.updateTabVisibility(), 50);
                 }
@@ -69,11 +76,10 @@
             // כדי להסתיר את התצוגה מיד כשלוחצים עליהם (לפני שה-DOM משתנה)
             this.addExitButtonsListener();
 
-            // TODO: ניווט עם Q ו-E - מוער כרגע
             // אתחול TabNavigator עם reference לטאב שלנו
-            // if (window.TankiComboManager.TabNavigator) {
-            //     window.TankiComboManager.TabNavigator.init(comboTab, myUnderline);
-            // }
+            if (window.TankiComboManager.TabNavigator) {
+                window.TankiComboManager.TabNavigator.init(comboTab, myUnderline);
+            }
         },
 
         // האזנה לכפתורים שיכולים לסגור את המוסך, לחזור ללובי, או לניווט (Q/E)
@@ -116,8 +122,8 @@
             // לחיצה על ESC - אותה התנהגות כמו כפתור חזרה
             const escapeKeyHandler = (e) => {
                 // רק אם לא לוחצים על input, textarea, או אלמנט contenteditable
-                if (e.target.tagName === 'INPUT' || 
-                    e.target.tagName === 'TEXTAREA' || 
+                if (e.target.tagName === 'INPUT' ||
+                    e.target.tagName === 'TEXTAREA' ||
                     e.target.isContentEditable) {
                     return;
                 }
@@ -136,39 +142,7 @@
                 exitButton.addEventListener('click', hideComboView);
             }
 
-            // כפתורי Q ו-E ב-UI
-            const qeContainer = document.querySelector(DOM.QE_BUTTONS_CONTAINER);
-            if (qeContainer) {
-                const buttons = qeContainer.querySelectorAll(`.${DOM.QE_BUTTON_CLASS}`);
-                if (buttons.length >= 2) {
-                    // הראשון הוא Q, השני הוא E
-                    buttons[0].addEventListener('click', hideAndDeactivateComboTab);
-                    buttons[1].addEventListener('click', hideAndDeactivateComboTab);
-                }
-            }
-
-            // האזנה למקשים במקלדת - רק אם אנחנו במוסך
-            const keydownHandler = (e) => {
-                const menuContainer = document.querySelector(DOM.MENU_CONTAINER);
-                if (!menuContainer) return;
-
-                // רק אם לא לוחצים על input, textarea, או אלמנט contenteditable
-                if (e.target.tagName === 'INPUT' || 
-                    e.target.tagName === 'TEXTAREA' || 
-                    e.target.isContentEditable) {
-                    return;
-                }
-
-                // שימוש ב-key code במקום האות (יותר אמין, לא תלוי בשפה)
-                const keyCode = e.code || e.keyCode;
-                if (keyCode === 'KeyQ' || keyCode === 81 || keyCode === 'KeyE' || keyCode === 69) {
-                    hideAndDeactivateComboTab();
-                }
-            };
-
-            document.addEventListener('keydown', keydownHandler);
-
-            if (backButton || exitButton || qeContainer) {
+            if (backButton || exitButton) {
                 this.exitButtonsListenerAdded = true;
             }
         },
@@ -177,11 +151,11 @@
         // paintsDelay - זמן המתנה אחרי לחיצה על Paints (ברירת מחדל: 1ms)
         async safeActivateComboTab(myTab, container, myUnderline, paintsDelay = 1) {
             const Utils = window.TankiComboManager?.Utils;
-            
+
             // קודם כל נכנסים לכרטיסיית Paints
             const allTabs = container.querySelectorAll(`.${DOM.TAB_ITEM_CLASS}`);
             let paintsTab = null;
-            
+
             for (let tab of allTabs) {
                 const tabText = tab.textContent ? tab.textContent.trim() : '';
                 const tabTextLower = tabText.toLowerCase();
@@ -206,7 +180,7 @@
 
             // אחר כך נפעיל את טאב הקומבואים
             this.activateComboTab(myTab, container, myUnderline);
-            
+
             // וידוא נוסף שהסתרת אלמנטי Paints (רק אם יש המתנה ארוכה, כלומר אחרי equipCombo)
             if (paintsDelay > 1 && Utils && Utils.sleep) {
                 await Utils.sleep(50);
@@ -233,11 +207,17 @@
                 if (underline && underline !== myUnderline) {
                     underline.style.display = 'none';
                 }
+                // הוספת cursor: pointer לכל הטאבים האחרים
+                if (tab !== myTab) {
+                    tab.style.cursor = 'pointer';
+                }
             });
 
             // הפעלת הטאב שלנו
             myTab.classList.add(DOM.ACTIVE_TAB_CLASS);
             myUnderline.style.display = 'block'; // הצגת הקו שלנו
+            // מניעת לחיצה על COMBOS כשהוא פעיל
+            myTab.style.pointerEvents = 'none';
 
             if (window.TankiComboManager.ViewRenderer) {
                 window.TankiComboManager.ViewRenderer.show();
@@ -248,6 +228,8 @@
             // כיבוי הטאב שלנו
             myTab.classList.remove(DOM.ACTIVE_TAB_CLASS);
             myUnderline.style.display = 'none';
+            // החזרת pointer events ל-COMBOS
+            myTab.style.pointerEvents = '';
 
             // החזרת הקווים הירוקים לטאבים המקוריים
             // (הערה: המשחק ינהל בעצמו מי צריך להיות דלוק, אנחנו רק מבטלים את ה-none ששמנו)
@@ -256,6 +238,10 @@
                 const underline = tab.querySelector(`.${DOM.ACTIVE_UNDERLINE_CLASS}`);
                 if (underline && underline !== myUnderline) {
                     underline.style.display = ''; // נותן למשחק להחליט אם להציג או לא
+                }
+                // החזרת cursor רגיל לכל הטאבים (המשחק ינהל את זה)
+                if (tab !== myTab) {
+                    tab.style.cursor = '';
                 }
             });
 
@@ -308,6 +294,14 @@
                         this.deactivateComboTab(this.comboTab, menuContainer, this.comboTabUnderline);
                     }
                 }
+                // הסתרת התצוגה גם אם הטאב לא פעיל (למקרה שהתצוגה נשארה פתוחה)
+                const ViewRenderer = window.TankiComboManager?.ViewRenderer;
+                if (ViewRenderer && ViewRenderer.viewElement) {
+                    const comboViewStyle = window.getComputedStyle(ViewRenderer.viewElement);
+                    if (comboViewStyle.display !== 'none') {
+                        ViewRenderer.hide();
+                    }
+                }
             } else {
                 // הצגת הטאב
                 this.comboTab.style.display = '';
@@ -324,10 +318,9 @@
                     this.exitButtonsListenerAdded = false; // צריך להוסיף מחדש את ה-listener
                     this.comboTab = null;
                     this.comboTabUnderline = null;
-                    // TODO: ניווט עם Q ו-E - מוער כרגע
-                    // if (window.TankiComboManager.TabNavigator) {
-                    //     window.TankiComboManager.TabNavigator.reset();
-                    // }
+                    if (window.TankiComboManager.TabNavigator) {
+                        window.TankiComboManager.TabNavigator.reset();
+                    }
                 } else {
                     // הכפתור קיים, נבדוק אם צריך להסתיר אותו
                     this.updateTabVisibility();
@@ -337,10 +330,9 @@
                 this.exitButtonsListenerAdded = false;
                 this.comboTab = null;
                 this.comboTabUnderline = null;
-                // TODO: ניווט עם Q ו-E - מוער כרגע
-                // if (window.TankiComboManager.TabNavigator) {
-                //     window.TankiComboManager.TabNavigator.reset();
-                // }
+                if (window.TankiComboManager.TabNavigator) {
+                    window.TankiComboManager.TabNavigator.reset();
+                }
             }
         }
     };
