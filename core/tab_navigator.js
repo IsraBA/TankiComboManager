@@ -249,8 +249,11 @@
             }
         },
 
-        // מעבר לטאב לפי טקסט
-        async navigateToTab(tabName) {
+        // מעבר לטאב לפי טקסט (מקבל מפתח כמו 'Turrets', 'Hulls' וכו')
+        async navigateToTab(tabKey) {
+            const LanguageManager = window.TankiComboManager.LanguageManager;
+            const tabName = LanguageManager ? LanguageManager.getTabName(tabKey) : tabKey;
+            
             const tabs = document.querySelectorAll(`.${DOM.TAB_ITEM_CLASS}`);
             let targetTab = null;
 
@@ -284,7 +287,7 @@
                 await Utils.sleep(50);
             } else {
                 const allTabTexts = Array.from(tabs).map(t => t.textContent?.trim() || '').join(', ');
-                console.error(`[ComboManager] Tab ${tabName} not found! Available tabs: ${allTabTexts}`);
+                console.error(`[ComboManager] Tab ${tabName} (key: ${tabKey}) not found! Available tabs: ${allTabTexts}`);
             }
         },
 

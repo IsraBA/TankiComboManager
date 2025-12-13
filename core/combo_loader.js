@@ -137,6 +137,10 @@
         isItemPurchased(item) {
             // אם item הוא null, בודקים את כפתור ה-equip בדף
             if (item === null || item === undefined) {
+                const LanguageManager = window.TankiComboManager.LanguageManager;
+                const equipText = LanguageManager ? LanguageManager.getEquipButtonText() : 'equip';
+                const equipTextLower = equipText.toLowerCase().trim();
+                
                 const allButtons = document.querySelectorAll(DOM.EQUIP_BUTTON);
                 for (let btn of allButtons) {
                     const btnText = btn.innerText || '';
@@ -146,12 +150,12 @@
                     for (let span of spans) {
                         const spanText = span.innerText || '';
                         const spanTextLower = spanText.toLowerCase().trim();
-                        if (spanTextLower === 'equip') {
+                        if (spanTextLower === equipTextLower) {
                             foundEquip = true;
                             break;
                         }
                     }
-                    if (foundEquip || btnTextLower === 'equip') {
+                    if (foundEquip || btnTextLower === equipTextLower) {
                         return true; // מצאנו כפתור equip, הפריט נרכש
                     }
                 }
@@ -243,19 +247,24 @@
 
         // לחיצה על כפתור Equip
         async clickEquipButton() {
-            // חיפוש כפתור Equip - זה הכפתור שיש בו הטקסט "equip" (לא "equipped")
+            // קבלת הטקסט של כפתור ה-equip בשפה הנוכחית
+            const LanguageManager = window.TankiComboManager.LanguageManager;
+            const equipText = LanguageManager ? LanguageManager.getEquipButtonText() : 'equip';
+            const equipTextLower = equipText.toLowerCase().trim();
+            
+            // חיפוש כפתור Equip - זה הכפתור שיש בו הטקסט של equip בשפה הנוכחית
             const allButtons = document.querySelectorAll(DOM.EQUIP_BUTTON);
 
             for (let btn of allButtons) {
-                // נחפש את הטקסט "equip" בתוך הכפתור (לא "equipped")
-                // נבדוק אם יש span עם הטקסט "equip" בתוך הכפתור
+                // נחפש את הטקסט של equip בשפה הנוכחית בתוך הכפתור
+                // נבדוק אם יש span עם הטקסט המתאים בתוך הכפתור
                 const spans = btn.querySelectorAll('span');
 
                 for (let span of spans) {
                     const spanText = span.innerText || '';
                     const spanTextLower = spanText.toLowerCase().trim();
-                    // אם מצאנו span עם הטקסט "equip" (לא "equipped")
-                    if (spanTextLower === 'equip') {
+                    // אם מצאנו span עם הטקסט המתאים
+                    if (spanTextLower === equipTextLower) {
                         // מצאנו את הכפתור הנכון - נשתמש בלחיצה עם קואורדינטות
                         await this.clickWithCoordinates(btn);
                         await Utils.sleep(50);
@@ -264,7 +273,7 @@
                 }
             }
 
-            // אם לא מצאנו כפתור "equip", נדלג (אולי הפריט כבר מצויד)
+            // אם לא מצאנו כפתור equip, נדלג (אולי הפריט כבר מצויד)
         },
     };
 })();

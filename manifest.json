@@ -22,6 +22,7 @@
       "js": [
         "lib/constants.js",
         "lib/utils.js",
+        "lib/language_manager.js",
         "core/tab_navigator.js",
         "core/scanners/base_item_scanner.js",
         "core/scanners/augment_scanner.js",

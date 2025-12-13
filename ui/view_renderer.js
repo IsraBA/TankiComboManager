@@ -13,6 +13,12 @@
         dragHandlerInitialized: false,
 
         async init() {
+            // זיהוי השפה הנוכחית כשמתחילים
+            const LanguageManager = window.TankiComboManager.LanguageManager;
+            if (LanguageManager) {
+                LanguageManager.detectLanguage();
+            }
+
             const garageMenuContainer = document.querySelector(DOM.GARAGE_MENU_CONTAINER);
             if (!garageMenuContainer) return;
 
@@ -309,8 +315,19 @@
                 const combos = result.savedCombos || [];
                 // console.log(`[ComboManager] Fetched ${combos.length} combos from storage`);
                 
+                // זיהוי השפה הנוכחית וסינון קומבואים שלא בשפה הנוכחית
+                const LanguageManager = window.TankiComboManager.LanguageManager;
+                const currentLanguageCode = LanguageManager ? LanguageManager.getCurrentLanguageCode() : 'en';
+                
+                // סינון קומבואים - רק אלה שנשמרו בשפה הנוכחית
+                const filteredCombos = combos.filter(combo => {
+                    // אם אין שפה שמורה, נניח שזה קומבו ישן באנגלית (תאימות לאחור)
+                    const comboLanguage = combo.language || 'en';
+                    return comboLanguage === currentLanguageCode;
+                });
+                
                 // מיון לפי order (אם קיים), אחרת לפי id (timestamp) מהחדש לישן
-                const sortedCombos = combos.sort((a, b) => {
+                const sortedCombos = filteredCombos.sort((a, b) => {
                     // אם לשניהם יש order, נמיין לפי order
                     if (a.order !== undefined && b.order !== undefined) {
                         return a.order - b.order;

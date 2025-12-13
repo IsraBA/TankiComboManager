@@ -102,12 +102,17 @@
                     }
                 });
 
+                // זיהוי השפה הנוכחית
+                const LanguageManager = window.TankiComboManager.LanguageManager;
+                const currentLanguageCode = LanguageManager ? LanguageManager.getCurrentLanguageCode() : 'en';
+
                 const newCombo = {
                     id: Date.now(), // מזהה ייחודי
                     name: `Combo ${combos.length + 1}`,
                     data: comboData,
                     date: new Date().toLocaleDateString(),
-                    order: 0 // קומבו חדש תמיד ראשון
+                    order: 0, // קומבו חדש תמיד ראשון
+                    language: currentLanguageCode // שמירת השפה שבה נשמר הקומבו
                 };
 
                 combos.push(newCombo);

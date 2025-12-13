@@ -485,7 +485,9 @@
 
 /* === Items Container === */
 .cme_itemsContainer {
+    position: relative;
     height: 100%;
+    min-width: 100%;
     overflow: auto hidden;
     scrollbar-width: none;
     display: flex;
@@ -519,6 +521,10 @@
 
 /* === Empty State === */
 .cme_empty-state {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     width: 100%;
     display: flex;
     flex-direction: column;
