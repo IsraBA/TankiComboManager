@@ -77,10 +77,19 @@
 
         // פתיחת המוסך וניווט לכרטיסיית הקומבואים
         async openGarageAndNavigateToCombos() {
+            // סימון מוקדם למנוע ניווט אוטומטי כפול
+            const AutoNavigator = window.TankiComboManager?.AutoNavigator;
+            if (AutoNavigator) {
+                AutoNavigator.autoNavigateTriggered = true;
+            }
+
             // מציאת כפתור המוסך
             const garageButton = document.querySelector(DOM.GARAGE_BUTTON);
             if (!garageButton) {
                 console.error("[ComboManager] Garage button not found!");
+                if (AutoNavigator) {
+                    AutoNavigator.autoNavigateTriggered = false;
+                }
                 return;
             }
 
@@ -96,6 +105,9 @@
             const garageLoaded = await NavigationHelpers.waitForElement(DOM.LOBBY_CONTAINER);
             if (!garageLoaded) {
                 console.error("[ComboManager] Timeout waiting for garage lobby to load");
+                if (AutoNavigator) {
+                    AutoNavigator.autoNavigateTriggered = false;
+                }
                 return;
             }
 
@@ -103,6 +115,9 @@
             const turretsBlock = await NavigationHelpers.waitForElementAndClick(DOM.LOBBY_TURRETS_BLOCK);
             if (!turretsBlock) {
                 console.error("[ComboManager] Turrets block not found");
+                if (AutoNavigator) {
+                    AutoNavigator.autoNavigateTriggered = false;
+                }
                 return;
             }
 
@@ -110,6 +125,9 @@
             const menuContainer = await NavigationHelpers.waitForElement(DOM.MENU_CONTAINER);
             if (!menuContainer) {
                 console.error("[ComboManager] Menu container not found");
+                if (AutoNavigator) {
+                    AutoNavigator.autoNavigateTriggered = false;
+                }
                 return;
             }
 

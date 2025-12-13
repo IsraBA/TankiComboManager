@@ -20,10 +20,11 @@
                 // אם אין ערך, ברירת מחדל היא true
                 const shouldAutoOpen = result.autoOpenCombosOnGarageEntry !== false;
 
-                if (!shouldAutoOpen) return;
-
-                // סימון שביצענו את הניווט
-                this.autoNavigateTriggered = true;
+                if (!shouldAutoOpen) {
+                    // אם המשתמש כיבה את האפשרות, נאפס את הדגל
+                    this.autoNavigateTriggered = false;
+                    return;
+                }
 
                 // עכשיו נלחץ על התותחים כדי לפתוח את תפריט המוסך
                 const turretsBlock = await NavigationHelpers.waitForElementAndClick(DOM.LOBBY_TURRETS_BLOCK);
@@ -54,6 +55,9 @@
 
             // אם GARAGE_WRAPPER קיים ולא ביצענו את הניווט עדיין
             if (garageWrapper && !this.autoNavigateTriggered) {
+                // סימון שאנחנו בתהליך ניווט - למנוע ניווט כפול
+                this.autoNavigateTriggered = true;
+                
                 // נווט לכרטיסיית הקומבואים (בדיוק כמו בלחיצה על הכפתור בלובי)
                 this.navigateToCombos();
             }
