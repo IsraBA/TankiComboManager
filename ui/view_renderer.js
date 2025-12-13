@@ -103,14 +103,63 @@
             });
         },
 
-        // טעינת ה-HTML מהקובץ הנפרד
+        // טעינת ה-HTML של ה-view
         async loadViewHTML() {
-            const htmlUrl = chrome.runtime.getURL('ui/combo_view_base.html');
-            const response = await fetch(htmlUrl);
-            if (!response.ok) {
-                throw new Error(`Failed to load HTML: ${response.status}`);
-            }
-            return await response.text();
+            const LM = window.TankiComboManager.LanguageManager;
+            
+            // יצירת HTML דינמי לפי השפה הנוכחית
+            return `
+<div class="cme_commonBlockForDescriptionAndButton">
+    <div id="cme_tankPreviewContainer" class="cme_tankPreview"></div>
+    <div class="cme_descriptionBlockCollection">
+        <div class="cme_commonBlockDescriptionCollection cme_animatedBlurredLeftBlock">
+            <div class="cme_headline">
+                <h1>${LM.getUIText('comboManager')}</h1>
+                <h3>${LM.getUIText('specialExtension')}</h3>
+            </div>
+            <div class="cme_PaintsCollectionComponentStyle-fullDescriptionPaint">
+                <h3>${LM.getUIText('description')}</h3>
+                <h3><strong>${LM.getUIText('proTipLabel')}</strong> ${LM.getUIText('proTip1')}</h3>
+                <h3><strong>${LM.getUIText('proTip2Label')}</strong> ${LM.getUIText('proTip2')}</h3>
+                
+                <!-- Auto-Open Combos Checkbox -->
+                <label class="cme_auto-open-checkbox-label">
+                    <input type="checkbox" id="cme_auto-open-combos-checkbox" class="cme_auto-open-checkbox" checked>
+                    <span class="cme_auto-open-checkbox-text">${LM.getUIText('autoOpenCheckbox')}</span>
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="cme_TanksPartComponentStyle-tankPartUpgrades">
+        <div id="cme_save-combo-btn" class="cme_commonBlockButton cme_bigActionButton" style="cursor: pointer;">
+            <div class="cme_flexCenterAlignCenter cme_flexCenterAlignCenter_inner">
+                <div class="cme_backgroundImage"></div>
+            </div>
+            <div class="cme_flexEndAlignEnd">
+                <span class="Font-bold">${LM.getUIText('saveCombo')}</span>
+            </div>
+            <div class="cme_flexStartAlignStart">
+                <h3 class="cme_hotkey">Enter</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Combos List Container -->
+<div class="cme_itemsListContainer cme_appearFromBottom">
+    <!-- Navigation Arrows (for future scrolling) -->
+    <div class="cme_arrowLeft cme_flexCenterAlignCenter" style="opacity: 0;">
+        <img src="/play/static/images/arrow.2552fe80.svg">
+    </div>
+    <div class="cme_arrowRight cme_flexCenterAlignCenter" style="opacity: 0;">
+        <img src="/play/static/images/arrow.2552fe80.svg">
+    </div>
+
+    <!-- Combos Grid Container -->
+    <div id="combos-grid-container" class="cme_itemsContainer">
+    </div>
+</div>
+            `;
         },
 
         // וידוא שלכל הקומבואים יש order
@@ -357,10 +406,11 @@
             container.innerHTML = '';
 
             if (combos.length === 0) {
+                const LM = window.TankiComboManager.LanguageManager;
                 container.innerHTML = `
                     <div class="cme_empty-state">
-                        <h2>No saved combos yet</h2>
-                        <p>Click "SAVE CURRENT" to save your first combo!</p>
+                        <h2>${LM.getUIText('noSavedCombos')}</h2>
+                        <p>${LM.getUIText('clickToSave')}</p>
                     </div>
                 `;
                 // עדכון נראות החיצים - אין תוכן לגלול
@@ -422,7 +472,8 @@
 
         // מחיקת קומבו
         deleteCombo(comboId) {
-            if (!confirm('Are you sure you want to delete this combo?')) return;
+            const LM = window.TankiComboManager.LanguageManager;
+            if (!confirm(LM.getUIText('deleteConfirm'))) return;
 
             chrome.storage.local.get(['savedCombos'], (result) => {
                 let combos = result.savedCombos || [];

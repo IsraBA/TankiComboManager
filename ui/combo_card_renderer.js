@@ -9,6 +9,7 @@
     window.TankiComboManager.ComboCardRenderer = {
         // יצירת כרטיס קומבו בודד
         createComboCard(combo, index, viewRenderer) {
+            const LM = window.TankiComboManager.LanguageManager;
             const card = document.createElement('div');
             card.className = 'cme_combo-card';
             card.setAttribute('data-combo-id', combo.id);
@@ -18,7 +19,7 @@
 
             // כפתור מחיקה
             const deleteBtnHTML = `
-                <div class="cme_delete-btn" title="Delete combo">
+                <div class="cme_delete-btn" title="${LM.getUIText('deleteCombo')}">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M12 4L4 12M4 4L12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                     </svg>
@@ -150,11 +151,12 @@
             }
 
             // כפתור EQUIP NOW
+            const LM = window.TankiComboManager.LanguageManager;
             const equipButtonHTML = `
                 <div class="cme_combo-equip-btn">
                     <div class="cme_combo-equip-btn-inner">
                         <div class="cme_combo-equip-icon"></div>
-                        <span class="cme_combo-equip-text">EQUIP</span>
+                        <span class="cme_combo-equip-text">${LM.getUIText('equipCombo')}</span>
                     </div>
                 </div>
             `;
