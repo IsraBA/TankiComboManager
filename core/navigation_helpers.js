@@ -165,13 +165,6 @@
                     menuContainer,
                     MenuInjector.comboTabUnderline
                 );
-
-                // וידוא ש-loadAndRenderCombos רץ - אם show() לא קרא לו, נקרא לו מפורשות
-                if (ViewRenderer && ViewRenderer.loadAndRenderCombos) {
-                    // המתנה קצרה כדי לוודא ש-show() סיים
-                    await new Promise(resolve => setTimeout(resolve, 100));
-                    ViewRenderer.loadAndRenderCombos();
-                }
                 return true;
             }
             return false;

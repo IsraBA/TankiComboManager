@@ -274,15 +274,22 @@
             return !!document.querySelector(DOM.FRIENDS_INDICATOR);
         },
 
+        // בדיקה אם אנחנו במסך יצירת באטל (שם הטאב לא צריך להיראות)
+        isOnBattleCreationScreen() {
+            // מסך יצירת באטל מאופיין בנוכחות של אלמנט עם הקלאס BattleCreateComponentStyle-mainContainer
+            return !!document.querySelector(DOM.BATTLE_CREATION_INDICATOR);
+        },
+
         // עדכון נראות הטאב לפי המסך הנוכחי
         updateTabVisibility() {
             if (!this.comboTab) return;
 
-            // הטאב צריך להיות מוסתר במסך augments/skins, במסך המשימות, במסך הקלאן, או במסך החברים
+            // הטאב צריך להיות מוסתר במסך augments/skins, במסך המשימות, במסך הקלאן, במסך החברים, או במסך יצירת באטל
             const shouldHide = this.isOnAugmentsOrSkinsScreen()
                 || this.isOnMissionsScreen()
                 || this.isOnClanScreen()
-                || this.isOnFriendsScreen();
+                || this.isOnFriendsScreen()
+                || this.isOnBattleCreationScreen();
 
             if (shouldHide) {
                 // הסתרת הטאב

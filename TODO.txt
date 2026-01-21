@@ -1,4 +1,3 @@
-- להסתיר את הכרטיסיית קומבואים כשיוצרים באטל
 - להוסיף פופאפ מחיקה במקום confirm
 - לפתור בעיית קומבואים ריקים שנוצרים בלי סיבה:
 tab_navigator.js:290 [ComboManager] Tab Turrets (key: Turrets) not found! Available tabs: 
