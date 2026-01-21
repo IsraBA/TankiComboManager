@@ -359,6 +359,19 @@
                 return;
             }
 
+            // מחיקה אוטומטית של קומבואים ריקים לפני טעינה
+            const ComboCleaner = window.TankiComboManager.ComboCleaner;
+            if (ComboCleaner && ComboCleaner.removeEmptyCombos) {
+                ComboCleaner.removeEmptyCombos(() => {
+                    this._loadAndRenderCombosAfterCleanup(container);
+                });
+            } else {
+                this._loadAndRenderCombosAfterCleanup(container);
+            }
+        },
+
+        // פונקציה פנימית שטוענה ומציגה קומבואים (אחרי ניקוי)
+        _loadAndRenderCombosAfterCleanup(container) {
             // console.log("[ComboManager] Container found, fetching combos from storage...");
             chrome.storage.local.get(['savedCombos'], (result) => {
                 const combos = result.savedCombos || [];
@@ -549,7 +562,16 @@
 
                 chrome.storage.local.set({ savedCombos: combos }, () => {
                     // console.log(`[ComboManager] Item ${itemType} removed from combo ${comboId}`);
-                    this.loadAndRenderCombos();
+                    
+                    // מחיקה אוטומטית של קומבואים ריקים
+                    const ComboCleaner = window.TankiComboManager.ComboCleaner;
+                    if (ComboCleaner && ComboCleaner.removeEmptyCombos) {
+                        ComboCleaner.removeEmptyCombos(() => {
+                            this.loadAndRenderCombos();
+                        });
+                    } else {
+                        this.loadAndRenderCombos();
+                    }
                 });
             });
         },

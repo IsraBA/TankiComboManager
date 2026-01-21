@@ -359,6 +359,12 @@
 
                 chrome.storage.local.set({ savedCombos: combos }, () => {
                     // console.log('[ComboManager] Combo order updated');
+                    
+                    // מחיקה אוטומטית של קומבואים ריקים
+                    const ComboCleaner = window.TankiComboManager.ComboCleaner;
+                    if (ComboCleaner && ComboCleaner.removeEmptyCombos) {
+                        ComboCleaner.removeEmptyCombos();
+                    }
                 });
             });
         },
