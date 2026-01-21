@@ -158,7 +158,9 @@
             // ניווט לכרטיסיית הקומבואים
             const MenuInjector = window.TankiComboManager?.MenuInjector;
             if (MenuInjector && MenuInjector.comboTab && MenuInjector.comboTabUnderline) {
-                MenuInjector.activateComboTab(
+                // שימוש ב-safeActivateComboTab במקום activateComboTab ישירות
+                // זה מבטיח שעוברים דרך Paints קודם, מה שנותן זמן לטנק להיטען
+                await MenuInjector.safeActivateComboTab(
                     MenuInjector.comboTab,
                     menuContainer,
                     MenuInjector.comboTabUnderline
