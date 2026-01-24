@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Tanki Online Pro Combo Manager",
+  "name": "Tanki Online - Combo Manager",
   "version": "2.0",
-  "description": "Advanced modular combo manager with automated tab navigation.",
+  "description": "Save your favorite Tanki Online combos and switch between them with a single click",
   "permissions": [
     "storage"
   ],
