@@ -17,7 +17,8 @@
       "css": [
         "styles.css",
         "combo_card.css",
-        "ui/lobby_button.css"
+        "ui/lobby_button.css",
+        "ui/delete_combo_modal.css"
       ],
       "js": [
         "lib/constants.js",
@@ -40,6 +41,7 @@
         "ui/lobby_button_injector.js",
         "ui/lobby_shortcut_handler.js",
         "ui/combo_drag_handler.js",
+        "ui/delete_combo_modal.js",
         "ui/combo_card_renderer.js",
         "ui/view_renderer.js",
         "main.js"

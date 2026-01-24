@@ -11,10 +11,10 @@
 
         // פונקציה ראשית להצטיידות בקומבו
         async equipCombo(combo) {
-            console.log('[ComboManager] Equipping combo:', combo);
+            // console.log('[ComboManager] Equipping combo:', combo);
 
             if (!combo || !combo.data) {
-                console.error('[ComboManager] Invalid combo data');
+                // console.error('[ComboManager] Invalid combo data');
                 return;
             }
 

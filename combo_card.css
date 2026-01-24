@@ -286,21 +286,18 @@
 /* כפתור מחיקה */
 .cme_delete-btn {
     position: absolute;
-    top: 0.3em;
-    right: 0.3em;
-    width: 1.5em;
-    height: 1.5em;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(0, 0, 0, 0.5);
-    border-radius: 50%;
+    top: 0.5em;
+    right: 0.5em;
+    width: 1em;
+    height: 1em;
     cursor: pointer;
+    background-image: url(https://s.eu.tankionline.com/static/images/iconDelete.b879b0ab.svg);
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center center;
     opacity: 0;
-    transition: all 0.2s ease;
+    transition: opacity 0.2s ease, background-image 0.2s ease;
     z-index: 20;
-    -webkit-box-align: center;
-    -webkit-box-pack: center;
 }
 
 .cme_combo-card:hover .cme_delete-btn {
@@ -308,13 +305,10 @@
 }
 
 .cme_delete-btn:hover {
-    background: rgba(255, 0, 0, 0.5);
-}
-
-.cme_delete-btn svg {
-    width: 0.675em;
-    height: 0.675em;
-    color: white;
+    background-image: url(https://s.eu.tankionline.com/static/images/deleteHoverModal.3aceb055.svg);
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center center;
 }
 
 /* === Item Removal Styles === */

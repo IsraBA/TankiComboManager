@@ -484,17 +484,25 @@
         },
 
         // מחיקת קומבו
-        deleteCombo(comboId) {
-            const LM = window.TankiComboManager.LanguageManager;
-            if (!confirm(LM.getUIText('deleteConfirm'))) return;
+        deleteCombo(comboId, comboName) {
+            const DeleteModal = window.TankiComboManager.DeleteComboModal;
+            
+            if (!DeleteModal) {
+                console.error('[ComboManager] DeleteComboModal not loaded!');
+                return;
+            }
 
-            chrome.storage.local.get(['savedCombos'], (result) => {
-                let combos = result.savedCombos || [];
-                combos = combos.filter(c => c.id !== comboId);
+            // פתיחת המודל עם callback למחיקה
+            DeleteModal.show(comboId, comboName, (confirmedComboId) => {
+                // הקוד שמבצע את המחיקה בפועל
+                chrome.storage.local.get(['savedCombos'], (result) => {
+                    let combos = result.savedCombos || [];
+                    combos = combos.filter(c => c.id !== confirmedComboId);
 
-                chrome.storage.local.set({ savedCombos: combos }, () => {
-                    // console.log(`[ComboManager] Combo ${comboId} deleted`);
-                    this.loadAndRenderCombos();
+                    chrome.storage.local.set({ savedCombos: combos }, () => {
+                        // console.log(`[ComboManager] Combo ${confirmedComboId} deleted`);
+                        this.loadAndRenderCombos();
+                    });
                 });
             });
         },

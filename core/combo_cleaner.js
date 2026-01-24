@@ -54,7 +54,7 @@
                 // שמירה רק אם היו קומבואים ריקים
                 if (removedCount > 0) {
                     chrome.storage.local.set({ savedCombos: combos }, () => {
-                        console.log(`[ComboManager] Removed ${removedCount} empty combo(s)`);
+                        // console.log(`[ComboManager] Removed ${removedCount} empty combo(s)`);
                         if (callback) callback(removedCount);
                     });
                 } else {

@@ -1,0 +1,268 @@
+/* ui/delete_combo_modal.css - Delete Combo Modal Styles */
+/* עיצוב מודל מחיקת קומבו - משכפל את העיצוב של מודל יציאה מהמשחק */
+
+/* === Modal Root (מכל) === */
+#cme_modal-root {
+    pointer-events: none;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+}
+
+/* רקע כהה של המודל */
+.cme_ModalStyle-rootHover {
+    pointer-events: auto;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+    z-index: 60;
+}
+
+/* === Container (תיבת המודל) === */
+.cme_DialogContainerComponentStyle-container {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: space-between;
+    pointer-events: auto;
+    width: 31.625em;
+    min-height: 14.125em;
+    z-index: 60;
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 0.313em 1.25em 0px;
+    outline: rgba(255, 255, 255, 0.25) solid 0.063em;
+    padding: 2em;
+    background: radial-gradient(100% 100% at 0% 0%, rgba(254, 38, 74, 0.75) 0%, rgba(255, 38, 74, 0) 100%), rgba(0, 25, 38, 0.75);
+    min-width: 31.625em;
+    max-width: 31.625em;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: stretch;
+    -webkit-box-pack: justify;
+}
+
+/* === Header (כותרת המודל) === */
+.cme_DialogContainerComponentStyle-header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    background-color: transparent;
+    width: 100%;
+    margin-left: 0px;
+    position: relative;
+    -webkit-box-align: center;
+    -webkit-box-pack: start;
+}
+
+.cme_DialogContainerComponentStyle-header h1 {
+    font-family: BaseFontBold, FallbackFontBold;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 1.5em;
+    line-height: normal;
+    text-transform: uppercase;
+    margin: 0px;
+    color: rgb(255, 255, 255);
+}
+
+/* כפתור סגירה */
+.cme_DialogContainerComponentStyle-containerForImg {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: auto;
+    height: auto;
+    position: absolute;
+    right: 0.1875em;
+    -webkit-box-align: center;
+    -webkit-box-pack: start;
+}
+
+.cme_DialogContainerComponentStyle-imgClose {
+    width: 1.5em;
+    height: 1.5em;
+    align-self: center;
+    margin-left: 0.5em;
+    cursor: pointer;
+    background-image: url(https://s.eu.tankionline.com/static/images/iconDelete.b879b0ab.svg);
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center center;
+    position: absolute;
+    right: 0px;
+    transition: background-image 0.2s ease, box-shadow 0.3s;
+}
+
+.cme_DialogContainerComponentStyle-imgClose:hover {
+    background-image: url(https://s.eu.tankionline.com/static/images/deleteHoverModal.3aceb055.svg);
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center center;
+    height: 1.5em;
+    width: 1.5em;
+}
+
+/* === Content (תוכן המודל) === */
+.cme_DialogContainerComponentStyle-contentContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: auto;
+    margin: 1.5em 0;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: center;
+    -webkit-box-pack: start;
+}
+
+.cme_DialogBuyGarageItemComponentStyle-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.cme_DialogBuyGarageItemComponentStyle-container span {
+    line-height: 1.375em;
+    text-align: center;
+    align-self: center;
+    font-size: 1em;
+    color: rgb(255, 255, 255);
+}
+
+/* === Footer (כפתורים) === */
+.cme_DialogContainerComponentStyle-footerContainer {
+    background-color: transparent;
+    width: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25em;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+/* כפתור ביטול */
+.cme_DialogContainerComponentStyle-keyButton {
+    width: 12.375em;
+    height: 3em;
+    position: relative;
+    margin-top: 0px;
+    margin-right: 0px;
+    text-align: center;
+    border-radius: 0.75em;
+    cursor: pointer;
+    background-color: rgba(255, 255, 255, 0.15);
+    transition: background 0.3s, box-shadow 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.cme_DialogContainerComponentStyle-keyButton:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    box-shadow: rgb(255, 255, 255) 0em 0em 0em 2px;
+}
+
+.cme_DialogContainerComponentStyle-keyButton span {
+    font-family: BaseFontBold, FallbackFontBold;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 1em;
+    line-height: normal;
+    color: rgb(255, 255, 255);
+    text-align: center;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+/* כפתור אישור (מחיקה) */
+.cme_DialogContainerComponentStyle-enterButton {
+    width: 12.375em;
+    min-width: 12.375em;
+    height: 3.125em;
+    position: relative;
+    margin-top: 0px;
+    margin-right: 0px;
+    text-align: center;
+    border-radius: 0.75em;
+    cursor: pointer;
+    background-color: rgb(118, 255, 51);
+    transition: background 0.3s, box-shadow 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.cme_DialogContainerComponentStyle-enterButton:hover {
+    background-color: rgb(118, 255, 51);
+    box-shadow: rgb(255, 255, 255) 0em 0em 0em 2px;
+}
+
+.cme_DialogContainerComponentStyle-enterButton span {
+    font-family: BaseFontBold, FallbackFontBold;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 1em;
+    line-height: normal;
+    text-transform: uppercase;
+    text-wrap: nowrap;
+    padding: 0.2em 1.8em;
+    color: rgb(0, 25, 38);
+}
+
+/* אנימציה של הופעת המודל */
+@keyframes cme_modal_fade_in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.cme_ModalStyle-rootHover {
+    animation: cme_modal_fade_in 0.2s ease-out;
+}
+
+@keyframes cme_modal_slide_in {
+    from {
+        transform: scale(0.95);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.cme_DialogContainerComponentStyle-container {
+    animation: cme_modal_slide_in 0.2s ease-out;
+}
+
+/* === Common === */
+.cme_Common-flexCenterAlignCenter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}

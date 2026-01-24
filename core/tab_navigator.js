@@ -287,7 +287,7 @@
                 await Utils.sleep(60);
             } else {
                 const allTabTexts = Array.from(tabs).map(t => t.textContent?.trim() || '').join(', ');
-                console.error(`[ComboManager] Tab ${tabName} (key: ${tabKey}) not found! Available tabs: ${allTabTexts}`);
+                // console.error(`[ComboManager] Tab ${tabName} (key: ${tabKey}) not found! Available tabs: ${allTabTexts}`);
             }
         },
 

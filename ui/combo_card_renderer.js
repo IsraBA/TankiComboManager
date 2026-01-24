@@ -19,11 +19,7 @@
 
             // כפתור מחיקה
             const deleteBtnHTML = `
-                <div class="cme_delete-btn" title="${LM.getUIText('deleteCombo')}">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 4L4 12M4 4L12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
-                </div>
+                <div class="cme_delete-btn" title="${LM.getUIText('deleteCombo')}"></div>
             `;
 
             // כותרת הקומבו (ללא רקע כהה)
@@ -208,7 +204,7 @@
             if (deleteBtn) {
                 deleteBtn.onclick = (e) => {
                     e.stopPropagation();
-                    viewRenderer.deleteCombo(combo.id);
+                    viewRenderer.deleteCombo(combo.id, combo.name);
                 };
             }
 
