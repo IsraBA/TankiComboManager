@@ -136,6 +136,9 @@
 
             document.addEventListener('keydown', escapeKeyHandler);
 
+            // כפתור חזרה של הדפדפן - אותה התנהגות כמו כפתור חזרה של המשחק
+            window.addEventListener('popstate', hideComboView);
+
             // כפתור סגירה של המוסך
             const exitButton = document.querySelector(DOM.EXIT_GARAGE_BUTTON);
             if (exitButton) {
