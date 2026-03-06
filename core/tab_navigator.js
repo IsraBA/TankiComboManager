@@ -282,9 +282,18 @@
                     }
                 }
 
+                // אם הטאב כבר פעיל, אין צורך ללחוץ שוב (מונע timeout מיותר)
+                if (targetTab.classList.contains(DOM.ACTIVE_TAB_CLASS)) {
+                    return;
+                }
+
+                // מקימים observer על document.body *לפני* הלחיצה כדי לתפוס את השינוי ב-DOM
+                // חשוב: לא צופים ב-POSITION_CONTENT כי React מחליף את האלמנט בין סוגי טאבים שונים
+                const NavigationHelpers = window.TankiComboManager.NavigationHelpers;
+                const contentReady = NavigationHelpers.waitForDOMChange(null);
                 targetTab.click();
-                // המתנה קריטית לטעינת ה-HTML של הטאב
-                await Utils.sleep(60);
+                // המתנה חכמה - ממתין עד שה-DOM מסיים להתעדכן (במקום sleep קבוע)
+                await contentReady;
             } else {
                 const allTabTexts = Array.from(tabs).map(t => t.textContent?.trim() || '').join(', ');
                 // console.error(`[ComboManager] Tab ${tabName} (key: ${tabKey}) not found! Available tabs: ${allTabTexts}`);

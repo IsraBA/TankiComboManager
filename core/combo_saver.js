@@ -63,12 +63,6 @@
                 }
                 currentCombo.protection = window.TankiComboManager.ProtectionScanner.scanProtection();
 
-                // 8. סריקת צבע - בוטל
-                // if (window.TankiComboManager.TabNavigator) {
-                //     await window.TankiComboManager.TabNavigator.navigateToTab('Paints');
-                // }
-                // currentCombo.paint = window.TankiComboManager.PaintScanner.scanPaint();
-
                 // שמירה ל-localStorage
                 this.saveToStorage(currentCombo);
 
@@ -85,8 +79,7 @@
                 }
 
             } catch (error) {
-                console.error("[ComboManager] Error during save:", error);
-                alert("Error saving combo. See console.");
+                console.error("[ComboManager] Error saving combo:", error);
             }
         },
 

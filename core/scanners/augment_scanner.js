@@ -9,31 +9,32 @@
     const Utils = window.TankiComboManager.Utils;
 
     window.TankiComboManager.AugmentScanner = {
-        
+
         // פונקציה לזיהוי אוגמנט מצויד (תותח או גוף)
         async scanAugment() {
-            // קודם כל, נקח את התמונה של האוגמנט מהמסך הראשי (לפני שנכנסים למסך האוגמנטים)
-            // התמונה נמצאת ב-img עם class DeviceButtonComponentStyle-deviceIcon
+            // ניגש ל-NavigationHelpers בזמן הקריאה (לא בזמן טעינת המודול)
+            // כי navigation_helpers.js נטען אחרי הקובץ הזה
+            const NavigationHelpers = window.TankiComboManager.NavigationHelpers;
+
             const augmentImage = Utils.findImageBySelector(`${DOM.OPEN_AUGMENTS_BTN}`);
-            
+
             const openBtn = document.querySelector(DOM.OPEN_AUGMENTS_BTN);
             if (!openBtn) {
                 return null;
             }
 
-            // כניסה למסך אוגמנטים
+            // כניסה למסך אוגמנטים - מקימים observer *לפני* הלחיצה
+            // ואז ממתינים שכל ה-DOM ייגמר להתרנדר (כולל נתוני האוגמנטים)
+            const contentReady = NavigationHelpers.waitForDOMChange(null);
             openBtn.click();
-            await Utils.sleep(50); // המתנה לפתיחת החלון
+            await contentReady;
 
             let equippedAugmentName = null;
 
-            // חיפוש האייקון של "Equipped" בתוך הגריד
             const mountIcon = document.querySelector(DOM.AUGMENT_EQUIPPED_ICON);
-            
+
             if (mountIcon) {
-                // מצאנו את האייקון, עכשיו צריך למצוא את השם שנמצא באותו "תא"
-                // אנחנו עולים למעלה לאבא המשותף (התא) ואז מחפשים את השם
-                const parentCell = mountIcon.closest(DOM.AUGMENT_CELL); // שימוש ב-closest זה הכי בטוח
+                const parentCell = mountIcon.closest(DOM.AUGMENT_CELL);
                 if (parentCell) {
                     const nameEl = parentCell.querySelector(DOM.AUGMENT_NAME);
                     if (nameEl) {
@@ -41,16 +42,15 @@
                     }
                 }
             } else {
-                // אם לא מצאנו אייקון mount, אולי "Standard settings" נבחר?
-                // בדרך כלל לסטנדרט אין אייקון mount, אז נניח שזה זה.
                 equippedAugmentName = "STANDARD";
             }
 
-            // יציאה ממסך האוגמנטים (חזרה לתותח/גוף)
+            // יציאה ממסך האוגמנטים
             const backBtn = document.querySelector(DOM.BACK_BUTTON);
             if (backBtn) {
+                const contentBack = NavigationHelpers.waitForDOMChange(null);
                 backBtn.click();
-                await Utils.sleep(50); // המתנה קצרה ליציאה
+                await contentBack;
             }
 
             if (equippedAugmentName) {

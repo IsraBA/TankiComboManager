@@ -122,6 +122,42 @@
             });
         },
 
+        // המתנה לשינויי DOM שיירגעו בקונטיינר מסוים (debounce)
+        // חשוב: לקרוא לפונקציה *לפני* הפעולה שגורמת לשינוי (למשל click)
+        // כך ה-observer מוכן לתפוס את המוטציה הראשונה
+        waitForDOMChange(containerSelector, debounceMs = 70, timeout = 5000) {
+            return new Promise((resolve) => {
+                // אם ניתן selector אבל האלמנט לא נמצא, נעשה fallback ל-document.body
+                // כדי שעדיין נתפוס שינויי DOM (במקום לסיים מיד בלי המתנה)
+                const container = containerSelector
+                    ? (document.querySelector(containerSelector) || document.body)
+                    : document.body;
+
+                let debounceTimer;
+
+                const observer = new MutationObserver(() => {
+                    clearTimeout(debounceTimer);
+                    debounceTimer = setTimeout(() => {
+                        observer.disconnect();
+                        clearTimeout(timeoutId);
+                        resolve();
+                    }, debounceMs);
+                });
+
+                observer.observe(container, {
+                    childList: true,
+                    subtree: true
+                });
+
+                // timeout למקרה שלא מגיעות מוטציות כלל
+                const timeoutId = setTimeout(() => {
+                    clearTimeout(debounceTimer);
+                    observer.disconnect();
+                    resolve();
+                }, timeout);
+            });
+        },
+
         // פונקציה משותפת לניווט לכרטיסיית הקומבואים
         // מניחה שכבר יש menuContainer (כי זה נקרא אחרי שכבר לחצנו על תותחים)
         async navigateToCombosTab(menuContainer) {
