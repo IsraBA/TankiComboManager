@@ -531,3 +531,35 @@
 .cme_combo-card[draggable="true"] .cme_combo-title h1 {
     cursor: text;
 }
+
+/* === Delete Animation - Shredder Effect === */
+
+/* רעידה קצרה לפני הגריסה */
+.cme_combo-card.cme_shake {
+    animation: cme_shake 0.3s ease-in-out;
+}
+
+@keyframes cme_shake {
+    0%, 100% { transform: translateX(0); }
+    15% { transform: translateX(-4px) rotate(-1deg); }
+    30% { transform: translateX(3px) rotate(0.5deg); }
+    45% { transform: translateX(-3px) rotate(-0.5deg); }
+    60% { transform: translateX(2px) rotate(0.3deg); }
+    80% { transform: translateX(-1px); }
+}
+
+/* רצועת גריסה */
+.cme_shred-strip {
+    pointer-events: none !important;
+    will-change: transform, opacity;
+}
+
+/* קריסת העמודה אחרי הגריסה */
+.cme_flexSpaceBetweenAlignCenterColumn.cme_column-collapsing {
+    transition: width 0.3s ease-in, margin-right 0.3s ease-in, min-width 0.3s ease-in, padding 0.3s ease-in;
+    width: 0 !important;
+    min-width: 0 !important;
+    margin-right: 0 !important;
+    padding: 0 !important;
+    overflow: hidden;
+}

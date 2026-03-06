@@ -486,7 +486,7 @@
         // מחיקת קומבו
         deleteCombo(comboId, comboName) {
             const DeleteModal = window.TankiComboManager.DeleteComboModal;
-            
+
             if (!DeleteModal) {
                 console.error('[ComboManager] DeleteComboModal not loaded!');
                 return;
@@ -494,17 +494,96 @@
 
             // פתיחת המודל עם callback למחיקה
             DeleteModal.show(comboId, comboName, (confirmedComboId) => {
-                // הקוד שמבצע את המחיקה בפועל
-                chrome.storage.local.get(['savedCombos'], (result) => {
-                    let combos = result.savedCombos || [];
-                    combos = combos.filter(c => c.id !== confirmedComboId);
+                const removeFromStorage = () => {
+                    chrome.storage.local.get(['savedCombos'], (result) => {
+                        let combos = result.savedCombos || [];
+                        combos = combos.filter(c => c.id !== confirmedComboId);
 
-                    chrome.storage.local.set({ savedCombos: combos }, () => {
-                        // console.log(`[ComboManager] Combo ${confirmedComboId} deleted`);
-                        this.loadAndRenderCombos();
+                        chrome.storage.local.set({ savedCombos: combos }, () => {
+                            this.loadAndRenderCombos();
+                        });
+                    });
+                };
+
+                // מציאת הכרטיס והעמודה לאנימציה
+                const card = this.viewElement.querySelector(`.cme_combo-card[data-combo-id="${confirmedComboId}"]`);
+                const column = card ? card.closest('.cme_flexSpaceBetweenAlignCenterColumn') : null;
+
+                if (card && column) {
+                    this.playDeleteAnimation(card, column, removeFromStorage);
+                } else {
+                    removeFromStorage();
+                }
+            });
+        },
+
+        // אנימציית גריסה למחיקת קומבו
+        playDeleteAnimation(card, column, callback) {
+            const STRIP_COUNT = 7;
+
+            // שלב 1: רעידה קצרה
+            card.classList.add('cme_shake');
+
+            setTimeout(() => {
+                const cardRect = card.getBoundingClientRect();
+                const computedFontSize = getComputedStyle(card).fontSize;
+                const strips = [];
+
+                // שלב 2: יצירת רצועות גריסה
+                for (let i = 0; i < STRIP_COUNT; i++) {
+                    const stripEl = card.cloneNode(true);
+                    const topPercent = (i / STRIP_COUNT) * 100;
+                    const bottomPercent = ((STRIP_COUNT - i - 1) / STRIP_COUNT) * 100;
+
+                    stripEl.style.cssText = `
+                        position: fixed;
+                        top: ${cardRect.top}px;
+                        left: ${cardRect.left}px;
+                        width: ${cardRect.width}px;
+                        height: ${cardRect.height}px;
+                        clip-path: inset(${topPercent}% 0 ${bottomPercent}% 0);
+                        pointer-events: none;
+                        z-index: 99999;
+                        margin: 0;
+                        font-size: ${computedFontSize};
+                        will-change: transform, opacity;
+                        transition: transform 0.55s cubic-bezier(.22,.61,.36,1), opacity 0.45s ease-out;
+                        transition-delay: ${i * 0.035}s;
+                    `;
+                    stripEl.classList.add('cme_shred-strip');
+                    stripEl.classList.remove('cme_shake');
+
+                    document.body.appendChild(stripEl);
+                    strips.push(stripEl);
+                }
+
+                // הסתרת הכרטיס המקורי
+                card.style.visibility = 'hidden';
+
+                // שלב 3: הנפשת הרצועות
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        strips.forEach((strip, i) => {
+                            const direction = i % 2 === 0 ? 1 : -1;
+                            const translateX = direction * (30 + Math.random() * 70);
+                            const translateY = 15 + Math.random() * 45;
+                            const rotate = direction * (2 + Math.random() * 10);
+
+                            strip.style.transform = `translate(${translateX}px, ${translateY}px) rotate(${rotate}deg)`;
+                            strip.style.opacity = '0';
+                        });
                     });
                 });
-            });
+
+                // שלב 4: קריסת העמודה וניקוי
+                const totalAnimTime = STRIP_COUNT * 35 + 550;
+                setTimeout(() => {
+                    strips.forEach(s => s.remove());
+                    column.classList.add('cme_column-collapsing');
+
+                    setTimeout(callback, 320);
+                }, totalAnimTime);
+            }, 300); // המתנה לסיום הרעידה
         },
 
         // שינוי שם קומבו
