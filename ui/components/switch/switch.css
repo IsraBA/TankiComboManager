@@ -1,0 +1,89 @@
+/* ui/components/switch/switch.css */
+/* סטיילים לקומפוננטת toggle switch בסגנון הגדרות המשחק */
+
+.cme_switch-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    height: 2.25em;
+    margin-bottom: 1.25em;
+}
+
+/* === מסלול (track) === */
+.cme_switch-track {
+    display: flex;
+    width: 2.75em;
+    height: 1.5em;
+    border: 0.063em solid rgba(255, 255, 255, 0.2);
+    border-radius: 6.25rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    flex-shrink: 0;
+    position: relative;
+}
+
+/* מצב כבוי */
+.cme_switch-track[data-checked="false"] {
+    background-color: rgba(191, 213, 255, 0.25);
+}
+
+/* מצב דלוק */
+.cme_switch-track[data-checked="true"] {
+    background-color: rgba(118, 255, 51, 0.25);
+}
+
+/* === עיגול (thumb) === */
+.cme_switch-track::before {
+    content: "";
+    position: relative;
+    width: 1rem;
+    height: auto;
+    margin-top: 0;
+    transition: left 0.2s ease, background 0.2s ease;
+}
+
+/* עיגול כבוי - X */
+.cme_switch-track[data-checked="false"]::before {
+    background: url("https://s.eu.tankionline.com/static/images/incorrectCheck.1918884a.svg") 50% 50% / 100% 100% no-repeat;
+    left: 0.25em;
+}
+
+/* עיגול דלוק - V */
+.cme_switch-track[data-checked="true"]::before {
+    background: url("https://s.eu.tankionline.com/static/images/correct.afad1b22.svg") 50% 50% / 100% 100% no-repeat;
+    left: 1.5em;
+}
+
+/* === תווית === */
+.cme_switch-label {
+    width: max-content;
+    height: 3em;
+    margin-left: 0;
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.cme_switch-label span {
+    font-family: BaseFontRegular, FallbackFontRegular;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 1em;
+    line-height: normal;
+    margin-left: 1em;
+    margin-right: 1em;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+/* טקסט כבוי */
+.cme_switch-row[data-checked="false"] .cme_switch-label span {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* טקסט דלוק */
+.cme_switch-row[data-checked="true"] .cme_switch-label span {
+    color: rgb(255, 255, 255);
+}

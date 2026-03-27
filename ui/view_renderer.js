@@ -122,11 +122,8 @@
                 <h3><strong>${LM.getUIText('proTipLabel')}</strong> ${LM.getUIText('proTip1')}</h3>
                 <h3><strong>${LM.getUIText('proTip2Label')}</strong> ${LM.getUIText('proTip2')}</h3>
                 
-                <!-- Auto-Open Combos Checkbox -->
-                <label class="cme_auto-open-checkbox-label">
-                    <input type="checkbox" id="cme_auto-open-combos-checkbox" class="cme_auto-open-checkbox" checked>
-                    <span class="cme_auto-open-checkbox-text">${LM.getUIText('autoOpenCheckbox')}</span>
-                </label>
+                <!-- Auto-Open Combos Switch -->
+                <div id="cme_auto-open-switch-container" style="margin-top: 1em;"></div>
             </div>
         </div>
     </div>
@@ -141,6 +138,15 @@
             <div class="cme_flexStartAlignStart">
                 <h3 class="cme_hotkey">Enter</h3>
             </div>
+        </div>
+        <div id="cme_surprise-me-btn" class="cme_commonBlockButton cme_surpriseMeButton" style="cursor: pointer;">
+            <div class="cme_flexCenterAlignCenter cme_flexCenterAlignCenter_inner">
+                <div class="cme_backgroundImage"></div>
+            </div>
+            <div class="cme_flexEndAlignEnd">
+                <span class="Font-bold">${LM.getUIText('surpriseMe')}</span>
+            </div>
+            <div id="cme_randomizer-settings-gear" class="cme_randomizer-gear" title="${LM.getUIText('randomizerSettings')}"></div>
         </div>
     </div>
 </div>
@@ -251,21 +257,43 @@
                 };
             }
 
-            // טעינת מצב הצ'קבוקס של פתיחה אוטומטית
-            const autoOpenCheckbox = this.viewElement.querySelector('#cme_auto-open-combos-checkbox');
-            if (autoOpenCheckbox) {
-                // טעינת הערך מהשמירה
-                chrome.storage.local.get(['autoOpenCombosOnGarageEntry'], (result) => {
-                    // אם אין ערך, ברירת מחדל היא true (checked)
-                    const shouldAutoOpen = result.autoOpenCombosOnGarageEntry !== false;
-                    autoOpenCheckbox.checked = shouldAutoOpen;
-                });
+            // כפתור Surprise Me
+            const surpriseMeBtn = this.viewElement.querySelector('#cme_surprise-me-btn');
+            if (surpriseMeBtn) {
+                surpriseMeBtn.onclick = async () => {
+                    if (window.TankiComboManager.Randomizer) {
+                        await window.TankiComboManager.Randomizer.run();
+                    }
+                };
+            }
 
-                // שמירת הערך כשמשנים את הצ'קבוקס
-                autoOpenCheckbox.addEventListener('change', (e) => {
-                    chrome.storage.local.set({ autoOpenCombosOnGarageEntry: e.target.checked }, () => {
-                        // console.log('[ComboManager] Auto-open combos setting saved:', e.target.checked);
+            // אייקון הגדרות רנדומייזר (בתוך כפתור SURPRISE ME — צריך stopPropagation)
+            const gearIcon = this.viewElement.querySelector('#cme_randomizer-settings-gear');
+            if (gearIcon) {
+                gearIcon.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (window.TankiComboManager.RandomizerSettings) {
+                        window.TankiComboManager.RandomizerSettings.init();
+                        window.TankiComboManager.RandomizerSettings.show();
+                    }
+                });
+            }
+
+            // יצירת Switch לפתיחה אוטומטית של כרטיסיית קומבואים
+            const autoOpenContainer = this.viewElement.querySelector('#cme_auto-open-switch-container');
+            if (autoOpenContainer && window.TankiComboManager.Switch) {
+                const LM = window.TankiComboManager.LanguageManager;
+                chrome.storage.local.get(['autoOpenCombosOnGarageEntry'], (result) => {
+                    const shouldAutoOpen = result.autoOpenCombosOnGarageEntry !== false;
+                    const autoOpenSwitch = window.TankiComboManager.Switch.create({
+                        id: 'cme_auto-open-switch',
+                        label: LM ? LM.getUIText('autoOpenCheckbox') : 'Auto-open Combos tab',
+                        checked: shouldAutoOpen,
+                        onChange: (isChecked) => {
+                            chrome.storage.local.set({ autoOpenCombosOnGarageEntry: isChecked });
+                        }
                     });
+                    autoOpenContainer.appendChild(autoOpenSwitch);
                 });
             }
 

@@ -323,6 +323,66 @@
     box-shadow: rgb(255, 255, 255) 0em 0em 0em 0.125em;
 }
 
+/* --- כפתור SURPRISE ME --- */
+#cme_surprise-me-btn.cme_commonBlockButton.cme_commonBlockButton.cme_commonBlockButton {
+    height: 4em;
+}
+
+#cme_surprise-me-btn.cme_commonBlockButton.cme_commonBlockButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.75em;
+    box-sizing: border-box;
+    cursor: pointer;
+    position: relative;
+    background-color: rgb(0, 212, 255);
+    margin-top: 0.75em;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+#cme_surprise-me-btn.cme_commonBlockButton.cme_commonBlockButton:hover {
+    background-color: rgb(0, 212, 255);
+    box-shadow: rgb(255, 255, 255) 0em 0em 0em 0.125em;
+}
+
+/* אייקון קוביות בתוך כפתור SURPRISE ME */
+#cme_surprise-me-btn .cme_backgroundImage {
+    background-image: url("https://s.eu.tankionline.com/static/images/iconLobbyMenuSettings.cc00d08a.svg");
+    background-size: 60%;
+    opacity: 0.08;
+}
+
+/* אייקון הגדרות בתוך כפתור SURPRISE ME — פינה שמאלית עליונה */
+.cme_randomizer-gear {
+    position: absolute;
+    top: 0.4em;
+    left: 0.4em;
+    width: 2em;
+    height: 2em;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    background-color: rgb(0, 25, 38);
+    -webkit-mask-image: url(/play/static/images/iconLobbyMenuSettings.cc00d08a.svg);
+    mask-image: url(/play/static/images/iconLobbyMenuSettings.cc00d08a.svg);
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    z-index: 5;
+}
+
+.cme_randomizer-gear:hover {
+    background-color: rgb(255, 255, 255);
+}
+
+.cme_randomizer-gear:hover {
+    opacity: 1;
+}
+
 .cme_flexCenterAlignCenter {
     display: flex;
     align-items: center;
