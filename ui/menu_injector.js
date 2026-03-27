@@ -119,7 +119,7 @@
                 backButton.addEventListener('click', hideComboView);
             }
 
-            // לחיצה על ESC - אותה התנהגות כמו כפתור חזרה
+            // לחיצה על ESC או Z - אותה התנהגות כמו כפתור חזרה
             const escapeKeyHandler = (e) => {
                 // רק אם לא לוחצים על input, textarea, או אלמנט contenteditable
                 if (e.target.tagName === 'INPUT' ||
@@ -129,7 +129,8 @@
                 }
 
                 const keyCode = e.code || e.keyCode;
-                if (keyCode === 'Escape' || keyCode === 27) {
+                if (keyCode === 'Escape' || keyCode === 27 ||
+                    keyCode === 'KeyZ' || keyCode === 90) {
                     hideComboView();
                 }
             };
