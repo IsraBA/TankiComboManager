@@ -1,0 +1,6951 @@
+@font-face {
+    font-family: BaseFontRegular;
+    src: url("https://s.eu.tankionline.com/static/fonts/Rubik-Regular.7e001ec0.woff") format("woff2"), url("https://s.eu.tankionline.com/static/fonts/Rubik-Regular.7e001ec0.woff") format("woff");
+}
+
+@font-face {
+    font-family: BaseFontBold;
+    src: url("https://s.eu.tankionline.com/static/fonts/Rubik-Bold.26ae1fce.woff") format("woff2"), url("https://s.eu.tankionline.com/static/fonts/Rubik-Bold.26ae1fce.woff") format("woff");
+}
+
+@font-face {
+    font-family: BaseFontMedium;
+    src: url("https://s.eu.tankionline.com/static/fonts/Rubik-Medium.fc871fe9.woff") format("woff2"), url("https://s.eu.tankionline.com/static/fonts/Rubik-Medium.fc871fe9.woff") format("woff");
+}
+
+@font-face {
+    font-family: FallbackFontRegular;
+    src: url("https://s.eu.tankionline.com/static/fonts/MPLUS1p-Regular.d7322c05.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: FallbackFontBold;
+    src: url("https://s.eu.tankionline.com/static/fonts/MPLUS1p-Bold.be4e37ac.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: FallbackFontMedium;
+    src: url("https://s.eu.tankionline.com/static/fonts/MPLUS1p-Medium.2d50fad9.ttf") format("truetype");
+}
+
+html,
+body {
+    text-size-adjust: 100%;
+    font-family: BaseFontMedium, FallbackFontMedium;
+    background-color: black;
+    width: 100%;
+    height: 100%;
+    margin: 0px;
+    overflow: hidden;
+    touch-action: none;
+    position: fixed;
+}
+
+.logo {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 128px;
+    height: 124px;
+}
+
+.preloader {
+    user-select: none;
+    background: radial-gradient(50% 100% at 50% 100%, rgb(57, 86, 115) 0%, rgb(0, 25, 38) 100%);
+    height: 100%;
+    width: 100%;
+}
+
+.progress {
+    position: absolute;
+    bottom: 40px;
+    height: 32px;
+    width: 320px;
+    transform: translateX(-50%);
+    left: 50%;
+
+    @media screen and (max-width: 640px),
+    (max-height: 480px) {
+        bottom: 20px;
+    }
+}
+
+.loading-text {
+    position: absolute;
+    bottom: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    font-family: BaseFontMedium, FallbackFontMedium;
+    font-style: normal;
+    line-height: 30px;
+    text-transform: uppercase;
+
+    @media screen and (max-width: 640px),
+    (max-height: 480px) {
+        bottom: 40px;
+    }
+}
+
+#modal-root {
+    pointer-events: none;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0px;
+    bottom: 0px;
+}
+
+img {
+    pointer-events: none;
+}
+
+#modal-root>div {
+    pointer-events: auto;
+}
+
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+
+:root {
+    --sar: env(safe-area-inset-right);
+    --sal: env(safe-area-inset-left);
+}
+
+.bgClipText {
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+}
+
+
+
+.tt-help-container {
+    align-items: center !important;
+    background-color: rgba(0, 0, 0, 0.5) !important;
+    display: flex !important;
+    height: 100% !important;
+    justify-content: center !important;
+    position: absolute !important;
+    width: 100% !important;
+    z-index: 61 !important;
+}
+
+.tt-help-container * {
+    box-sizing: border-box !important;
+}
+
+.tt-help-container>.tt-popup {
+    background-color: rgb(44, 47, 51) !important;
+    border-radius: 1em !important;
+    color: rgb(255, 255, 255) !important;
+    height: max-content !important;
+    overflow: hidden !important;
+    width: 35em !important;
+}
+
+:is(.tt-help-container > .tt-popup)>* {
+    height: max-content !important;
+    width: 100% !important;
+}
+
+:is(.tt-help-container > .tt-popup)>.tt-header {
+    align-items: center !important;
+    display: flex !important;
+    height: 7.75em !important;
+    justify-content: center !important;
+    position: relative !important;
+}
+
+:is(:is(.tt-help-container > .tt-popup) > .tt-header)>.tt-close-button {
+    align-items: center !important;
+    background-color: rgb(35, 39, 42) !important;
+    border-radius: 0px 0px 0px 0.15em !important;
+    color: rgb(237, 66, 69) !important;
+    display: flex !important;
+    font-size: 2.5em !important;
+    height: 1.5em !important;
+    justify-content: center !important;
+    position: absolute !important;
+    right: 0px !important;
+    top: 0px !important;
+    width: 1.5em !important;
+}
+
+:is(:is(:is(.tt-help-container > .tt-popup) > .tt-header) > .tt-close-button):hover {
+    color: red !important;
+    cursor: pointer !important;
+}
+
+:is(:is(.tt-help-container > .tt-popup) > .tt-header)>.tt-logo-container {
+    align-items: end !important;
+    background-color: rgb(35, 39, 42) !important;
+    border-radius: 0px 0px 1em 1em !important;
+    display: flex !important;
+    height: 100% !important;
+    justify-content: center !important;
+    padding: 0px 2.5em 1em !important;
+}
+
+:is(:is(:is(.tt-help-container > .tt-popup) > .tt-header) > .tt-logo-container)>.tt-logo-with-copyright {
+    align-items: center !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    width: max-content !important;
+}
+
+:is(:is(:is(:is(.tt-help-container > .tt-popup) > .tt-header) > .tt-logo-container) > .tt-logo-with-copyright)>.tt-logo {
+    width: 14em !important;
+}
+
+:is(:is(:is(:is(.tt-help-container > .tt-popup) > .tt-header) > .tt-logo-container) > .tt-logo-with-copyright)>.tt-copyright {
+    align-self: end !important;
+    bottom: 0.5em !important;
+    color: rgb(118, 255, 51) !important;
+    font-size: 1.2em !important;
+    position: relative !important;
+    right: 1.5em !important;
+}
+
+:is(.tt-help-container > .tt-popup)>.tt-content {
+    font-size: 1.2em !important;
+    padding: 0px 1em !important;
+    text-align: center !important;
+}
+
+:is(:is(.tt-help-container > .tt-popup) > .tt-content)>h2 {
+    font-size: 1.2em !important;
+}
+
+:is(.tt-help-container > .tt-popup)>.tt-footer {
+    background-color: rgb(35, 39, 42) !important;
+    font-size: 1.2em !important;
+    padding: 1em !important;
+    text-align: center !important;
+}
+
+:is(:is(.tt-help-container > .tt-popup) > .tt-footer)>.tt-sm-buttons {
+    display: flex !important;
+    margin-top: 1em !important;
+}
+
+:is(:is(:is(.tt-help-container > .tt-popup) > .tt-footer) > .tt-sm-buttons)>* {
+    border-radius: 0.5em !important;
+    flex: 1 1 0% !important;
+    padding: 0.8em 0px !important;
+}
+
+:is(:is(:is(.tt-help-container > .tt-popup) > .tt-footer) > .tt-sm-buttons)>.tt-discord-button {
+    background-color: rgb(89, 102, 243) !important;
+    margin-right: 0.5em !important;
+}
+
+:is(:is(:is(:is(.tt-help-container > .tt-popup) > .tt-footer) > .tt-sm-buttons) > .tt-discord-button):hover {
+    background-color: rgb(113, 124, 244) !important;
+    cursor: pointer !important;
+}
+
+:is(:is(:is(.tt-help-container > .tt-popup) > .tt-footer) > .tt-sm-buttons)>.tt-telegram-button {
+    background-color: rgb(38, 161, 223) !important;
+}
+
+:is(:is(:is(:is(.tt-help-container > .tt-popup) > .tt-footer) > .tt-sm-buttons) > .tt-telegram-button):hover {
+    background-color: rgb(60, 170, 226) !important;
+    cursor: pointer !important;
+}
+
+:is(:is(.tt-help-container > .tt-popup) > .tt-footer)>.tt-boosty-button {
+    background-color: rgb(242, 97, 44) !important;
+    border-radius: 0.5em !important;
+    margin-top: 1em !important;
+    padding: 0.8em 0px !important;
+}
+
+:is(:is(:is(.tt-help-container > .tt-popup) > .tt-footer) > .tt-boosty-button):hover {
+    background-color: rgb(243, 115, 68) !important;
+    cursor: pointer !important;
+}
+
+.MatchmakingWaitComponentStyle-container {
+    background-position: unset !important;
+    background-size: unset !important;
+    background-repeat: unset !important;
+    background-attachment: unset !important;
+    background-origin: unset !important;
+    background-clip: unset !important;
+    background-color: unset !important;
+    background-image: linear-gradient(90deg, rgb(9, 34, 53), rgb(6, 23, 35)) !important;
+    border-bottom: 0.063em solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 0px 0px 1em 1em !important;
+    box-shadow: rgb(118, 255, 51) 0.3em 0px inset, rgb(118, 255, 51) -0.3em 0px inset !important;
+    height: 7em !important;
+    overflow: hidden !important;
+    right: calc(50% - 15.5em) !important;
+    top: 0px !important;
+    width: 31em !important;
+}
+
+.MatchmakingWaitComponentStyle-container>* {
+    height: 100% !important;
+    margin-top: 0px !important;
+}
+
+:is(.MatchmakingWaitComponentStyle-container > *)>* {
+    margin-top: 0px !important;
+}
+
+.MatchmakingWaitComponentStyle-container> :first-child {
+    background-position: 100% center !important;
+    border-radius: 0px 0px 1em !important;
+    right: 0.3em !important;
+    top: 0px !important;
+}
+
+.MatchmakingWaitComponentStyle-container>.MatchmakingWaitComponentStyle-contentContainer {
+    box-sizing: border-box !important;
+    flex: 1 1 0% !important;
+    margin-left: 2.3em !important;
+    padding-top: 0.5em !important;
+}
+
+:is(.MatchmakingWaitComponentStyle-container > .MatchmakingWaitComponentStyle-contentContainer)>.MatchmakingWaitComponentStyle-currentTimeContainer {
+    margin-bottom: 0.8em !important;
+    margin-left: 0.6875em !important;
+}
+
+.MatchmakingWaitComponentStyle-container>.MatchmakingWaitComponentStyle-cancelButton {
+    width: 7.3em !important;
+}
+
+:is(.MatchmakingWaitComponentStyle-container > .MatchmakingWaitComponentStyle-cancelButton)>span {
+    margin-right: 0.3em !important;
+}
+
+.tt-container-counters-container {
+    --tt-rare-color: #00d4ff;
+    --tt-epic-color: #884dff;
+    --tt-legendary-color: #e6b800;
+    --tt-exotic-color: #e60000;
+    align-items: center !important;
+    backdrop-filter: blur(3.125em) !important;
+    background-color: rgba(191, 213, 255, 0.15) !important;
+    border-radius: 0.5em !important;
+    box-shadow: rgba(191, 213, 255, 0.25) 0px 0px 0px 1px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    font-family: BaseFontMedium, FallbackFontMedium !important;
+    height: 16.785em !important;
+    justify-content: center !important;
+    margin-top: 1.75em !important;
+    width: 22.5em !important;
+}
+
+.tt-container-counters-container .tt-rare {
+    color: var(--tt-rare-color) !important;
+}
+
+.tt-container-counters-container .tt-epic {
+    color: var(--tt-epic-color) !important;
+}
+
+.tt-container-counters-container .tt-legendary {
+    color: var(--tt-legendary-color) !important;
+}
+
+.tt-container-counters-container .tt-exotic {
+    color: var(--tt-exotic-color) !important;
+}
+
+.tt-container-counters-container .tt-rare-circle {
+    background-color: var(--tt-rare-color) !important;
+}
+
+.tt-container-counters-container .tt-epic-circle,
+.tt-container-counters-container .tt-rare-circle {
+    clip-path: circle() !important;
+    display: inline-block !important;
+    height: 0.9rem !important;
+    width: 0.9rem !important;
+}
+
+.tt-container-counters-container .tt-epic-circle {
+    background-color: var(--tt-epic-color) !important;
+}
+
+.tt-container-counters-container .tt-legendary-circle {
+    background-color: var(--tt-legendary-color) !important;
+    clip-path: circle() !important;
+    display: inline-block !important;
+    height: 0.9rem !important;
+    width: 0.9rem !important;
+}
+
+.tt-container-counters-container .tt-exotic-circle {
+    background-color: var(--tt-exotic-color) !important;
+    clip-path: circle() !important;
+    display: inline-block !important;
+    height: 0.9rem !important;
+    width: 0.9rem !important;
+}
+
+.tt-container-counters-container .tt-dot {
+    background-image: url("chrome-extension://khcoecipddmigggaeokhmhmhjhlpcpnb/assets/3be2d3da7cbfea4e8fbc.svg") !important;
+    background-repeat: no-repeat !important;
+    background-size: contain !important;
+    display: inline-block !important;
+    height: 0.9em !important;
+    scale: 1.33 !important;
+    width: 0.9em !important;
+}
+
+.tt-container-counters-header {
+    height: 6.785em !important;
+    position: relative !important;
+    width: 100% !important;
+}
+
+.tt-container-counters-header,
+.tt-container-counters-header>.tt-title-container {
+    align-items: center !important;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: start !important;
+}
+
+.tt-container-counters-header>.tt-title-container {
+    height: 4em !important;
+    margin-left: 1.5em !important;
+    width: max-content !important;
+}
+
+:is(.tt-container-counters-header > .tt-title-container)>.tt-icon {
+    background-image: url("chrome-extension://khcoecipddmigggaeokhmhmhjhlpcpnb/assets/55b1108b2d7ab82f9e69.svg") !important;
+    background-repeat: no-repeat !important;
+    background-size: contain !important;
+    height: 4em !important;
+    margin-right: 1.75em !important;
+    width: 4em !important;
+}
+
+:is(.tt-container-counters-header > .tt-title-container)>.tt-help-icon {
+    background-image: url("chrome-extension://khcoecipddmigggaeokhmhmhjhlpcpnb/assets/9c7b97f64b309c1e6520.svg") !important;
+    background-repeat: no-repeat !important;
+    background-size: contain !important;
+    height: 4em !important;
+    margin-right: 1em !important;
+    width: 4em !important;
+}
+
+:is(.tt-container-counters-header > .tt-title-container)>.tt-help-common-icon {
+    background-image: url("chrome-extension://khcoecipddmigggaeokhmhmhjhlpcpnb/assets/eb724d9b8c464cc67e43.png") !important;
+    background-position: left -0.4em top -0.5em !important;
+    background-repeat: no-repeat !important;
+    background-size: 4.5em !important;
+    height: 4em !important;
+    margin-right: 1em !important;
+    width: 4em !important;
+}
+
+:is(.tt-container-counters-header > .tt-title-container)>.tt-help-epic-icon {
+    background-image: url("chrome-extension://khcoecipddmigggaeokhmhmhjhlpcpnb/assets/211a44cb7fb907d8a2ec.png") !important;
+    background-position: left -0.4em top -0.5em !important;
+    background-repeat: no-repeat !important;
+    background-size: 4.5em !important;
+    height: 4em !important;
+    margin-right: 1em !important;
+    width: 4em !important;
+}
+
+:is(.tt-container-counters-header > .tt-title-container)>.tt-title {
+    color: rgb(255, 255, 255) !important;
+    font-size: 1.05em !important;
+    line-height: 1.6em !important;
+    text-transform: uppercase !important;
+}
+
+.tt-container-counters-header>.tt-buttons {
+    place-items: center !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    grid-template-rows: 1fr 1fr !important;
+    height: 4.5em !important;
+    position: absolute !important;
+    right: 0.8em !important;
+    top: 0.8em !important;
+    width: 4.5em !important;
+}
+
+:is(.tt-container-counters-header > .tt-buttons)>* {
+    background-color: rgba(230, 237, 255, 0.9) !important;
+    height: 1.9em !important;
+    mask-repeat: no-repeat !important;
+    mask-size: contain !important;
+    width: 1.9em !important;
+}
+
+:is(:is(.tt-container-counters-header > .tt-buttons) > *):hover {
+    background-color: rgb(230, 237, 255) !important;
+    cursor: pointer !important;
+}
+
+:is(.tt-container-counters-header > .tt-buttons)>.tt-help-button {
+    place-self: start end !important;
+    grid-area: 1 / 2 !important;
+    mask-image: url("chrome-extension://khcoecipddmigggaeokhmhmhjhlpcpnb/assets/f281b965bff0b110a399.svg") !important;
+}
+
+:is(.tt-container-counters-header > .tt-buttons)>.tt-home-button {
+    place-self: start end !important;
+    grid-area: 1 / 2 !important;
+    mask-image: url("chrome-extension://khcoecipddmigggaeokhmhmhjhlpcpnb/assets/726e60c47e72d44bb855.svg") !important;
+}
+
+:is(.tt-container-counters-header > .tt-buttons)>.tt-back-button {
+    place-self: end start !important;
+    grid-area: 2 / 1 !important;
+    mask-image: url("chrome-extension://khcoecipddmigggaeokhmhmhjhlpcpnb/assets/31a5d6aa913c014b8ba8.svg") !important;
+}
+
+:is(.tt-container-counters-header > .tt-buttons)>.tt-forward-button {
+    place-self: end !important;
+    grid-area: 2 / 2 !important;
+    mask-image: url("chrome-extension://khcoecipddmigggaeokhmhmhjhlpcpnb/assets/505bfcb98fbb9f276d3c.svg") !important;
+}
+
+.tt-container-counters-body {
+    align-items: center !important;
+    display: flex !important;
+    flex-direction: column !important;
+    height: 10em !important;
+    justify-content: center !important;
+    width: 100% !important;
+}
+
+.tt-container-counters-body>.tt-help-content {
+    box-sizing: border-box !important;
+    color: rgba(255, 255, 255, 0.8) !important;
+    font-size: 0.9em !important;
+    height: 100% !important;
+    padding: 0.5em 1.75em 0px !important;
+    width: 100% !important;
+}
+
+:is(.tt-container-counters-body > .tt-help-content)>div {
+    float: left !important;
+    margin-bottom: 2em !important;
+    margin-right: 1em !important;
+}
+
+:is(.tt-container-counters-body > .tt-help-content)>p {
+    color: inherit !important;
+    margin-top: 0px !important;
+    text-wrap: nowrap !important;
+}
+
+.tt-container-counters-table {
+    border-collapse: separate !important;
+    border-spacing: 0px 1em !important;
+    padding-right: 0.75em !important;
+    table-layout: fixed !important;
+    width: 100% !important;
+}
+
+.tt-container-counters-table td {
+    border-radius: 0.2em !important;
+    overflow: hidden !important;
+    padding: 0px !important;
+}
+
+:is(.tt-container-counters-table td):not(:first-child) {
+    text-align: center !important;
+}
+
+.tt-count:is(.tt-container-counters-table td) {
+    caret-color: transparent !important;
+    color: rgba(255, 255, 255, 0.8) !important;
+    font-size: 1.2em !important;
+    text-align: right !important;
+}
+
+.tt-guarantee:is(.tt-container-counters-table td) {
+    font-size: 0.9em !important;
+    position: relative !important;
+    text-align: left !important;
+    top: 0.125em !important;
+}
+
+:is(.tt-container-counters-table td):focus {
+    background-color: rgba(230, 237, 255, 0.1) !important;
+    color: rgb(255, 255, 255) !important;
+    outline: none !important;
+}
+
+.tt-container-counters-table>tbody>tr {
+    height: 3em !important;
+}
+
+.tt-container-counters-table tr:first-child>td:first-child {
+    background-image: url("chrome-extension://khcoecipddmigggaeokhmhmhjhlpcpnb/assets/eb724d9b8c464cc67e43.png") !important;
+}
+
+.tt-container-counters-table tr:last-child>td:first-child {
+    background-image: url("chrome-extension://khcoecipddmigggaeokhmhmhjhlpcpnb/assets/211a44cb7fb907d8a2ec.png") !important;
+}
+
+.tt-container-counters-table td:first-child {
+    background-position: 50% center !important;
+    background-repeat: no-repeat !important;
+    background-size: 3.25em !important;
+}
+
+.MainScreenComponentStyle-blockMainMenu>ul> :nth-child(2)>.PrimaryMenuItemComponentStyle-notificationIconNewNews {
+    height: 1.875em !important;
+    margin-right: 0.625em !important;
+    pointer-events: unset !important;
+    position: absolute !important;
+    right: 0px !important;
+    transition: scale 0.1s ease-in-out, opacity 0.1s ease-in-out !important;
+    width: 1.875em !important;
+    -webkit-user-drag: none !important;
+}
+
+.tt-grayed-out:is(.MainScreenComponentStyle-blockMainMenu > ul > :nth-child(2) > .PrimaryMenuItemComponentStyle-notificationIconNewNews) {
+    filter: grayscale(100%) !important;
+    opacity: 0.8 !important;
+}
+
+:is(.MainScreenComponentStyle-blockMainMenu > ul > :nth-child(2) > .PrimaryMenuItemComponentStyle-notificationIconNewNews):hover {
+    opacity: 1 !important;
+    scale: 1.2 !important;
+}
+
+.tt-garage-paints-button {
+    border-radius: 0.5em !important;
+    box-shadow: rgba(255, 255, 255, 0.25) 0px 0px 0px 1px !important;
+    height: 4.5em !important;
+    left: -4.75em !important;
+    position: absolute !important;
+    top: 0.125em !important;
+    width: 4.5em !important;
+}
+
+.tt-garage-paints-button:hover {
+    background-color: rgba(255, 255, 255, 0.15) !important;
+    cursor: pointer !important;
+}
+
+.tt-garage-paints-button:hover> :first-child {
+    background-color: rgb(255, 255, 255) !important;
+}
+
+.tt-garage-paints-button> :first-child {
+    background-color: rgb(191, 213, 255) !important;
+    height: 4.5em !important;
+    mask-image: url("chrome-extension://khcoecipddmigggaeokhmhmhjhlpcpnb/assets/2603e3e030594fc064dc.svg") !important;
+    mask-size: contain !important;
+    width: 4.5em !important;
+}
+
+.tt-garage-item-favorite-button {
+    background-image: url("chrome-extension://khcoecipddmigggaeokhmhmhjhlpcpnb/assets/0e39d67ada76a9a1cbfe.svg") !important;
+    background-size: contain !important;
+    cursor: pointer !important;
+    height: 2em !important;
+    position: absolute !important;
+    right: 0px !important;
+    top: 0px !important;
+    width: 2em !important;
+    z-index: 10 !important;
+}
+
+.tt-garage-item-favorite-button.tt-favorite {
+    background-image: url("chrome-extension://khcoecipddmigggaeokhmhmhjhlpcpnb/assets/1ce58570be0f803f1f96.svg") !important;
+}
+
+.ListItemsComponentStyle-itemsContainer {
+    padding-right: 3em !important;
+}
+
+.ListItemsComponentStyle-itemsContainer> :last-child:has(.garage-item) {
+    margin-right: 0.625em !important;
+}
+
+.tt-garage-augments-shortcuts-panel {
+    align-items: center !important;
+    background-color: rgba(191, 213, 255, 0.05) !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.25) !important;
+    box-sizing: border-box !important;
+    display: none !important;
+    flex-direction: column !important;
+    height: 100% !important;
+    justify-content: start !important;
+    overflow: scroll !important;
+    padding-bottom: 2em !important;
+    padding-top: 2em !important;
+    scrollbar-width: none !important;
+    width: 9em !important;
+}
+
+.tt-garage-augments-shortcuts-panel>.tt-button {
+    align-items: center !important;
+    cursor: pointer !important;
+    display: flex !important;
+    flex: 0 0 auto !important;
+    height: 6em !important;
+    justify-content: center !important;
+    margin-bottom: 0.5em !important;
+    width: 100% !important;
+}
+
+:is(.tt-garage-augments-shortcuts-panel > .tt-button)>img {
+    width: 4em !important;
+}
+
+:is(.tt-garage-augments-shortcuts-panel > .tt-button):hover {
+    background-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+.tt-garage-augments-shortcuts-panel>.tt-tooltip {
+    background-color: rgb(3, 41, 48) !important;
+    border-radius: 0.4em !important;
+    box-shadow: rgba(0, 0, 0, 0.5) 0px 0px 0.2em !important;
+    color: rgb(255, 255, 255) !important;
+    padding: 0.3em 0.7em !important;
+    text-transform: uppercase !important;
+    transform: translate(4.5em, -50%) !important;
+    z-index: 4 !important;
+}
+
+:is(.tt-garage-augments-shortcuts-panel > .tt-tooltip)::before {
+    border-width: 0.6em !important;
+    border-style: solid !important;
+    border-color: transparent rgb(3, 41, 48) transparent transparent !important;
+    border-image: initial !important;
+    content: "" !important;
+    height: 0px !important;
+    left: 0px !important;
+    position: absolute !important;
+    top: 50% !important;
+    transform: translateX(calc(-100% + 2px)) translateY(-50%) !important;
+    width: 0px !important;
+}
+
+.GarageCommonStyle-positionContentAlteration {
+    overflow-y: hidden !important;
+}
+
+.SkinCellStyle-nameDevices {
+    top: 0.4em !important;
+}
+
+.garage-item>.ItemNotificationMarkerStyle-base {
+    left: 0.4em !important;
+    top: 0.4em !important;
+}
+
+.GarageItemComponentStyle-descriptionDevice {
+    padding-left: 1.25em !important;
+    width: 9em !important;
+}
+
+.BattleTabStatisticComponentStyle-container> :first-child {
+    max-height: unset !important;
+}
+
+.BattleTabStatisticComponentStyle-commonContainerIconOptions {
+    right: 1em !important;
+}
+
+.BattleTabStatisticComponentStyle-commonBlockScroll {
+    margin: 3em 0px 0px !important;
+    max-height: 42em !important;
+    padding: 0px 0px 0.3em !important;
+}
+
+.BattleTabStatisticComponentStyle-containerInsideResults {
+    width: 56.75em !important;
+}
+
+.BattleTabStatisticComponentStyle-containerInsideResults>.BattleTabStatisticComponentStyle-commonBlockScroll {
+    width: calc(100% - 0.9em) !important;
+}
+
+.BattleTabStatisticComponentStyle-container table {
+    border-spacing: 0px !important;
+    margin: 0px !important;
+    padding-bottom: 0px !important;
+}
+
+:is(.BattleTabStatisticComponentStyle-container table) td,
+:is(.BattleTabStatisticComponentStyle-container table) th {
+    box-sizing: border-box !important;
+    flex-shrink: 0 !important;
+    margin: 0px !important;
+    max-width: unset !important;
+    min-width: unset !important;
+}
+
+:is(.BattleTabStatisticComponentStyle-container table)>thead {
+    top: 3.5em !important;
+}
+
+:is(:is(.BattleTabStatisticComponentStyle-container table) > thead > tr)>* {
+    width: 10% !important;
+}
+
+:is(:is(.BattleTabStatisticComponentStyle-container table) > thead > tr)> :first-child {
+    width: 35% !important;
+}
+
+:is(:is(.BattleTabStatisticComponentStyle-container table) > thead > tr)> :nth-child(3) {
+    align-items: center !important;
+    display: flex !important;
+    justify-content: center !important;
+    width: 15% !important;
+}
+
+:is(:is(:is(.BattleTabStatisticComponentStyle-container table) > thead > tr) > :nth-child(3))> :first-child {
+    height: 1em !important;
+    width: 1.5em !important;
+}
+
+:is(.BattleTabStatisticComponentStyle-container table)>tbody>tr {
+    margin-top: 0.3em !important;
+}
+
+:is(:is(.BattleTabStatisticComponentStyle-container table) > tbody > tr)>* {
+    visibility: visible !important;
+    width: 10% !important;
+}
+
+:is(:is(.BattleTabStatisticComponentStyle-container table) > tbody > tr)> :first-child {
+    order: -2 !important;
+    width: 35% !important;
+}
+
+:is(:is(.BattleTabStatisticComponentStyle-container table) > tbody > tr)> :nth-child(2) {
+    order: 0 !important;
+    width: 15% !important;
+}
+
+:is(:is(.BattleTabStatisticComponentStyle-container table) > tbody > tr)> :nth-child(3) {
+    order: -1 !important;
+}
+
+.BattleTabStatisticComponentStyle-container table>tbody>tr {
+    cursor: unset !important;
+}
+
+:is(.BattleTabStatisticComponentStyle-container table > tbody > tr)> :nth-child(2) {
+    height: max-content !important;
+    justify-content: space-evenly !important;
+}
+
+:is(:is(.BattleTabStatisticComponentStyle-container table > tbody > tr) > :nth-child(2))>.tt-compact-cell {
+    place-items: center !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    justify-content: space-evenly !important;
+    padding: 0px 0.3em !important;
+    width: 100% !important;
+}
+
+:is(:is(.BattleTabStatisticComponentStyle-container table > tbody > tr) > :nth-child(2)) .BattleTabStatisticComponentStyle-defenceLabel {
+    place-items: center !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    height: 1.5em !important;
+    justify-content: space-evenly !important;
+    margin: 0px !important;
+    padding: 0px !important;
+    width: 2.5em !important;
+}
+
+:is(:is(:is(.BattleTabStatisticComponentStyle-container table > tbody > tr) > :nth-child(2)) .BattleTabStatisticComponentStyle-defenceLabel):not(:has(> div + h3)) {
+    grid-template-columns: 1fr !important;
+}
+
+:is(:is(:is(.BattleTabStatisticComponentStyle-container table > tbody > tr) > :nth-child(2)) .BattleTabStatisticComponentStyle-defenceLabel)>* {
+    margin: 0px !important;
+    padding: 0px !important;
+}
+
+:is(:is(:is(:is(.BattleTabStatisticComponentStyle-container table > tbody > tr) > :nth-child(2)) .BattleTabStatisticComponentStyle-defenceLabel) > *):nth-child(2) {
+    justify-self: start !important;
+}
+
+:is(:is(:is(.BattleTabStatisticComponentStyle-container table > tbody > tr) > :nth-child(2)) .BattleTabStatisticComponentStyle-defenceLabel):has(> div + h3) {
+    --tt-default-color: #fff;
+    --tt-highlight-color: #fe6666;
+    --tt-gray-out-color: #fff;
+    --tt-current-color: var(--tt-default-color);
+}
+
+.tt-protecting:is(:is(:is(.BattleTabStatisticComponentStyle-container table > tbody > tr) > :nth-child(2)) .BattleTabStatisticComponentStyle-defenceLabel):has(> div + h3) {
+    --tt-default-color: #fe6666;
+}
+
+.tt-spectrum:is(:is(:is(.BattleTabStatisticComponentStyle-container table > tbody > tr) > :nth-child(2)) .BattleTabStatisticComponentStyle-defenceLabel):has(> div + h3) {
+    --tt-default-color: #32dac0;
+}
+
+.tt-highlighted:is(:is(:is(.BattleTabStatisticComponentStyle-container table > tbody > tr) > :nth-child(2)) .BattleTabStatisticComponentStyle-defenceLabel):has(> div + h3) {
+    --tt-current-color: var(--tt-highlight-color);
+}
+
+.tt-grayed-out:is(:is(:is(.BattleTabStatisticComponentStyle-container table > tbody > tr) > :nth-child(2)) .BattleTabStatisticComponentStyle-defenceLabel):has(> div + h3) {
+    --tt-current-color: var(--tt-gray-out-color);
+}
+
+.tt-marked:is(:is(:is(.BattleTabStatisticComponentStyle-container table > tbody > tr) > :nth-child(2)) .BattleTabStatisticComponentStyle-defenceLabel):has(> div + h3)> :first-child {
+    background-color: var(--tt-current-color) !important;
+}
+
+.tt-marked:is(:is(:is(.BattleTabStatisticComponentStyle-container table > tbody > tr) > :nth-child(2)) .BattleTabStatisticComponentStyle-defenceLabel):has(> div + h3)> :nth-child(2) {
+    color: var(--tt-current-color) !important;
+}
+
+:is(:is(.BattleTabStatisticComponentStyle-container table > tbody > tr) > :nth-child(2))>.tt-protecting,
+:is(:is(.BattleTabStatisticComponentStyle-container table > tbody > tr) > :nth-child(2))>.tt-spectrum {
+    order: -1 !important;
+}
+
+:is(:is(.BattleTabStatisticComponentStyle-container table > tbody > tr) > :nth-child(2))> :not(.tt-compact-cell) {
+    display: none !important;
+}
+
+:is(:is(.BattleTabStatisticComponentStyle-container table > tbody > tr) > :nth-child(2)):is(:hover, .tt-expanded) {
+    cursor: pointer !important;
+    width: 35% !important;
+}
+
+:is(:is(.BattleTabStatisticComponentStyle-container table > tbody > tr) > :nth-child(2)):is(:hover, .tt-expanded)>.tt-compact-cell {
+    display: none !important;
+}
+
+:is(:is(.BattleTabStatisticComponentStyle-container table > tbody > tr) > :nth-child(2)):is(:hover, .tt-expanded)> :not(.tt-compact-cell) {
+    display: grid !important;
+}
+
+:is(.BattleTabStatisticComponentStyle-container table > tbody > tr):has(> :nth-child(2):is(:hover, .tt-expanded))> :nth-child(4),
+:is(.BattleTabStatisticComponentStyle-container table > tbody > tr):has(> :nth-child(2):is(:hover, .tt-expanded))> :nth-child(5) {
+    display: none;
+}
+
+:is(:is(.BattleTabStatisticComponentStyle-container table > tbody > tr) > :is(:nth-child(4), :nth-child(5)) > :first-child)> :hover {
+    cursor: pointer !important;
+}
+
+:is(:is(.BattleTabStatisticComponentStyle-container table > tbody > tr) > :is(:nth-child(4), :nth-child(5)) > :first-child)>.tt-tooltip {
+    backdrop-filter: blur(0.313em) !important;
+    background-color: rgba(0, 25, 38, 0.9) !important;
+    border: 0.063em solid rgba(191, 213, 255, 0.25) !important;
+    border-radius: 0.25em !important;
+    color: rgb(255, 255, 255) !important;
+    font-size: 1em !important;
+    padding: 1em !important;
+    text-wrap: nowrap !important;
+    transform: translate(0.5em, 0.5em) !important;
+    z-index: 4 !important;
+}
+
+.BattleTabStatisticComponentStyle-commonBlockScroll+.-flexCenterAlignCenter {
+    height: max-content !important;
+    margin: 1em 0px 0px !important;
+    min-height: 2.7em !important;
+    padding: 0px !important;
+}
+
+:is(.BattleTabStatisticComponentStyle-commonBlockScroll + .-flexCenterAlignCenter)>* {
+    height: 1em !important;
+    margin: 0px !important;
+    padding: 0.5em 0.3em 1.2em !important;
+}
+
+:is(:is(.BattleTabStatisticComponentStyle-commonBlockScroll + .-flexCenterAlignCenter) > *)>* {
+    bottom: 0px !important;
+    position: relative !important;
+    transition: bottom 0.1s ease-in-out !important;
+}
+
+.tt-hovered:is(:is(.BattleTabStatisticComponentStyle-commonBlockScroll + .-flexCenterAlignCenter) > *) {
+    cursor: pointer !important;
+}
+
+.tt-hovered:is(:is(.BattleTabStatisticComponentStyle-commonBlockScroll + .-flexCenterAlignCenter) > *)>* {
+    bottom: 0.5em !important;
+}
+
+.BattleTabStatisticComponentStyle-container {
+    --tt-border-width: 0.2em;
+    --tt-border-radius: 1em;
+    --tt-border-radius-inner: calc(var(--tt-border-radius) - var(--tt-border-width));
+    --tt-gradient-angle: 120deg;
+    --tt-blue-team-color: #00d4ff;
+    --tt-red-team-color: #f66;
+}
+
+.BattleTabStatisticComponentStyle-header {
+    justify-content: center !important;
+}
+
+.BattleTabStatisticComponentStyle-header>.BattleTabStatisticComponentStyle-commonBlockCustomName {
+    width: unset !important;
+}
+
+.BattleTabStatisticComponentStyle-header>.BattleTabStatisticComponentStyle-commonBlockMapName {
+    position: absolute !important;
+}
+
+.BattleTabStatisticComponentStyle-container> :first-child {
+    background-color: transparent !important;
+    border-radius: var(--tt-border-radius-inner) !important;
+}
+
+:is(.BattleTabStatisticComponentStyle-container > :first-child)>* {
+    z-index: 3 !important;
+}
+
+:is(.BattleTabStatisticComponentStyle-container > :first-child)>.tt-background {
+    backdrop-filter: blur(1.5em) !important;
+    background-color: rgba(3, 41, 48, 0.8) !important;
+    border-radius: var(--tt-border-radius-inner) !important;
+    inset: 0px !important;
+    outline: calc(var(--tt-border-width) - 1px) solid rgba(3, 41, 48, .8) !important;
+    pointer-events: none !important;
+    position: absolute !important;
+    z-index: 0 !important;
+}
+
+:is(.BattleTabStatisticComponentStyle-container > :first-child)>.tt-background::before {
+    border-radius: var(--tt-border-radius-inner) !important;
+    box-shadow: inset 0 0 2em 1em var(--tt-blue-team-color) !important;
+    content: "" !important;
+    inset: 0px !important;
+    mask-image: !important;
+    -webkit-mask-position-x: !important;
+    -webkit-mask-position-y: !important;
+    mask-size: !important;
+    mask-repeat: !important;
+    mask-origin: !important;
+    mask-clip: !important;
+    mask-mode: !important;
+    mask-composite: xor !important;
+    opacity: 0.1 !important;
+    pointer-events: none !important;
+    position: absolute !important;
+}
+
+:is(.BattleTabStatisticComponentStyle-container > :first-child)>.tt-background::after {
+    border-radius: var(--tt-border-radius-inner) !important;
+    box-shadow: inset 0 0 2em 1em var(--tt-red-team-color) !important;
+    content: "" !important;
+    inset: 0px !important;
+    mask-image: !important;
+    -webkit-mask-position-x: !important;
+    -webkit-mask-position-y: !important;
+    mask-size: !important;
+    mask-repeat: !important;
+    mask-origin: !important;
+    mask-clip: !important;
+    mask-mode: !important;
+    mask-composite: xor !important;
+    opacity: 0.1 !important;
+    pointer-events: none !important;
+    position: absolute !important;
+}
+
+:is(.BattleTabStatisticComponentStyle-container > :first-child)>.BattleTabStatisticComponentStyle-commonBlockScroll+.-flexCenterAlignCenter,
+:is(.BattleTabStatisticComponentStyle-container > :first-child)>.BattleTabStatisticComponentStyle-header {
+    z-index: 1 !important;
+}
+
+:is(.BattleTabStatisticComponentStyle-container > :first-child)::after {
+    background-image: linear-gradient(var(--tt-gradient-angle), var(--tt-blue-team-color) 0 50%, #032930 0 50.5%, var(--tt-red-team-color) 0 100%) !important;
+    border-radius: var(--tt-border-radius) !important;
+    content: "" !important;
+    inset: calc(var(--tt-border-width)*-1) !important;
+    mask: linear-gradient(rgb(255, 255, 255), rgb(255, 255, 255)) content-box xor, linear-gradient(rgb(255, 255, 255), rgb(255, 255, 255)) !important;
+    padding: var(--tt-border-width) !important;
+    pointer-events: none !important;
+    position: absolute !important;
+    z-index: 2 !important;
+}
+
+.BattleTabStatisticComponentStyle-commonBlockScroll::-webkit-scrollbar-track {
+    background-color: rgb(61, 66, 67) !important;
+}
+
+.BattleTabStatisticComponentStyle-commonBlockScroll::-webkit-scrollbar-thumb {
+    background-color: rgb(115, 115, 115) !important;
+}
+
+:is(.BattleTabStatisticComponentStyle-container table)>tbody>tr {
+    box-shadow: unset !important;
+}
+
+:is(:is(.BattleTabStatisticComponentStyle-container table) > tbody > tr)> :nth-child(2) {
+    backdrop-filter: grayscale(100%) !important;
+    background-color: rgba(3, 41, 48, 0.6) !important;
+    border: 0.06em solid rgba(191, 213, 255, 0.25) !important;
+    border-radius: 0.4em !important;
+    padding: 0.3em 0px !important;
+}
+
+:is(:is(:is(.BattleTabStatisticComponentStyle-container table) > tbody > tr) > :nth-child(2)) .BattleTabStatisticComponentStyle-defenceLabel {
+    --tt-highlight-color: #ff5050 !important;
+}
+
+.tt-protecting:is(:is(:is(:is(.BattleTabStatisticComponentStyle-container table) > tbody > tr) > :nth-child(2)) .BattleTabStatisticComponentStyle-defenceLabel) {
+    --tt-default-color: #ff5050 !important;
+}
+
+:is(:is(:is(.BattleTabStatisticComponentStyle-container table) > tbody > tr) > :nth-child(3))>.GearScoreStyle-bestGsLight {
+    display: none !important;
+}
+
+:is(:is(:is(.BattleTabStatisticComponentStyle-container table) > tbody > tr) > :is(:nth-child(4), :nth-child(5)) > :first-child)>.tt-tooltip {
+    background-color: rgba(3, 41, 48, 0.9) !important;
+    border-radius: 0.4em !important;
+    box-shadow: rgba(0, 0, 0, 0.5) 0px 0px 0.2em !important;
+    padding: 0.3em 0.7em !important;
+    transform: translate(-50%, -3em) !important;
+}
+
+:is(:is(:is(:is(.BattleTabStatisticComponentStyle-container table) > tbody > tr) > :is(:nth-child(4), :nth-child(5)) > :first-child) > .tt-tooltip)::before {
+    border-width: 0.6em !important;
+    border-style: solid !important;
+    border-color: rgba(3, 41, 48, 0.9) transparent transparent !important;
+    border-image: initial !important;
+    content: "" !important;
+    height: 0px !important;
+    left: 50% !important;
+    position: absolute !important;
+    top: calc(100% - 1px) !important;
+    transform: translateX(-50%) !important;
+    width: 0px !important;
+}
+
+:is(.BattleTabStatisticComponentStyle-container.tt-expanded table > thead > tr)>* {
+    width: 8.33% !important;
+}
+
+:is(.BattleTabStatisticComponentStyle-container.tt-expanded table > thead > tr)> :first-child {
+    width: 29.16% !important;
+}
+
+:is(.BattleTabStatisticComponentStyle-container.tt-expanded table > thead > tr)> :nth-child(3) {
+    width: 29.16% !important;
+}
+
+:is(.BattleTabStatisticComponentStyle-container.tt-expanded table > tbody > tr)>* {
+    width: 8.33% !important;
+}
+
+:is(.BattleTabStatisticComponentStyle-container.tt-expanded table > tbody > tr)> :first-child {
+    width: 29.16% !important;
+}
+
+:is(.BattleTabStatisticComponentStyle-container.tt-expanded table > tbody > tr)> :nth-child(2) {
+    width: 29.16% !important;
+}
+
+:is(.BattleTabStatisticComponentStyle-container.tt-expanded table > tbody > tr)> :nth-child(2) {
+    cursor: unset !important;
+}
+
+:is(:is(.BattleTabStatisticComponentStyle-container.tt-expanded table > tbody > tr) > :nth-child(2))>.tt-compact-cell {
+    display: none !important;
+}
+
+:is(:is(.BattleTabStatisticComponentStyle-container.tt-expanded table > tbody > tr) > :nth-child(2))> :not(.tt-compact-cell) {
+    display: grid !important;
+}
+
+:is(.BattleTabStatisticComponentStyle-container.tt-expanded table > tbody > tr)> :nth-child(4),
+:is(.BattleTabStatisticComponentStyle-container.tt-expanded table > tbody > tr)> :nth-child(5) {
+    display: flex !important;
+}
+
+.BattleTabStatisticComponentStyle-container.tt-expanded>.BattleTabStatisticComponentStyle-containerInsideTeams {
+    width: 95.25em !important;
+}
+
+:is(.BattleTabStatisticComponentStyle-container.tt-expanded > .BattleTabStatisticComponentStyle-containerInsideTeams) tr {
+    width: 45.75em !important;
+}
+
+.BattleTabStatisticComponentStyle-container.tt-expanded>.BattleTabStatisticComponentStyle-containerInsideResults {
+    width: 67.125em !important;
+}
+
+:is(.BattleTabStatisticComponentStyle-container.tt-expanded > .BattleTabStatisticComponentStyle-containerInsideResults) tr {
+    width: 65.25em !important;
+}
+
+.BattleKillBoardComponentStyle-tableContainer table {
+    align-items: center !important;
+    height: 42em !important;
+    width: 100em !important;
+}
+
+:is(.BattleKillBoardComponentStyle-tableContainer table) td,
+:is(.BattleKillBoardComponentStyle-tableContainer table) th {
+    box-sizing: border-box !important;
+    flex-shrink: 0 !important;
+    margin: 0px !important;
+    max-width: unset !important;
+    min-width: unset !important;
+}
+
+:is(.BattleKillBoardComponentStyle-tableContainer table) tr {
+    width: 49.5em !important;
+}
+
+:is(:is(.BattleKillBoardComponentStyle-tableContainer table) tr)>* {
+    width: 9.28% !important;
+}
+
+:is(:is(:is(.BattleKillBoardComponentStyle-tableContainer table) tr) > *)>* {
+    margin: 0px !important;
+}
+
+:is(:is(.BattleKillBoardComponentStyle-tableContainer table) tr)> :first-child {
+    width: 35% !important;
+}
+
+:is(.BattleKillBoardComponentStyle-tableContainer table)>thead {
+    padding-right: 1em !important;
+}
+
+:is(:is(.BattleKillBoardComponentStyle-tableContainer table) > thead)>tr {
+    pointer-events: none !important;
+}
+
+:is(:is(:is(.BattleKillBoardComponentStyle-tableContainer table) > thead) > tr)> :first-child {
+    padding-left: 0.75em !important;
+}
+
+:is(:is(:is(.BattleKillBoardComponentStyle-tableContainer table) > thead) > tr)>th> :nth-child(2) {
+    display: none !important;
+}
+
+:is(.BattleKillBoardComponentStyle-tableContainer table)>tbody {
+    display: grid !important;
+    gap: 0.3em 1em !important;
+    grid-auto-flow: column !important;
+    grid-auto-rows: min-content !important;
+    grid-template-columns: 1fr 1fr !important;
+    padding-right: 1em !important;
+    width: 100% !important;
+}
+
+:is(:is(.BattleKillBoardComponentStyle-tableContainer table) > tbody)>tr {
+    grid-column: 1 / 2 !important;
+    height: 2.5em !important;
+}
+
+#enemyCommand:is(:is(:is(.BattleKillBoardComponentStyle-tableContainer table) > tbody) > tr) {
+    grid-column: 2 / 3 !important;
+}
+
+#rowSpace:is(:is(:is(.BattleKillBoardComponentStyle-tableContainer table) > tbody) > tr),
+#teamRowSpace:is(:is(:is(.BattleKillBoardComponentStyle-tableContainer table) > tbody) > tr) {
+    display: none !important;
+}
+
+:is(.BattleKillBoardComponentStyle-tableContainer table):not(:has(> tbody > #teamRowSpace)) {
+    width: 50em !important;
+}
+
+:is(.BattleKillBoardComponentStyle-tableContainer table):not(:has(> tbody > #teamRowSpace)) tr {
+    grid-column: 1 / 2 !important;
+    width: 50em !important;
+}
+
+:is(.BattleKillBoardComponentStyle-tableContainer table):not(:has(> tbody > #teamRowSpace))>thead> :nth-child(2) {
+    display: none !important;
+}
+
+:is(.BattleKillBoardComponentStyle-tableContainer table):not(:has(> tbody > #teamRowSpace))>tbody {
+    grid-template-columns: 1fr !important;
+}
+
+.BattleResultNavigationComponentStyle-commonBlockButtonNextLeave {
+    flex-direction: row !important;
+    height: 8.125em !important;
+    width: 17em !important;
+}
+
+.BattleResultNavigationComponentStyle-commonBlockButtonNextLeave> :first-child {
+    margin-bottom: 0px !important;
+    margin-right: 0.5em !important;
+}
+
+
+
+:is(.BattlePassLobbyComponentStyle-menuBattlePass, .EventBattlePassLobbyComponentStyle-buttonEventBattlePass)>div:has(> img[src*="notification"]) {
+    scale: 1.1 !important;
+    transition: scale 0.1s ease-in-out, opacity 0.1s ease-in-out !important;
+    z-index: 1 !important;
+}
+
+:is(:is(.BattlePassLobbyComponentStyle-menuBattlePass, .EventBattlePassLobbyComponentStyle-buttonEventBattlePass) > div:has(> img[src*="notification"])):hover {
+    cursor: pointer !important;
+    scale: 1.3 !important;
+}
+
+:is(:is(.BattlePassLobbyComponentStyle-menuBattlePass, .EventBattlePassLobbyComponentStyle-buttonEventBattlePass) > div:has(> img[src*="notification"]))>img {
+    pointer-events: all !important;
+}
+
+html {
+    width: 100%;
+    height: 100%;
+    padding: 0px;
+    margin: 0px;
+    user-select: none;
+}
+
+body {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    padding: 0px;
+    margin: 0px;
+    font-family: BaseFontRegular, FallbackFontRegular;
+}
+
+body h1,
+body h2,
+body h3,
+body h4,
+body span,
+body p {
+    font-size: 1em;
+    color: rgb(255, 255, 255);
+}
+
+body li {
+    list-style-type: none;
+}
+
+body a {
+    color: rgb(175, 255, 112);
+    text-decoration: none;
+}
+
+input {
+    outline: none;
+    font-size: 1em;
+}
+
+input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+input::-webkit-input-placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.wrapper {
+    position: absolute;
+    height: 100%;
+    left: var(--sar);
+    right: var(--sal);
+    background: radial-gradient(50% 100% at 50% 100%, rgb(57, 86, 115) 0%, rgb(0, 25, 38) 100%);
+}
+
+html {
+    font-size: max(min(1.48148vh, 1vw), 3px);
+}
+
+@media only screen and (orientation: portrait) {
+    .wrapper {
+        left: 0px !important;
+        right: 0px !important;
+    }
+}
+
+.-displayFlex {
+    display: flex;
+}
+
+.-displayFlexColumn {
+    display: flex;
+    flex-direction: column;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+}
+
+.-alignCenter {
+    align-items: center;
+    -webkit-box-align: center;
+}
+
+.-flexSpaceBetweenAlignCenterColumn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: center;
+    -webkit-box-pack: justify;
+}
+
+.-container {
+    background: radial-gradient(rgb(32, 48, 64) 0%, rgb(3, 8, 13) 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0px;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: center;
+    -webkit-box-pack: justify;
+}
+
+.-backgroundImage {
+    background-repeat: no-repeat;
+    background-size: 100%;
+    background-position: center center;
+}
+
+.-entranceBackground {
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+    background-image: url("https://s.eu.tankionline.com/static/images/background.fc2779c1.webp");
+    z-index: 100;
+}
+
+.-entranceGradient {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0px;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background: linear-gradient(rgb(0, 25, 38) 0%, rgba(0, 25, 38, 0) 100%);
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: center;
+    -webkit-box-pack: justify;
+}
+
+.-flexCenterAlignCenter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.MainEntranceComponentStyle-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: auto;
+    align-self: center;
+    position: relative;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.-flexCenterAlignCenterColumn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.StartScreenComponentStyle-mainContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: auto;
+    align-self: center;
+    position: relative;
+    flex-direction: column;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+}
+
+.StartScreenComponentStyle-logoTankOnline {
+    width: 16em;
+}
+
+.-flexCenterAlignEnd {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    -webkit-box-align: end;
+    -webkit-box-pack: center;
+}
+
+.StartScreenComponentStyle-loadingBlock {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    width: auto;
+    height: 4em;
+    margin-top: 2em;
+    -webkit-box-align: end;
+    -webkit-box-pack: center;
+}
+
+.StartScreenComponentStyle-text {
+    font-size: 1.125em;
+    text-transform: uppercase;
+    cursor: default;
+    font-family: BaseFontMedium, FallbackFontMedium;
+    margin-bottom: 0.8em;
+    white-space: nowrap;
+}
+
+.-contentCenter {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    inset: 0px;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+    user-select: none;
+}
+
+.-contentSpaceBetween {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    inset: 0px;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+    user-select: none;
+}
+
+.EntranceComponentStyle-ContainerForm {
+    align-self: center;
+    background-color: transparent;
+    min-width: 22.5em;
+    width: 22.5em;
+    height: auto;
+    z-index: 4;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.HeaderComponentStyle-linkBar {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    width: 100%;
+    height: 6em;
+    position: absolute;
+    left: 0px;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-pack: start;
+}
+
+.HeaderComponentStyle-headerLinkBar {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    width: 100%;
+    height: 6em;
+    position: absolute;
+    left: 0px;
+    bottom: 0px;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-pack: start;
+}
+
+.-flexSpaceBetweenAlignCenter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    -webkit-box-align: center;
+    -webkit-box-pack: justify;
+}
+
+.HeaderComponentStyle-commonBlockContentPanel {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%;
+    padding-left: 2.5em;
+    -webkit-box-align: center;
+    -webkit-box-pack: justify;
+}
+
+.-flexEndAlignCenter {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    -webkit-box-align: center;
+    -webkit-box-pack: end;
+}
+
+.ClientInfoComponentStyle-main {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    width: 100%;
+    height: 1.3rem;
+    z-index: 101;
+    -webkit-box-align: center;
+    -webkit-box-pack: end;
+}
+
+.-flexStartAlignCenter {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    -webkit-box-align: center;
+    -webkit-box-pack: start;
+}
+
+.ClientInfoComponentStyle-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: auto;
+    height: 100%;
+    padding-right: 1.8rem;
+    box-sizing: border-box;
+    -webkit-box-align: center;
+    -webkit-box-pack: start;
+}
+
+.-regular {
+    font-family: BaseFontRegular, FallbackFontRegular;
+    font-style: normal;
+    font-weight: normal;
+}
+
+.ClientInfoComponentStyle-parameterText {
+    font-family: BaseFontRegular, FallbackFontRegular;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 0.9375em;
+    letter-spacing: 0.0375em;
+    text-transform: none;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.ClientInfoComponentStyle-delimiter {
+    font-family: BaseFontRegular, FallbackFontRegular;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 0.9375em;
+    margin-left: 0.4rem;
+    margin-right: 0.4rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.ApplicationLoaderComponentStyle-container {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    min-width: 100%;
+    min-height: 100%;
+    width: 100%;
+    height: 100%;
+}
+
+.-background {
+    background-image: url("https://s.eu.tankionline.com/634/127561/362/71/31625734640000/image.webp");
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
+.ApplicationLoaderComponentStyle-logo {
+    position: absolute;
+    bottom: 2.625em;
+    left: 4.375em;
+    width: 4em;
+    height: 3.875em;
+}
+
+.ApplicationLoaderComponentStyle-loader {
+    position: absolute;
+    bottom: 4em;
+    height: 2em;
+    left: 50%;
+    transform: translate(-50%, 0px);
+}
+
+.-normal {
+    font-family: BaseFontRegular, FallbackFontRegular;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 1em;
+    line-height: normal;
+}
+
+.ApplicationLoaderComponentStyle-helpChangeTip {
+    position: absolute;
+    right: 4.75em;
+    bottom: 4em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.-medium {
+    font-family: BaseFontMedium, FallbackFontMedium;
+    font-style: normal;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.-defaultHotKeyStyle {
+    background-color: rgb(255, 255, 255);
+    border-radius: 0.1875em;
+    box-sizing: border-box;
+    color: rgb(0, 25, 38);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: BaseFontMedium, FallbackFontMedium;
+    font-style: normal;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 1em;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.-inlineBlockForHotKey {
+    background-color: rgb(255, 255, 255);
+    border-radius: 0.1875em;
+    box-sizing: border-box;
+    color: rgb(0, 25, 38);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: BaseFontMedium, FallbackFontMedium;
+    font-style: normal;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 1em;
+    margin: 0px 0.625em;
+    min-width: 3em;
+    max-height: 1.5em;
+    padding: 0.125em 0.375em;
+    width: auto;
+    line-height: normal;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.ApplicationLoaderComponentStyle-helpChangeKey {
+    background-color: rgb(255, 255, 255);
+    border-radius: 0.1875em;
+    box-sizing: border-box;
+    color: rgb(0, 25, 38);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: BaseFontMedium, FallbackFontMedium;
+    font-style: normal;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 1em;
+    margin: 0px 0.625em 0px 0.5em;
+    min-width: 3em;
+    max-height: 1.5em;
+    padding: 0.125em 0.375em;
+    width: auto;
+    line-height: normal;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.ApplicationLoaderComponentStyle-helpChangeKey span {
+    font-family: BaseFontMedium, FallbackFontMedium;
+    font-style: normal;
+    font-weight: 500;
+    text-transform: uppercase;
+    color: rgb(0, 25, 38);
+}
+
+.TankPreviewComponentStyle-hidden {
+    position: absolute;
+    visibility: hidden;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+}
+
+.ksc-9 {
+    touch-action: none;
+}
+
+.-visible {
+    visibility: visible;
+    opacity: 1;
+    transition: opacity 500ms;
+}
+
+.ksc-10 {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    touch-action: none;
+}
+
+.-flexStartAlignStart {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    -webkit-box-align: start;
+    -webkit-box-pack: start;
+}
+
+.MainScreenComponentStyle-containerPanel {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+    width: 100%;
+    height: 6em;
+    padding: 0px;
+    position: absolute;
+    margin: 0px;
+    z-index: 2;
+    -webkit-box-align: center;
+    -webkit-box-pack: justify;
+}
+
+.MainScreenComponentStyle-containerPanel::before {
+    content: "";
+    height: 100%;
+    width: 100%;
+    position: absolute;
+}
+
+.UserInfoContainerStyle-blockLeftPanel {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-left: 0px;
+    margin-top: 0px;
+    position: relative;
+    width: auto;
+    z-index: 2;
+    -webkit-box-align: center;
+    -webkit-box-pack: start;
+}
+
+.UserInfoContainerStyle-blockForIconTankiOnline {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    position: absolute;
+    margin: auto;
+    inset: 0px;
+    z-index: 1;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.UserScoreComponentStyle-blockRightPanel {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    align-self: center;
+    margin-right: 0px;
+    height: 6em;
+    margin-top: 0px;
+    z-index: 5;
+    -webkit-box-pack: end;
+    -webkit-box-align: center;
+}
+
+.BreadcrumbsComponentStyle-logout {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 0px;
+    width: 6em;
+    height: 6em;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.BreadcrumbsComponentStyle-logout:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.-maskImage {
+    mask-position: center center;
+    mask-repeat: no-repeat;
+}
+
+.-maskImageContain {
+    mask-position: center center;
+    mask-repeat: no-repeat;
+    mask-size: contain;
+}
+
+.BreadcrumbsComponentStyle-iconLogout {
+    background-color: rgb(191, 213, 255);
+    height: 1.5em;
+    width: 1.5em;
+    mask-image: url("https://s.eu.tankionline.com/static/images/iconBack.62869951.svg");
+    mask-position: center center;
+    mask-repeat: no-repeat;
+    mask-size: contain;
+}
+
+.BreadcrumbsComponentStyle-logout:hover .BreadcrumbsComponentStyle-iconLogout {
+    background-color: rgb(255, 255, 255);
+}
+
+.UserInfoContainerStyle-userTitleContainer {
+    display: flex;
+    align-items: center;
+    place-content: flex-start;
+    min-width: 13em;
+    width: auto;
+    -webkit-box-align: center;
+    -webkit-box-pack: start;
+}
+
+.-commonBlockForHotKey {
+    background-color: rgb(255, 255, 255);
+    border-radius: 0.1875em;
+    box-sizing: border-box;
+    color: rgb(0, 25, 38);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: BaseFontMedium, FallbackFontMedium;
+    font-style: normal;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 1em;
+    height: auto;
+    left: 0.5em;
+    margin: 0px;
+    min-height: 1.5em;
+    min-width: 1.5em;
+    position: absolute;
+    text-align: center;
+    top: 0.5em;
+    width: auto;
+    padding-left: 0.3em;
+    padding-right: 0.3em;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.-commonBlockForHotKey span {
+    font-size: 1em;
+    color: rgb(0, 25, 38);
+}
+
+.-commonBlockForHotKey h3 {
+    font-size: 1em;
+    color: rgb(0, 25, 38);
+}
+
+.-backgroundImageCover {
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+}
+
+.-flexCenter {
+    display: flex;
+    justify-content: center;
+    -webkit-box-pack: center;
+}
+
+.UserGroupTitleButtonComponentStyle-commonUserIconsBlockGroup {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    width: 3.25em;
+    height: 1.9em;
+    -webkit-box-pack: center;
+}
+
+.ksc-14 {
+    height: 6rem;
+    width: 5.9375rem;
+    position: relative;
+    border-right: 1px solid rgba(255, 255, 255, 0.25);
+    cursor: pointer;
+}
+
+.ksc-14:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.ksc-15 {
+    width: 1.5em;
+    height: 1.5em;
+    display: block;
+    position: absolute;
+    left: 0px;
+    bottom: 0px;
+    background-color: rgba(191, 212, 255, 0.5);
+    mask-image: url("https://s.eu.tankionline.com/static/images/groupUser.67c9ec61.svg");
+    mask-position: center center;
+    mask-repeat: no-repeat;
+    mask-size: contain;
+}
+
+.ksc-16 {
+    width: 1.5em;
+    height: 1.5em;
+    display: block;
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    background-color: rgba(191, 212, 255, 0.5);
+    mask-image: url("https://s.eu.tankionline.com/static/images/groupUser.67c9ec61.svg");
+    mask-position: center center;
+    mask-repeat: no-repeat;
+    mask-size: contain;
+}
+
+.UserInfoContainerStyle-rankIconContainer {
+    width: 5.9375em;
+    height: 6em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.UserInfoContainerStyle-containerRightBorder {
+    border-right: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.UserInfoContainerStyle-rankIconContainerClickable {
+    width: 5.9375em;
+    height: 6em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border-right: 1px solid rgba(255, 255, 255, 0.25);
+    cursor: pointer;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.UserInfoContainerStyle-rankIconContainerClickable:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.UserInfoContainerStyle-titleRankIcon {
+    width: 4.375em;
+    height: 4.375em;
+    margin: 0px 0.813em;
+}
+
+.UserInfoContainerStyle-containerProgressMainScreen {
+    display: flex;
+    flex-direction: column;
+    min-width: 10em;
+    width: auto;
+    margin-left: 1em;
+    height: 3.75em;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+}
+
+.UserInfoContainerStyle-userNameRank {
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.UserInfoContainerStyle-userNameRank:hover {
+    color: rgb(255, 188, 9);
+}
+
+.UserInfoContainerStyle-textDecoration {
+    text-shadow: rgba(0, 0, 0, 0.5) 0em 0em 0.25em;
+}
+
+.-flexStartAlignStartColumn {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: start;
+    -webkit-box-pack: start;
+}
+
+.-whiteSpaceNoWrap {
+    white-space: nowrap;
+}
+
+.UserInfoContainerStyle-containerParameterProgress {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    height: 0.875em;
+    margin-top: 0.55em;
+    opacity: 0.8;
+    white-space: nowrap;
+    -webkit-box-align: start;
+    -webkit-box-pack: start;
+}
+
+.UserInfoContainerStyle-xpIcon {
+    background-image: url("https://s.eu.tankionline.com/static/images/experience.402435da.svg");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center center;
+    width: 1em;
+    height: 1em;
+    margin-top: 0.0625em;
+}
+
+.UserInfoContainerStyle-progressValue {
+    text-shadow: rgba(0, 0, 0, 0.5) 0em 0em 0.25em;
+    font-family: BaseFontMedium, FallbackFontMedium;
+    font-style: normal;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 1em;
+    text-align: justify;
+    margin-left: 0.25em;
+    color: rgb(118, 255, 51);
+}
+
+.ksc-17 {
+    height: 6em;
+    margin: 0px;
+}
+
+.ksc-18 {
+    background-color: rgba(118, 255, 51, 0.5);
+    border-radius: 0.375em;
+    position: relative;
+    min-width: 12.5em;
+    width: auto;
+    height: 0.25em;
+    margin-top: 0.375em;
+    margin-left: 0px;
+}
+
+.ksc-18::after {
+    content: "";
+    display: flex;
+    background-color: rgb(118, 255, 51);
+    border-radius: 6.25em;
+    width: 53%;
+    height: 100%;
+}
+
+.ksc-19 {
+    opacity: 0.6;
+    color: rgb(118, 255, 51);
+}
+
+.HeaderCommonStyle-icons {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    height: 3em;
+    order: 1;
+    flex-grow: 1;
+    flex-shrink: 0;
+    cursor: pointer;
+    min-width: 7.9375em;
+    -webkit-box-align: center;
+    -webkit-box-pack: start;
+    -webkit-box-flex: 1;
+}
+
+.-bold {
+    font-family: BaseFontBold, FallbackFontBold;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 1em;
+    line-height: normal;
+}
+
+.HeaderCommonStyle-iconFont {
+    font-family: BaseFontMedium, FallbackFontMedium;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 1.125em;
+    line-height: 1.313em;
+    text-transform: uppercase;
+    word-spacing: 0.938em;
+}
+
+.-iconCoinSizeMedium {
+    height: 1em;
+    width: 1em;
+    margin-right: 0.25em;
+}
+
+.UserScoreComponentStyle-addRubyCrystal {
+    width: 1em;
+    height: 1em;
+    position: absolute;
+    right: 1em;
+}
+
+.UserScoreComponentStyle-iconCrystal {
+    width: 1em;
+    height: 1em;
+    margin-left: -0.78em;
+}
+
+.ksc-21 {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+}
+
+.ksc-22 {
+    padding-right: 0.75em;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+    cursor: pointer;
+}
+
+.ksc-22 span {
+    font-family: BaseFontMedium, FallbackFontMedium;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 1.125em;
+    line-height: 1.313em;
+    text-transform: uppercase;
+    word-spacing: 0.1em;
+    color: rgb(255, 102, 102);
+    margin-left: 0.6em;
+    margin-right: 1em;
+    margin-top: 0.1em;
+}
+
+.ksc-22:hover {
+    background: linear-gradient(270deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+}
+
+.ksc-23 {
+    margin-right: 0px;
+}
+
+.ksc-24 {
+    padding-left: 0.75em;
+    padding-right: 0.75em;
+    cursor: pointer;
+}
+
+.ksc-24 span {
+    font-family: BaseFontMedium, FallbackFontMedium;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 1.125em;
+    line-height: 1.313em;
+    text-transform: uppercase;
+    word-spacing: 0.1em;
+    color: rgb(0, 215, 255);
+    margin-left: 0.6em;
+    margin-right: 1em;
+}
+
+.ksc-24:hover {
+    background: linear-gradient(270deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+}
+
+.ksc-25 {
+    background-color: transparent;
+    border-right: 1px solid rgba(255, 255, 255, 0.25);
+    border-left: 1px solid rgba(255, 255, 255, 0.25);
+    cursor: pointer;
+    width: 6em;
+    height: 6em;
+    flex-grow: 0;
+    position: relative;
+    -webkit-box-flex: 0;
+}
+
+.ksc-25:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.ksc-25:hover div {
+    background-color: rgb(255, 255, 255);
+}
+
+.ksc-26 {
+    height: 1.5em;
+    width: 1.5em;
+    background-color: rgb(191, 213, 255);
+    mask-image: url("https://s.eu.tankionline.com/static/images/fullscreen.0b4547f5.svg");
+}
+
+.-blockCenter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.MainScreenComponentStyle-containerForMenuGradient {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    width: 50%;
+    height: 100%;
+    margin-left: 0px;
+    margin-top: 0px;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: start;
+    -webkit-box-pack: start;
+}
+
+.MainScreenComponentStyle-gradientBlock {
+    background: linear-gradient(90deg, rgb(0, 0, 0) 0%, rgba(0, 0, 0, 0) 100%);
+    width: 50%;
+    height: 100%;
+    opacity: 0.5;
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.MainScreenComponentStyle-playButtonContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 23.75em;
+    height: 10.75em;
+    background-color: rgba(118, 255, 51, 0.25);
+    border-radius: 0.5em;
+    box-shadow: rgba(118, 255, 51, 0.25) 0em 0em 0em 0.063em;
+    box-sizing: border-box;
+    z-index: 4;
+    cursor: pointer;
+    position: relative;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+    transition: 0.2s ease-in-out;
+}
+
+.MainScreenComponentStyle-playButtonContainer span {
+    font-family: BaseFontMedium, FallbackFontMedium;
+    font-style: normal;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 2.75em;
+    color: rgb(118, 255, 51);
+}
+
+.MainScreenComponentStyle-playButtonContainer h3 {
+    font-family: BaseFontMedium, FallbackFontMedium;
+    font-style: normal;
+    font-weight: 500;
+    text-transform: uppercase;
+    color: rgb(118, 255, 51);
+    font-size: 0.75em;
+    left: 3.25em;
+    right: 3.25em;
+    letter-spacing: 0.05em;
+    position: absolute;
+    top: calc(50% + 3.938em);
+    text-align: center;
+    height: 1em;
+}
+
+.MainScreenComponentStyle-playButtonContainer img {
+    height: 2.8125em;
+    width: 2.625em;
+}
+
+.MainScreenComponentStyle-playButtonContainer:hover {
+    box-shadow: rgb(118, 255, 51) 0em 0em 0em 2px;
+    border: 0px none transparent;
+}
+
+.MainScreenComponentStyle-buttonPlay {
+    backdrop-filter: blur(1.563em);
+    background-color: rgb(0, 25, 38);
+    background-image: url("https://s.eu.tankionline.com/static/images/videoplay.79570900.gif");
+    background-size: cover;
+    background-repeat: no-repeat;
+    width: 21.875em;
+    height: 10.75em;
+}
+
+.MainScreenComponentStyle-buttonPlay img {
+    width: 22.5em;
+    height: 10.75em;
+    position: fixed;
+    cursor: pointer;
+}
+
+.MainScreenComponentStyle-blockMainMenu {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-shrink: 1;
+    flex-grow: 1;
+    width: 50%;
+    margin-left: 4.375em;
+    z-index: 3;
+    pointer-events: none;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: start;
+    -webkit-box-pack: start;
+    -webkit-box-flex: 1;
+}
+
+.MainScreenComponentStyle-blockMainMenu ul {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-shrink: 1;
+    flex-grow: 1;
+    height: inherit;
+    list-style-type: none;
+    padding-left: 0px;
+    margin: 0px;
+    white-space: nowrap;
+    width: 63%;
+    pointer-events: auto;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: start;
+    -webkit-box-pack: start;
+    -webkit-box-flex: 1;
+}
+
+.PrimaryMenuItemComponentStyle-itemCommonLi {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: left;
+    list-style-type: none;
+    width: 3.5em;
+    height: 3.5em;
+    background-size: contain;
+    background-repeat: no-repeat;
+    margin-left: 0.625em;
+    -webkit-box-align: center;
+    -webkit-box-pack: start;
+}
+
+.PrimaryMenuItemComponentStyle-itemCommonLi:hover {
+    box-shadow: rgb(255, 255, 255) 0em 0em 0em 0.125em;
+    border-radius: 0.5em;
+}
+
+.PrimaryMenuItemComponentStyle-itemCommonLi:hover div {
+    background-color: rgb(255, 255, 255);
+}
+
+.PrimaryMenuItemComponentStyle-menuItemContainer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-shrink: 1;
+    flex-grow: 1;
+    width: 27em;
+    max-height: 4.5em;
+    position: relative;
+    margin-top: 0px;
+    z-index: 4;
+    cursor: pointer;
+    -webkit-box-align: center;
+    -webkit-box-pack: start;
+    -webkit-box-flex: 1;
+}
+
+.PrimaryMenuItemComponentStyle-itemLiContainers {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: left;
+    list-style-type: none;
+    width: 3.5em;
+    height: 3.5em;
+    background-size: contain;
+    background-repeat: no-repeat;
+    margin-left: 0.625em;
+    background-color: rgb(191, 213, 255);
+    -webkit-box-align: center;
+    -webkit-box-pack: start;
+    mask-image: url("https://s.eu.tankionline.com/static/images/iconLobbyMenuContainers.f960290f.svg");
+    mask-position: center center;
+    mask-repeat: no-repeat;
+    mask-size: contain;
+}
+
+.PrimaryMenuItemComponentStyle-itemLiContainers:hover {
+    box-shadow: rgb(255, 255, 255) 0em 0em 0em 0.125em;
+    border-radius: 0.5em;
+}
+
+.PrimaryMenuItemComponentStyle-itemLiContainers:hover div {
+    background-color: rgb(255, 255, 255);
+}
+
+.PrimaryMenuItemComponentStyle-itemName {
+    font-family: BaseFontMedium, FallbackFontMedium;
+    font-size: 2em;
+    text-transform: uppercase;
+    margin-left: 0.5625em;
+    text-shadow: rgba(0, 0, 0, 0.25) 0em 0.25em 0.25em;
+    transition: 0.2s ease-in-out;
+}
+
+.PrimaryMenuItemComponentStyle-itemLiQuests {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: left;
+    list-style-type: none;
+    width: 3.5em;
+    height: 3.5em;
+    background-size: contain;
+    background-repeat: no-repeat;
+    margin-left: 0.625em;
+    background-color: rgb(191, 213, 255);
+    -webkit-box-align: center;
+    -webkit-box-pack: start;
+    mask-image: url("https://s.eu.tankionline.com/static/images/iconLobbyMenuQuests.54801b8b.svg");
+    mask-position: center center;
+    mask-repeat: no-repeat;
+    mask-size: contain;
+}
+
+.PrimaryMenuItemComponentStyle-itemLiQuests:hover {
+    box-shadow: rgb(255, 255, 255) 0em 0em 0em 0.125em;
+    border-radius: 0.5em;
+}
+
+.PrimaryMenuItemComponentStyle-itemLiQuests:hover div {
+    background-color: rgb(255, 255, 255);
+}
+
+.PrimaryMenuItemComponentStyle-itemLiGarage {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: left;
+    list-style-type: none;
+    width: 3.5em;
+    height: 3.5em;
+    background-size: contain;
+    background-repeat: no-repeat;
+    margin-left: 0.625em;
+    background-color: rgb(191, 213, 255);
+    -webkit-box-align: center;
+    -webkit-box-pack: start;
+    mask-image: url("https://s.eu.tankionline.com/static/images/iconLobbyMenuGarage.0b623165.svg");
+    mask-position: center center;
+    mask-repeat: no-repeat;
+    mask-size: contain;
+}
+
+.PrimaryMenuItemComponentStyle-itemLiGarage:hover {
+    box-shadow: rgb(255, 255, 255) 0em 0em 0em 0.125em;
+    border-radius: 0.5em;
+}
+
+.PrimaryMenuItemComponentStyle-itemLiGarage:hover div {
+    background-color: rgb(255, 255, 255);
+}
+
+.PrimaryMenuItemComponentStyle-itemLiShop {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: left;
+    list-style-type: none;
+    width: 3.5em;
+    height: 3.5em;
+    background-size: contain;
+    background-repeat: no-repeat;
+    margin-left: 0.625em;
+    background-color: rgb(191, 213, 255);
+    -webkit-box-align: center;
+    -webkit-box-pack: start;
+    mask-image: url("https://s.eu.tankionline.com/static/images/iconLobbyMenuStore.e755fe14.svg");
+    mask-position: center center;
+    mask-repeat: no-repeat;
+    mask-size: contain;
+}
+
+.PrimaryMenuItemComponentStyle-itemLiShop:hover {
+    box-shadow: rgb(255, 255, 255) 0em 0em 0em 0.125em;
+    border-radius: 0.5em;
+}
+
+.PrimaryMenuItemComponentStyle-itemLiShop:hover div {
+    background-color: rgb(255, 255, 255);
+}
+
+.PrimaryMenuItemComponentStyle-itemLiOption {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: left;
+    list-style-type: none;
+    width: 3.5em;
+    height: 3.5em;
+    background-size: contain;
+    background-repeat: no-repeat;
+    margin-left: 0.625em;
+    background-color: rgb(191, 213, 255);
+    -webkit-box-align: center;
+    -webkit-box-pack: start;
+    mask-image: url("https://s.eu.tankionline.com/static/images/iconLobbyMenuSettings.cc00d08a.svg");
+    mask-position: center center;
+    mask-repeat: no-repeat;
+    mask-size: contain;
+}
+
+.PrimaryMenuItemComponentStyle-itemLiOption:hover {
+    box-shadow: rgb(255, 255, 255) 0em 0em 0em 0.125em;
+    border-radius: 0.5em;
+}
+
+.PrimaryMenuItemComponentStyle-itemLiOption:hover div {
+    background-color: rgb(255, 255, 255);
+}
+
+.FooterComponentStyle-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: transparent;
+    background-size: cover;
+    flex: 0 0 auto;
+    width: 100%;
+    height: 6em;
+    z-index: 2;
+    position: relative;
+    -webkit-box-align: center;
+    -webkit-box-pack: justify;
+    -webkit-box-flex: 0;
+}
+
+.FooterComponentStyle-footer ul {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 21.75em;
+    height: 5.0625em;
+    padding: 0px;
+    margin-left: 5em;
+    -webkit-box-align: center;
+    -webkit-box-pack: start;
+}
+
+.FooterComponentStyle-footer li {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 5em;
+    height: 5em;
+    margin-left: 0px;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.FooterComponentStyle-containerMenu {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 5em;
+    height: 5em;
+    cursor: pointer;
+    position: relative;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.FooterComponentStyle-containerMenu img {
+    transition: 0.2s;
+}
+
+.FooterComponentStyle-containerMenu:hover {
+    width: 5em;
+    height: 5em;
+    border-radius: 6.25em;
+    box-shadow: white 0em 0em 0em 0.125em;
+}
+
+.FooterComponentStyle-button {
+    cursor: pointer;
+}
+
+.FooterComponentStyle-button div {
+    width: 2em;
+    height: 2em;
+    background-color: rgb(191, 213, 255);
+    mask-position: center center;
+    mask-repeat: no-repeat;
+    mask-size: contain;
+}
+
+.FooterComponentStyle-button:hover div {
+    background-color: rgb(255, 255, 255);
+}
+
+.FooterComponentStyle-newsButton {
+    cursor: pointer;
+}
+
+.FooterComponentStyle-newsButton div {
+    width: 2em;
+    height: 2em;
+    background-color: rgb(191, 213, 255);
+    mask-position: center center;
+    mask-repeat: no-repeat;
+    mask-size: contain;
+}
+
+.FooterComponentStyle-newsButton div {
+    mask-image: url("https://s.eu.tankionline.com/static/images/iconLobbyMenuNews.6efe9ae3.svg");
+}
+
+.FooterComponentStyle-newsButton:hover div {
+    background-color: rgb(255, 255, 255);
+}
+
+.MainScreenComponentStyle-noNew {
+    display: none;
+}
+
+.FooterComponentStyle-chatButton {
+    cursor: pointer;
+}
+
+.FooterComponentStyle-chatButton div {
+    width: 2em;
+    height: 2em;
+    background-color: rgb(191, 213, 255);
+    mask-position: center center;
+    mask-repeat: no-repeat;
+    mask-size: contain;
+}
+
+.FooterComponentStyle-chatButton div {
+    mask-image: url("https://s.eu.tankionline.com/static/images/iconLobbyMenuChat.e48a39a4.svg");
+}
+
+.FooterComponentStyle-chatButton:hover div {
+    background-color: rgb(255, 255, 255);
+}
+
+.FooterComponentStyle-friendButton {
+    cursor: pointer;
+}
+
+.FooterComponentStyle-friendButton div {
+    width: 2em;
+    height: 2em;
+    background-color: rgb(191, 213, 255);
+    mask-position: center center;
+    mask-repeat: no-repeat;
+    mask-size: contain;
+}
+
+.FooterComponentStyle-friendButton div {
+    mask-image: url("https://s.eu.tankionline.com/static/images/iconLobbyMenuFriends.28305317.svg");
+}
+
+.FooterComponentStyle-friendButton:hover div {
+    background-color: rgb(255, 255, 255);
+}
+
+.FooterComponentStyle-clanButton {
+    cursor: pointer;
+}
+
+.FooterComponentStyle-clanButton div {
+    width: 2em;
+    height: 2em;
+    background-color: rgb(191, 213, 255);
+    mask-position: center center;
+    mask-repeat: no-repeat;
+    mask-size: contain;
+}
+
+.FooterComponentStyle-clanButton div {
+    mask-image: url("https://s.eu.tankionline.com/static/images/iconLobbyMenuClan.f01ae646.svg");
+}
+
+.FooterComponentStyle-clanButton:hover div {
+    background-color: rgb(255, 255, 255);
+}
+
+.MainScreenComponentStyle-gradientBlockRight {
+    background: linear-gradient(90deg, rgb(0, 0, 0) 0%, rgba(0, 0, 0, 0) 100%);
+    width: 27.75em;
+    height: 100%;
+    opacity: 0.75;
+    position: absolute;
+    transform: rotate(-180deg);
+    top: 0px;
+    bottom: 0px;
+    right: 0px;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.BattlePassLobbyComponentStyle-menuBattlePass {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    width: 22.5em;
+    height: 10em;
+    position: absolute;
+    margin-top: 8.5em;
+    background: linear-gradient(0deg, rgba(0, 25, 38, 0.25) 0%, rgb(0, 25, 38) 100%);
+    right: 2.5em;
+    z-index: 1;
+    cursor: pointer;
+    border-radius: 0.5em;
+    filter: drop-shadow(rgba(0, 0, 0, 0.25) 0px 4px 4px);
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: start;
+    -webkit-box-pack: start;
+    transition: 0.2s ease-in-out;
+}
+
+.BattlePassLobbyComponentStyle-menuBattlePass:hover {
+    box-shadow: rgb(191, 213, 255) 0em 0em 0em 0.125em;
+}
+
+.BattlePassLobbyComponentStyle-descriptionMenuPass {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 2.75em;
+    top: 0px;
+    position: relative;
+    -webkit-box-align: center;
+    -webkit-box-pack: justify;
+}
+
+.BattlePassLobbyComponentStyle-numberStar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: auto;
+    flex: 1 0 auto;
+    margin-left: 1em;
+    margin-right: 1em;
+    -webkit-box-align: center;
+    -webkit-box-pack: start;
+    -webkit-box-flex: 1;
+}
+
+.BattlePassLobbyComponentStyle-numberStar img {
+    width: 1em;
+    height: 1em;
+}
+
+.BattlePassLobbyComponentStyle-numberStar span {
+    font-family: BaseFontBold, FallbackFontBold;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 0.9375em;
+    line-height: normal;
+    margin-left: 0.25em;
+}
+
+.BattlePassLobbyComponentStyle-timers {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: auto;
+    height: 1.313em;
+    right: 0px;
+    position: relative;
+    flex: 1 0 auto;
+    padding-right: 1em;
+    padding-left: 1em;
+    -webkit-box-align: center;
+    -webkit-box-pack: justify;
+    -webkit-box-flex: 1;
+}
+
+.BattlePassLobbyComponentStyle-timers img {
+    width: 1.125em;
+    height: 1.125em;
+}
+
+.BattlePassLobbyComponentStyle-timers span {
+    font-family: BaseFontRegular, FallbackFontRegular;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 0.9375em;
+    line-height: normal;
+    color: rgba(255, 255, 255, 0.6);
+    margin-left: 0.25em;
+}
+
+.BattlePassLobbyComponentStyle-blockBattlePass {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 98%;
+    height: 3.125em;
+    background-color: rgba(0, 0, 0, 0.1);
+    border: 0.063em solid rgba(255, 255, 255, 0.1);
+    box-sizing: border-box;
+    border-radius: 0.313em;
+    margin-left: 0.313em;
+    margin-right: 0.313em;
+    margin-bottom: 0.313em;
+    position: relative;
+    -webkit-box-align: center;
+    -webkit-box-pack: start;
+}
+
+.BattlePassLobbyComponentStyle-blockBattlePass span {
+    font-family: BaseFontBold, FallbackFontBold;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 0.9375em;
+    line-height: normal;
+    margin-left: 0.813em;
+    margin-top: -1em;
+}
+
+.BattlePassLobbyComponentStyle-iconBattlePass {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 4.063em;
+    height: 3.125em;
+    margin-left: 0px;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.BattlePassLobbyComponentStyle-iconBattlePass img {
+    width: 4.063em;
+    height: 2.375em;
+}
+
+.BattlePassLobbyComponentStyle-commonDescription {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    width: 15.188em;
+    height: 3.125em;
+    margin-left: 0px;
+    border-right: 0.063em solid rgba(255, 255, 255, 0.1);
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: start;
+    -webkit-box-pack: start;
+}
+
+.BattlePassLobbyComponentStyle-commonDescription span {
+    margin-left: 0px;
+    margin-top: 0.25em;
+}
+
+.BattlePassLobbyComponentStyle-commonDescription p {
+    font-family: BaseFontBold, FallbackFontBold;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 0.9375em;
+    line-height: normal;
+    margin-top: 0px;
+    margin-left: 0px;
+}
+
+.BattlePassLobbyComponentStyle-currentLevel {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.BattlePassLobbyComponentStyle-imagePass {
+    width: 4.813em;
+    height: 2.813em;
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+}
+
+.BattlePassLobbyComponentStyle-iconLocked img {
+    opacity: 0.3;
+}
+
+.BattlePassLobbyComponentStyle-premiumPass span {
+    color: rgb(255, 188, 9);
+}
+
+.BattlePassLobbyComponentStyle-lockedBlock p {
+    color: rgb(255, 124, 124);
+    opacity: 1;
+}
+
+.BattlePassLobbyComponentStyle-lockedBlock span {
+    opacity: 0.3;
+}
+
+.BattlePassLobbyComponentStyle-lockedImagePass {
+    opacity: 0.3;
+}
+
+.BattlePassLobbyComponentStyle-imageClosed {
+    background-image: url("https://s.eu.tankionline.com/static/images/closeBattlePass.e733af0d.svg");
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: 30%;
+    width: 4.063em;
+    height: 3.125em;
+    left: 0px;
+    top: 0px;
+    position: absolute;
+}
+
+.-flexStartAlignCenterColumn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: center;
+    -webkit-box-pack: start;
+}
+
+.EventBattlePassLobbyComponentStyle-buttonEventBattlePass {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    background: radial-gradient(106.67% 100% at 0% 0%, rgb(212, 127, 255) 0%, rgba(0, 25, 38, 0.5) 100%);
+    border-radius: 0.5em;
+    cursor: pointer;
+    height: 9em;
+    padding: 0.5em;
+    position: absolute;
+    right: 26.5em;
+    top: 8.5em;
+    width: 8.375em;
+    backdrop-filter: blur(0.781em);
+    box-shadow: rgb(213, 128, 255) 0em 0em 0em 1px;
+    z-index: 1;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: center;
+    -webkit-box-pack: start;
+}
+
+.EventBattlePassLobbyComponentStyle-buttonEventBattlePass:hover {
+    box-shadow: rgb(213, 128, 255) 0em 0em 0em 2px;
+}
+
+.EventBattlePassLobbyComponentStyle-commonBlockProgressBar {
+    background-color: rgba(0, 25, 38, 0.5);
+    border-radius: 6.25em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 2.4em;
+    height: 5em;
+    position: absolute;
+    width: 5em;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.EventBattlePassLobbyComponentStyle-commonBlockProgressBar h2 {
+    color: rgb(255, 204, 0);
+    font-family: BaseFontRegular, FallbackFontRegular;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 1.5em;
+    margin: 0px;
+    z-index: 2;
+}
+
+.EventBattlePassLobbyComponentStyle-progressBar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6.25em;
+    height: 4em;
+    width: 4em;
+    position: absolute;
+    z-index: 2;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.EventBattlePassLobbyComponentStyle-progressBar span {
+    color: rgb(255, 204, 0);
+    font-family: BaseFontRegular, FallbackFontRegular;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 1.5em;
+}
+
+.EventBattlePassLobbyComponentStyle-descriptionEventPass {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    bottom: 0.4em;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.EventBattlePassLobbyComponentStyle-descriptionEventPass h2 {
+    color: rgb(255, 255, 255);
+    font-family: BaseFontBold, FallbackFontBold;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 1em;
+    line-height: normal;
+    margin: 0px;
+    text-transform: uppercase;
+}
+
+.EventBattlePassLobbyComponentStyle-descriptionEventPass h3 {
+    color: rgb(255, 204, 0);
+    font-family: BaseFontMedium, FallbackFontMedium;
+    font-style: normal;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 0.75em;
+    margin: 0px;
+}
+
+.ChallengeTimerComponentStyle-timer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: center;
+    -webkit-box-pack: start;
+}
+
+.ChallengeTimerComponentStyle-timer h3 {
+    color: rgb(255, 255, 255);
+    font-family: BaseFontMedium, FallbackFontMedium;
+    font-style: normal;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 0.75em;
+    margin: 0px 0px 0.5em;
+}
+
+.ChallengeTimerComponentStyle-textTime {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: BaseFontMedium, FallbackFontMedium;
+    font-style: normal;
+    font-weight: 500;
+    text-transform: none;
+    border-radius: 0.25em;
+    background-color: rgb(255, 204, 0);
+    color: rgb(0, 25, 38);
+    height: 1.5em;
+    padding: 0px 0.25em;
+    width: auto;
+    font-size: 1.125em;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.AnnouncementHomeScreenComponentStyle-mainContainer {
+    touch-action: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    position: absolute;
+    bottom: 2.5em;
+    right: 2.5em;
+    width: 22.5em;
+    height: auto;
+    z-index: 2;
+    backdrop-filter: blur(0.781em);
+    background-color: rgba(0, 25, 38, 0.25);
+    border: 0.063em solid rgba(255, 255, 255, 0.25);
+    border-radius: 0.5em;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: center;
+    -webkit-box-pack: justify;
+    transition: 0.2s ease-in-out;
+}
+
+.AnnouncementHomeScreenComponentStyle-mainContainer:hover {
+    border: 0.063em solid rgb(191, 213, 255);
+    box-shadow: rgb(191, 213, 255) 0em 0em 0em 0.062em;
+}
+
+.AnnouncementHomeScreenComponentStyle-mainBackGroundContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 22.5em;
+    height: 12.5em;
+    position: relative;
+    cursor: pointer;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: center;
+    -webkit-box-pack: start;
+}
+
+.AnnouncementHomeScreenComponentStyle-mainClickContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    width: 100%;
+    height: inherit;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: start;
+    -webkit-box-pack: start;
+}
+
+.AnnouncementHomeScreenComponentStyle-announceDescriptionContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    width: 100%;
+    height: 15em;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: start;
+    -webkit-box-pack: start;
+}
+
+.AnnouncementHomeScreenComponentStyle-announceDescriptionContainer img {
+    max-width: 19.625em;
+    max-height: 13.375em;
+    align-self: center;
+}
+
+.-backgroundImageContain {
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center center;
+}
+
+.AnnouncementHomeScreenComponentStyle-headerTimer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.25em;
+    width: auto;
+    height: 1.5em;
+    flex: 1 0 auto;
+    padding: 0px 0.25em;
+    position: absolute;
+    left: 0.5em;
+    top: 0.5em;
+    background-color: rgb(255, 204, 0);
+    z-index: 1;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+    -webkit-box-flex: 1;
+}
+
+.AnnouncementHomeScreenComponentStyle-headerTimer span {
+    font-family: BaseFontMedium, FallbackFontMedium;
+    font-style: normal;
+    font-weight: 500;
+    text-transform: none;
+    font-size: 1.125em;
+    color: rgb(0, 25, 38);
+}
+
+.-flexEndAlignCenterColumn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: center;
+    -webkit-box-pack: end;
+}
+
+.AnnouncementHomeScreenComponentStyle-announceContainer {
+    background: linear-gradient(rgba(0, 25, 38, 0) 0%, rgb(0, 25, 38) 100%);
+    bottom: 0px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    height: 4.375em;
+    position: absolute;
+    padding: 0px 0.75em 0.75em;
+    width: calc(100% - 1.5em);
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: center;
+    -webkit-box-pack: end;
+}
+
+.AnnouncementHomeScreenComponentStyle-announceContainer h3 {
+    font-family: BaseFontMedium, FallbackFontMedium;
+    font-style: normal;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 1.125em;
+    line-height: 1.375em;
+    margin: 0px;
+    text-align: center;
+}
+
+@media screen and (max-width: 640px),
+(max-height: 480px) {
+    .-disableBlock {
+        display: none;
+    }
+}
+
+.AnnouncementHomeScreenComponentStyle-navigationContainer {
+    bottom: 0.625em;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: absolute;
+    width: 22.5em;
+    z-index: 2;
+    -webkit-box-align: center;
+    -webkit-box-pack: justify;
+}
+
+.AnnouncementHomeScreenComponentStyle-navigationContainer>* {
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+}
+
+@media screen and (max-width: 640px),
+(max-height: 480px) {
+    .AnnouncementHomeScreenComponentStyle-navigationContainer {
+        display: none;
+    }
+}
+
+.AnnouncementHomeScreenComponentStyle-navigationLabelContainer {
+    bottom: 0.5em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 1.5em;
+    position: absolute;
+    width: calc(100% - 6em);
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.AnnouncementHomeScreenComponentStyle-navigationLabelPoint {
+    background-color: rgba(255, 255, 255, 0.25);
+    border-radius: 50%;
+    margin-right: 0.3125em;
+    height: 0.5em;
+    width: 0.5em;
+}
+
+.AnnouncementHomeScreenComponentStyle-selectedNavigationLabelPoint {
+    background-color: rgb(255, 255, 255);
+    border-radius: 50%;
+    margin-right: 0.3125em;
+    height: 0.5em;
+    width: 0.5em;
+}
+
+.-buttonQE {
+    background-color: rgba(255, 255, 255, 0.9);
+    box-sizing: border-box;
+    border-radius: 0.1875em;
+    height: 1.5em;
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+    min-height: 1.5rem;
+    min-width: 1.7rem;
+    padding: 0.2em;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    width: 1.5em;
+    z-index: 1;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.-buttonQE span {
+    font-family: BaseFontMedium, FallbackFontMedium;
+    font-style: normal;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 1.125em;
+    color: rgb(0, 25, 38);
+}
+
+.-buttonQE:hover {
+    background-color: rgb(255, 255, 255);
+}
+
+.LobbyLoaderComponentStyle-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: auto;
+    background: radial-gradient(50% 100% at 50% 100%, rgb(57, 86, 115) 0%, rgb(0, 25, 38) 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.LobbyLoaderComponentStyle-logo {
+    width: 8em;
+    height: 7.75em;
+}
+
+.LobbyLoaderComponentStyle-loaderContainer {
+    position: absolute;
+    bottom: 2.5em;
+    height: 3.75em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: center;
+    -webkit-box-pack: justify;
+}
+
+.LobbyLoaderComponentStyle-loaderContainer span {
+    text-transform: uppercase;
+    font-family: BaseFontRegular, FallbackFontRegular;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 1em;
+    line-height: normal;
+}
+
+.LobbyLoaderComponentStyle-loaderContainer img {
+    width: 20em;
+    height: 2em;
+}
+
+.-hidden {
+    visibility: hidden;
+    opacity: 0;
+}
+
+.GarageCommonStyle-garageContainer {
+    width: 100%;
+    height: calc(100% - 6em);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: center;
+    -webkit-box-pack: start;
+}
+
+.-backgroundColor {
+    background-color: transparent;
+    z-index: 3;
+}
+
+.-flexSpaceBetweenAlignStart {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    -webkit-box-align: start;
+    -webkit-box-pack: justify;
+}
+
+.BreadcrumbsComponentStyle-headerContainer {
+    background-color: transparent;
+    z-index: 3;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    width: 100%;
+    min-height: 6em;
+    height: 6em;
+    margin: 0px;
+    cursor: default;
+    position: relative;
+    -webkit-box-align: start;
+    -webkit-box-pack: justify;
+    user-select: none;
+}
+
+.-flexCenterAlignStart {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    -webkit-box-align: start;
+    -webkit-box-pack: center;
+}
+
+.BreadcrumbsComponentStyle-backButton {
+    background-color: transparent;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: rgba(255, 255, 255, 0.25) 1px 0em 0em 0em;
+    cursor: pointer;
+    height: 6em;
+    margin: 0px;
+    width: 6em;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.BreadcrumbsComponentStyle-backButton h3 {
+    background-color: rgb(255, 255, 255);
+    border-radius: 0.1875em;
+    box-sizing: border-box;
+    color: rgb(0, 25, 38);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: BaseFontMedium, FallbackFontMedium;
+    font-style: normal;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 1em;
+    height: auto;
+    left: 0.5em;
+    margin: 0px;
+    min-height: 1.5em;
+    min-width: 1.5em;
+    position: absolute;
+    text-align: center;
+    top: 0.5em;
+    width: auto;
+    padding-left: 0.3em;
+    padding-right: 0.3em;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.BreadcrumbsComponentStyle-backButton h3 span {
+    font-size: 1em;
+    color: rgb(0, 25, 38);
+}
+
+.BreadcrumbsComponentStyle-backButton h3 h3 {
+    font-size: 1em;
+    color: rgb(0, 25, 38);
+}
+
+.BreadcrumbsComponentStyle-backButton:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.BreadcrumbsComponentStyle-backButton:hover div {
+    background-color: rgb(255, 255, 255);
+}
+
+.IconStyle-iconBackArrow {
+    width: 1.875em;
+    height: 1.5em;
+    background-color: rgb(191, 213, 255);
+    mask-image: url("https://s.eu.tankionline.com/static/images/iconBackArrow.9f950ca9.svg");
+    mask-position: center center;
+    mask-repeat: no-repeat;
+    mask-size: contain;
+}
+
+.BreadcrumbsComponentStyle-breadcrumbs {
+    font-family: BaseFontBold, FallbackFontBold;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 1em;
+    line-height: normal;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1 1 0%;
+    position: absolute;
+    inset: 0px;
+    margin: auto;
+    z-index: 1;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.BreadcrumbsComponentStyle-breadcrumbs span {
+    font-family: BaseFontMedium, FallbackFontMedium;
+    font-style: normal;
+    font-weight: 500;
+    text-transform: uppercase;
+    line-height: 2.5em;
+}
+
+.BreadcrumbsComponentStyle-breadcrumbs span:nth-child(1) {
+    font-size: 2.25em;
+    text-align: left;
+    text-transform: uppercase;
+}
+
+.BreadcrumbsComponentStyle-breadcrumbs span:nth-child(n+2) {
+    color: rgb(255, 188, 9);
+    flex-grow: 0;
+    margin-top: 0.8em;
+    font-size: 1.375em;
+    text-transform: initial;
+    -webkit-box-flex: 0;
+}
+
+.BreadcrumbsComponentStyle-rootTitle {
+    padding-left: 2.625em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.BreadcrumbsComponentStyle-rightButtonsContainer {
+    place-content: center space-between;
+    display: flex;
+    align-items: center;
+    margin-right: 0px;
+    height: 6em;
+    z-index: 2;
+    -webkit-box-align: center;
+    -webkit-box-pack: justify;
+}
+
+.BreadcrumbsComponentStyle-exitGameButton {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 0px;
+    width: 6em;
+    height: 6em;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.BreadcrumbsComponentStyle-exitGameButton:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.BreadcrumbsComponentStyle-exitGameButton:hover div {
+    background-color: rgb(255, 255, 255);
+}
+
+.IconStyle-iconLogOff {
+    background-color: rgb(191, 213, 255);
+    height: 1.5em;
+    width: 1.5em;
+    mask-image: url("https://s.eu.tankionline.com/static/images/logOut.29b47580.svg");
+    mask-position: center center;
+    mask-repeat: no-repeat;
+    mask-size: contain;
+}
+
+.ksc-44 {
+    z-index: 2;
+}
+
+.GarageCommonStyle-commonStylePositionContent {
+    height: 100%;
+    width: 100%;
+    margin-top: 1.5em;
+    user-select: none;
+}
+
+@media screen and (min-width: 1280px),
+(min-height: 950px) {
+    .GarageCommonStyle-commonStylePositionContent {
+        margin-top: 4em;
+    }
+}
+
+.GarageCommonStyle-positionContent {
+    height: 100%;
+    width: 100%;
+    margin-top: 1.5em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    user-select: none;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: center;
+    -webkit-box-pack: start;
+}
+
+@media screen and (min-width: 1280px),
+(min-height: 950px) {
+    .GarageCommonStyle-positionContent {
+        margin-top: 4em;
+    }
+}
+
+.GarageMainScreenStyle-blockParameters {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex: 0 1 auto;
+    cursor: default;
+    height: calc(100% - 14.6875em);
+    width: calc(100% - 3em);
+    position: relative;
+    z-index: 3;
+    -webkit-box-pack: justify;
+    -webkit-box-align: start;
+    -webkit-box-flex: 0;
+    user-select: none;
+}
+
+@media screen and (min-width: 1280px),
+(min-height: 950px) {
+    .GarageMainScreenStyle-blockParameters {
+        width: calc(100% - 12em);
+    }
+}
+
+.GarageComponentStyle-tankPreview {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.TankParametersStyle-leftParamsContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 5.0625em;
+    margin-left: 0px;
+    cursor: default;
+    z-index: 2;
+    border: 0.063em solid rgba(255, 255, 255, 0.25);
+    border-radius: 0.5em;
+    padding: 0.75em;
+    width: 21em;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: center;
+    -webkit-box-pack: start;
+}
+
+@-webkit-keyframes ksc-keyframe-47 {
+    0% {
+        opacity: 0;
+        transform: translateX(-5vw);
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes ksc-keyframe-47 {
+    0% {
+        opacity: 0;
+        transform: translateX(-5vw);
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.-appearFromLeft {
+    animation: 200ms ease-out 0s 1 normal none running ksc-keyframe-47;
+}
+
+.GarageCommonStyle-animatedBlurredLeftBlock {
+    animation: 200ms ease-out 0s 1 normal none running ksc-keyframe-47;
+    backdrop-filter: blur(3.125em);
+}
+
+.TankParametersStyle-marginBlockGear {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    height: 3.75em;
+    margin: 0px;
+    width: 100%;
+    border-bottom: 0.063em solid rgba(255, 255, 255, 0.25);
+    -webkit-box-align: start;
+    -webkit-box-pack: justify;
+}
+
+.TankParametersStyle-iconGS {
+    width: 3em;
+    height: 1.5em;
+    margin-right: 0.625em;
+}
+
+.GearScoreStyle-bestGS {
+    background-image: linear-gradient(to left, rgb(40, 255, 203) 0%, rgb(255, 235, 51) 100%);
+    text-transform: uppercase;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: rgb(255, 235, 51);
+    z-index: 3;
+    font-family: BaseFontRegular, FallbackFontRegular;
+    font-style: normal;
+    font-weight: normal;
+}
+
+.GearScoreStyle-fontSizeDigitGS {
+    font-family: BaseFontRegular, FallbackFontRegular;
+    font-size: 4em;
+    margin-top: -0.22em;
+}
+
+.TankParametersStyle-parametersBlockGear {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 2.25em;
+    width: 100%;
+    border-bottom: 0.063em solid rgba(255, 255, 255, 0.25);
+    -webkit-box-align: center;
+    -webkit-box-pack: justify;
+}
+
+.TankParametersStyle-parametersBlockGear h3 {
+    font-family: BaseFontRegular, FallbackFontRegular;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 1em;
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.TankParametersStyle-parametersBlockGear span {
+    font-family: BaseFontMedium, FallbackFontMedium;
+    font-style: normal;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 1em;
+    color: rgb(118, 255, 51);
+    margin-left: 0.313em;
+}
+
+.TankParametersStyle-parametersBlockGear:last-child {
+    margin-bottom: -0.75em;
+    border-bottom: 0px none transparent;
+}
+
+.TankParametersStyle-iconGSSmall {
+    height: 0.75em;
+    margin-left: 0.25em;
+    width: 1.5em;
+}
+
+.MountedItemsStyle-resistanceContainer {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 5em;
+    margin-right: 0.75em;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.MountedItemsStyle-resistanceContainer:last-child {
+    margin-right: 0px;
+}
+
+.MountedItemsStyle-commonForCellResistenceName {
+    width: 4em;
+    height: 5em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 0px;
+    cursor: pointer;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.MountedItemsStyle-resistanceIconContainer {
+    width: 4em;
+    height: 5em;
+}
+
+.MountedItemsStyle-resistanceIconContainer img {
+    width: 3.75em;
+    height: 3.75em;
+}
+
+.CellResistanceComponentStyle-resistanceIconContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    width: 4.6875em;
+    height: 3.5625em;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.MountedItemsStyle-container {
+    display: flex;
+    flex-direction: column;
+    width: 23em;
+    position: absolute;
+    right: 0px;
+    z-index: 2;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+}
+
+@-webkit-keyframes ksc-keyframe-53 {
+    0% {
+        opacity: 0;
+        transform: translateX(5vw);
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes ksc-keyframe-53 {
+    0% {
+        opacity: 0;
+        transform: translateX(5vw);
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.-appearFromRight {
+    animation: 200ms ease-out 0s 1 normal none running ksc-keyframe-53;
+}
+
+.GarageCommonStyle-animatedBlurredRightBlock {
+    animation: 200ms ease-out 0s 1 normal none running ksc-keyframe-53;
+    backdrop-filter: blur(3.125em);
+}
+
+.MountedItemsStyle-containerBlockGarage {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    height: inherit;
+    overflow: hidden;
+    padding-top: 0.125em;
+    padding-right: 0.125em;
+    -webkit-box-pack: end;
+}
+
+@media screen and (max-width: 1022px),
+(max-height: 650px) {
+    .MountedItemsStyle-containerBlockGarage {
+        padding-top: 0.25em;
+        padding-right: 0.25em;
+    }
+}
+
+.MountedItemsStyle-commonBlockDrone {
+    border-radius: 0.5em;
+    width: 10.9375em;
+    height: 10.9375em;
+    margin-bottom: 0.625em;
+    margin-right: 0.625em;
+}
+
+.MountedItemsStyle-tankPartNameContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+    height: 2.0625em;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    -webkit-box-pack: start;
+    -webkit-box-align: start;
+}
+
+.MountedItemsStyle-tankPartNameContainer h1 {
+    color: rgb(191, 213, 255);
+    font-family: BaseFontBold, FallbackFontBold;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 1em;
+    line-height: 1em;
+    margin: 0.75em 0.25em 0px 0.75em;
+    text-align: left;
+    text-transform: uppercase;
+}
+
+.MountedItemsStyle-itemPreview {
+    width: 12.625em;
+    height: auto;
+    position: relative;
+    align-self: center;
+}
+
+@media screen and (max-width: 640px),
+(max-height: 480px) {
+    .-itemPreview {
+        height: auto;
+        width: 8.625em;
+    }
+}
+
+.MountedItemsStyle-commonBlockGrenades {
+    border-radius: 0.5em;
+    width: 10.9375em;
+    height: 10.9375em;
+    margin: 0px;
+}
+
+.MountedItemsStyle-improvementArrow {
+    width: 2.4375em;
+    height: 2.4375em;
+    cursor: default;
+    z-index: 2;
+    margin-right: 0.375em;
+    margin-top: -0.5em;
+}
+
+.-fontH3 {
+    font-size: 1.125em;
+}
+
+.GarageItemComponentStyle-supplyCount {
+    font-family: BaseFontMedium, FallbackFontMedium;
+    font-style: normal;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 1.125em;
+    bottom: 0.75em;
+    color: rgb(255, 255, 255);
+    left: 0.75em;
+    margin: 0px;
+    position: absolute;
+}
+
+.GarageItemComponentStyle-h2Countable::before {
+    content: "×";
+    margin-right: 0.2em;
+}
+
+.MountedItemsStyle-commonBlockForTurretsHulls {
+    width: 22.5em;
+    height: 12.5em;
+    position: relative;
+    justify-content: space-between;
+    -webkit-box-pack: justify;
+}
+
+@media screen and (max-width: 640px),
+(max-height: 480px) {
+    .-commonBlockForTurretsHulls {
+        height: 10.8125em;
+        width: 10.9375em;
+    }
+}
+
+@media screen and (max-width: 640px),
+(max-height: 480px) {
+    .-commonBlockForTurretsWeapon {
+        height: 10.8125em;
+        width: 10.9375em;
+    }
+}
+
+@media screen and (max-width: 640px),
+(max-height: 480px) {
+    .-commonBlockForTurretsWeapon {
+        margin-right: 0.625em;
+    }
+}
+
+.MountedItemsStyle-commonBlockIconNotificator {
+    height: 2em;
+    margin-bottom: 0.75em;
+    margin-left: 0.75em;
+    margin-right: 0.5em;
+    position: relative;
+    width: 2em;
+    z-index: 4;
+}
+
+.MountedItemsStyle-deviceIcon {
+    width: 2em;
+    height: 2em;
+}
+
+.MountedItemsStyle-blockSkin {
+    background-color: transparent;
+    border: 0px none transparent;
+    height: 2em;
+    margin-bottom: 0.75em;
+    margin-left: 0px;
+    margin-right: 0.5em;
+    position: relative;
+    width: 2em;
+    z-index: 4;
+    box-shadow: none;
+}
+
+.MountedItemsStyle-blockSkin img {
+    width: 2em;
+    height: 2em;
+}
+
+.MountedItemsStyle-blockSkin:hover {
+    background-color: transparent;
+    border: 0px none transparent;
+    box-shadow: none;
+}
+
+.-flexStartAlignStretch {
+    display: flex;
+    align-items: stretch;
+    justify-content: flex-start;
+    -webkit-box-align: stretch;
+    -webkit-box-pack: start;
+}
+
+.SkinsIconComponentStyle-cellSkins {
+    display: flex;
+    align-items: stretch;
+    justify-content: flex-start;
+    z-index: 4;
+    width: inherit;
+    -webkit-box-align: stretch;
+    -webkit-box-pack: start;
+}
+
+.-flexWrapWrap {
+    flex-wrap: wrap;
+}
+
+.SuppliesComponentStyle-commonBlockSupplies {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    flex-wrap: wrap;
+    bottom: 1.5em;
+    height: 9.625em;
+    position: absolute;
+    width: calc(100% - 12em);
+    z-index: 2;
+    -webkit-box-align: start;
+    -webkit-box-pack: center;
+}
+
+@media screen and (max-width: 640px),
+(max-height: 480px) {
+    .-commonBlockSupplies {
+        width: calc(100% - 3.5em);
+        bottom: -1em;
+    }
+}
+
+@-webkit-keyframes ksc-keyframe-66 {
+    0% {
+        opacity: 0;
+        transform: translateY(5vh);
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes ksc-keyframe-66 {
+    0% {
+        opacity: 0;
+        transform: translateY(5vh);
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.-appearFromBottom {
+    animation: 200ms ease-out 0s 1 normal none running ksc-keyframe-66;
+}
+
+.-cursorPointer {
+    cursor: pointer;
+}
+
+.SuppliesComponentStyle-screenShotButtonOpen {
+    background-image: url("https://s.eu.tankionline.com/static/images/transitionToWindowScreenShotTanks.f3eeaa44.svg");
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center center;
+    cursor: pointer;
+    width: 15em;
+    height: 3em;
+}
+
+.SuppliesComponentStyle-screenShotButtonOpen:hover {
+    background-image: url("https://s.eu.tankionline.com/static/images/hoverTransitionToWindowScreenShotTanks.6977c625.svg");
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center center;
+}
+
+.SuppliesComponentStyle-decorLine {
+    background: linear-gradient(270deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.25) 50%, rgba(255, 255, 255, 0) 100%);
+    height: 1px;
+    margin-top: -0.52px;
+    width: 100%;
+}
+
+.SuppliesComponentStyle-containersBlocks {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-direction: column;
+    height: 9.5em;
+    min-width: 33.125em;
+    padding-top: 1.5em;
+    width: 100%;
+    -webkit-box-align: center;
+    -webkit-box-pack: start;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+}
+
+.SuppliesComponentStyle-blocksCell {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    position: relative;
+    width: 100%;
+    -webkit-box-align: start;
+    -webkit-box-pack: justify;
+}
+
+.SuppliesComponentStyle-cellAdd {
+    background-color: rgba(191, 213, 255, 0.15);
+    border-radius: 0.5em;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 5em;
+    position: relative;
+    margin-right: 0.625em;
+    box-shadow: rgba(191, 213, 255, 0.25) 0em 0em 0em 0.063em;
+    z-index: 1;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: center;
+    -webkit-box-pack: justify;
+}
+
+.SuppliesComponentStyle-cellAdd span {
+    color: rgb(255, 255, 255);
+    font-family: BaseFontMedium, FallbackFontMedium;
+    font-style: normal;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 1.125em;
+    margin-left: 0px;
+    margin-top: 0px;
+    text-align: center;
+    margin-bottom: 0.5em;
+}
+
+.SuppliesComponentStyle-cellAdd:hover {
+    box-shadow: rgb(191, 213, 255) 0em 0em 0em 0.125em;
+}
+
+.SuppliesComponentStyle-cellAdd:last-child {
+    margin-right: 0px;
+}
+
+.SuppliesComponentStyle-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 2em;
+    height: 2em;
+    margin-top: 0.75em;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.SuppliesComponentStyle-cell img {
+    width: inherit;
+    height: inherit;
+}
+
+@-webkit-keyframes ksc-keyframe-69 {
+    0% {
+        opacity: 0;
+        transform: scale(1.2);
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes ksc-keyframe-69 {
+    0% {
+        opacity: 0;
+        transform: scale(1.2);
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.-appearWithScaling {
+    animation: 200ms ease-out 0s 1 normal none running ksc-keyframe-69;
+}
+
+.TankPreviewComponentStyle-visible {
+    animation: 200ms ease-out 0s 1 normal none running ksc-keyframe-69;
+    position: absolute;
+    visibility: visible;
+    width: 100%;
+    height: 100%;
+    opacity: 1;
+}
+
+.GarageMenuComponentStyle-garageMenuContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 4em;
+    z-index: 3;
+    position: relative;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.-marginArrow {
+    height: 1.5rem;
+    width: 1.5rem;
+}
+
+.-marginArrow:hover {
+    height: 1.5rem;
+    width: 1.5rem;
+}
+
+.-backgroundContain {
+    background-size: contain;
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
+.-arrowLeft {
+    height: 1.5rem;
+    width: 1.5rem;
+    background: url("https://s.eu.tankionline.com/static/images/arrowLeftMenuIcon.a0890701.svg") center center / contain no-repeat;
+}
+
+.-arrowLeft:hover {
+    height: 1.5rem;
+    width: 1.5rem;
+}
+
+.-arrowLeft:hover {
+    background: url("https://s.eu.tankionline.com/static/images/arrowLeftMenuIconActive.efdfc24b.svg") center center / contain no-repeat;
+}
+
+.MenuComponentStyle-blockButtonsQECommunity {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: calc(100% - 6em);
+    height: 4em;
+    align-self: center;
+    cursor: default;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+    user-select: none;
+}
+
+.MenuComponentStyle-battleTitleCommunity {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    position: relative;
+    height: 4em;
+    text-align: center;
+    width: auto;
+    padding-left: 0.2em;
+    overflow: scroll hidden;
+    scrollbar-width: none;
+    -webkit-box-align: center;
+    -webkit-box-pack: start;
+}
+
+.MenuComponentStyle-battleTitleCommunity span {
+    font-family: BaseFontBold, FallbackFontBold;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 1em;
+    line-height: normal;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.MenuComponentStyle-battleTitleCommunity::-webkit-scrollbar {
+    display: none;
+}
+
+.MenuComponentStyle-mainMenuItem {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    margin-right: 1.25em;
+    margin-left: 1.25em;
+    height: inherit;
+    position: relative;
+    font-family: BaseFontBold, FallbackFontBold;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 1em;
+    line-height: normal;
+    text-transform: uppercase;
+    text-align: center;
+    color: rgb(255, 255, 255);
+    white-space: nowrap;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.MenuComponentStyle-mainMenuItem:hover {
+    color: rgb(118, 255, 51);
+}
+
+.-activeMenu {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    height: inherit;
+    position: relative;
+    font-family: BaseFontBold, FallbackFontBold;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 1em;
+    line-height: normal;
+    text-transform: uppercase;
+    text-align: center;
+    color: rgb(118, 255, 51);
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.-activeMenu:hover {
+    color: rgb(118, 255, 51);
+}
+
+.-menuItemActive {
+    position: absolute;
+    bottom: 0px;
+    background-color: rgb(118, 255, 51);
+    box-shadow: rgb(118, 255, 51) 0em 0em 0.375em;
+    filter: drop-shadow(rgb(118, 255, 51) 0em 0em 0.375em);
+    width: 100%;
+    height: 1px;
+}
+
+.-arrowRight {
+    height: 1.5rem;
+    width: 1.5rem;
+    background: url("https://s.eu.tankionline.com/static/images/arrowRightMenuIcon.fa17b034.svg") center center / contain no-repeat;
+}
+
+.-arrowRight:hover {
+    height: 1.5rem;
+    width: 1.5rem;
+}
+
+.-arrowRight:hover {
+    background: url("https://s.eu.tankionline.com/static/images/arrowRightMenuIconActive.f061716d.svg") center center / contain no-repeat;
+}
+
+.MenuComponentStyle-decorLineMenu {
+    background-color: rgba(255, 255, 255, 0.25);
+    bottom: 0px;
+    height: 1px;
+    position: absolute;
+    width: 100%;
+    z-index: 1;
+}
+
+.TanksPartBaseComponentStyle-tankPartContainer {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%;
+    -webkit-box-align: start;
+    -webkit-box-pack: justify;
+}
+
+.-flexSpaceBetween {
+    display: flex;
+    justify-content: space-between;
+    -webkit-box-pack: justify;
+}
+
+.TanksPartBaseComponentStyle-blockInsideContainerItem {
+    display: flex;
+    justify-content: space-between;
+    margin: 0px auto;
+    height: 100%;
+    width: 100%;
+    -webkit-box-pack: justify;
+}
+
+.ListItemsComponentStyle-itemsListContainer {
+    align-self: center;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    bottom: 0px;
+    width: 100%;
+    position: relative;
+    height: auto;
+    background: linear-gradient(rgba(0, 25, 38, 0) 0%, rgb(0, 25, 38) 100%);
+    z-index: 1;
+    -webkit-box-align: center;
+    -webkit-box-pack: start;
+}
+
+.ListItemsComponentStyle-itemsContainer {
+    overflow: auto hidden;
+    scrollbar-width: none;
+    display: flex;
+    flex-flow: row;
+    height: auto;
+    padding: 1.5em;
+    z-index: 3;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    user-select: none;
+}
+
+.ListItemsComponentStyle-itemsContainer::-webkit-scrollbar {
+    display: none;
+}
+
+.-flexStartAlignStretchColumn {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: stretch;
+    -webkit-box-pack: start;
+}
+
+.-itemStyle {
+    background-color: rgba(191, 213, 255, 0.15);
+    box-shadow: rgba(191, 213, 255, 0.3) 0em 0em 0em 0.063em;
+    border-radius: 0.5em;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    width: 12.5em;
+    height: 9.375em;
+    position: relative;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: stretch;
+    -webkit-box-pack: start;
+}
+
+.GarageItemComponentStyle-descriptionDevice {
+    display: flex;
+    width: 10.9375em;
+    height: 1.25em;
+    padding: 0.75em 0.75em 0px;
+    color: rgb(191, 213, 255);
+}
+
+.GarageItemComponentStyle-itemPreview {
+    display: flex;
+    justify-content: center;
+    align-self: center;
+    position: relative;
+    width: 8.125em;
+    height: 6.25em;
+    -webkit-box-pack: center;
+}
+
+.GarageItemComponentStyle-mainImg {
+    width: auto;
+    height: 6.25em;
+    position: absolute;
+}
+
+.PaintsCollectionComponentStyle-containerPaints {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: center;
+    -webkit-box-pack: justify;
+    user-select: none;
+}
+
+.-flexSpaceBetweenAlignStretch {
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    -webkit-box-align: stretch;
+    -webkit-box-pack: justify;
+}
+
+.PaintsCollectionComponentStyle-commonBlockForDescriptionAndButton {
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    position: relative;
+    width: calc(100% - 3em);
+    flex-grow: 1;
+    -webkit-box-align: stretch;
+    -webkit-box-pack: justify;
+    -webkit-box-flex: 1;
+}
+
+@media screen and (min-width: 1280px),
+(min-height: 950px) {
+    .PaintsCollectionComponentStyle-commonBlockForDescriptionAndButton {
+        width: calc(100% - 12em);
+    }
+}
+
+.PaintsCollectionComponentStyle-descriptionBlockCollection {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    cursor: default;
+    width: 22.5em;
+    height: auto;
+    z-index: 1;
+    margin-top: 1.5em;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: start;
+    -webkit-box-pack: start;
+}
+
+.PaintsCollectionComponentStyle-descriptionBlockCollection canvas {
+    margin-top: 0px;
+    width: 30em;
+    height: 30em;
+}
+
+@media screen and (min-width: 1280px),
+(min-height: 950px) {
+    .PaintsCollectionComponentStyle-descriptionBlockCollection {
+        margin-top: 4em;
+    }
+}
+
+.-overflowScroll {
+    overflow-y: auto;
+    scrollbar-color: rgba(255, 255, 255, 0.15) rgba(255, 255, 255, 0);
+    scrollbar-width: thin;
+}
+
+.-overflowScroll::-webkit-scrollbar {
+    width: 0.438em;
+    height: auto;
+    display: flex;
+}
+
+.-overflowScroll::-webkit-scrollbar-track {
+    background-color: transparent;
+    background-size: 0.5em;
+}
+
+.-overflowScroll::-webkit-scrollbar-thumb {
+    background-color: rgba(191, 213, 255, 0.25);
+    border-radius: 0.313em;
+}
+
+.-overflowScroll::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(191, 213, 255, 0.5);
+}
+
+.PaintsCollectionComponentStyle-commonBlockDescriptionCollection {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    margin-top: 0px;
+    height: inherit;
+    z-index: 2;
+    overflow-y: auto;
+    scrollbar-color: rgba(255, 255, 255, 0.15) rgba(255, 255, 255, 0);
+    scrollbar-width: thin;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: start;
+    -webkit-box-pack: start;
+}
+
+.PaintsCollectionComponentStyle-commonBlockDescriptionCollection::-webkit-scrollbar {
+    width: 0.438em;
+    height: auto;
+    display: flex;
+}
+
+.PaintsCollectionComponentStyle-commonBlockDescriptionCollection::-webkit-scrollbar-track {
+    background-color: transparent;
+    background-size: 0.5em;
+}
+
+.PaintsCollectionComponentStyle-commonBlockDescriptionCollection::-webkit-scrollbar-thumb {
+    background-color: rgba(191, 213, 255, 0.25);
+    border-radius: 0.313em;
+}
+
+.PaintsCollectionComponentStyle-commonBlockDescriptionCollection::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(191, 213, 255, 0.5);
+}
+
+.-flexSpaceBetweenAlignStartColumn {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: start;
+    -webkit-box-pack: justify;
+}
+
+.PaintsCollectionComponentStyle-headlinePaint {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+    width: inherit;
+    margin-bottom: 0.75em;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: start;
+    -webkit-box-pack: justify;
+}
+
+.PaintsCollectionComponentStyle-headlinePaint h1 {
+    font-family: BaseFontMedium, FallbackFontMedium;
+    font-style: normal;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 1.5em;
+    padding: 0px;
+    margin: 0px;
+}
+
+.PaintsCollectionComponentStyle-styleCategoryPaint {
+    font-family: BaseFontMedium, FallbackFontMedium;
+    font-style: normal;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 0.75em;
+    line-height: 113%;
+    letter-spacing: 0.125em;
+    margin: 0px 0.75em 0px 0px;
+    white-space: nowrap;
+}
+
+.PaintsCollectionComponentStyle-fullDescriptionPaint {
+    width: 22.5em;
+    height: auto;
+    padding-right: 0.625em;
+}
+
+.PaintsCollectionComponentStyle-fullDescriptionPaint h3 {
+    font-family: BaseFontRegular, FallbackFontRegular;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 1em;
+    margin: 0px;
+}
+
+.PaintsCollectionComponentStyle-fullDescriptionPaint h3 a:visited {
+    color: rgb(255, 255, 255);
+}
+
+.TanksPartComponentStyle-constTop {
+    margin-top: 1.5em;
+}
+
+@media screen and (min-width: 1280px),
+(min-height: 950px) {
+    .TanksPartComponentStyle-constTop {
+        margin-top: 4em;
+    }
+}
+
+.TanksPartComponentStyle-tankPartUpgrades {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    right: 0px;
+    width: 22.5em;
+    height: max-content;
+    z-index: 2;
+    margin-top: 1.5em;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: start;
+    -webkit-box-pack: start;
+}
+
+@media screen and (min-width: 1280px),
+(min-height: 950px) {
+    .TanksPartComponentStyle-tankPartUpgrades {
+        margin-top: 4em;
+    }
+}
+
+@media screen and (min-width: 1280px),
+(min-height: 950px) {
+    .TanksPartComponentStyle-tankPartUpgrades {
+        margin-top: 4em;
+    }
+}
+
+.GarageCommonStyle-bigActionButton {
+    height: 6em;
+}
+
+.PaintsCollectionComponentStyle-blockPaints {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    height: auto;
+    z-index: 1;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: center;
+    -webkit-box-pack: start;
+}
+
+.PaintsCollectionComponentStyle-commonBlockFOrInfoAndCaptionCategory {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: calc(100% - 3em);
+    height: 2.5em;
+    -webkit-box-align: center;
+    -webkit-box-pack: end;
+}
+
+.PaintsCollectionComponentStyle-captionPaint {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: default;
+    width: auto;
+    height: 2.5em;
+    -webkit-box-align: center;
+    -webkit-box-pack: justify;
+}
+
+.PaintsCollectionComponentStyle-colorH3 {
+    font-family: BaseFontMedium, FallbackFontMedium;
+    font-style: normal;
+    font-weight: 500;
+    text-transform: uppercase;
+    color: rgb(255, 255, 255);
+    font-size: 0.75em;
+    margin-right: 0.75em;
+}
+
+.SquarePriceButtonComponentStyle-commonBlockButton {
+    position: relative;
+    min-width: 10.9375em;
+    width: inherit;
+    height: inherit;
+    z-index: 2;
+}
+
+@media screen and (max-width: 640px),
+(max-height: 480px) {
+    .-commonButtonUpdate {
+        min-width: 6em;
+    }
+}
+
+.-flexEndAlignEnd {
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    -webkit-box-align: end;
+    -webkit-box-pack: end;
+}
+
+.PaintsCollectionComponentStyle-commonBlockPaint {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 22em;
+    height: 2.5em;
+    -webkit-box-align: center;
+    -webkit-box-pack: start;
+}
+
+.PaintsCollectionComponentStyle-favoriteIconContainer {
+    right: 0px;
+    position: absolute;
+    top: 0px;
+    width: 2em;
+    height: 2em;
+    z-index: 10;
+}
+
+.PaintsCollectionComponentStyle-favoriteIconContainer img {
+    width: 2em;
+    height: 2em;
+}
+
+.-flexCenterAlignStretch {
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    -webkit-box-align: stretch;
+    -webkit-box-pack: center;
+}
+
+.TanksPartComponentStyle-descriptionContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    height: max-content;
+    width: 22.5em;
+    z-index: 2;
+    margin-top: 1.5em;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: start;
+    -webkit-box-pack: start;
+}
+
+@media screen and (min-width: 1280px),
+(min-height: 950px) {
+    .TanksPartComponentStyle-descriptionContainer {
+        margin-top: 4em;
+    }
+}
+
+@media screen and (min-width: 1280px),
+(min-height: 950px) {
+    .TanksPartComponentStyle-descriptionContainer {
+        margin-top: 4em;
+    }
+}
+
+.-alignStretch {
+    align-items: stretch;
+    -webkit-box-align: stretch;
+}
+
+.-flexSpaceAroundAlignStretchColumn {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: space-around;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: stretch;
+    -webkit-box-pack: justify;
+}
+
+.ItemDescriptionComponentStyle-captionDevice {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: space-around;
+    backdrop-filter: blur(3.125em);
+    box-shadow: rgba(191, 213, 255, 0.25) 0em 0em 0em 1px;
+    background: radial-gradient(100% 100% at 100% 100%, rgba(191, 213, 255, 0.15) 0%, rgba(191, 213, 255, 0) 100%);
+    border-radius: 0.5em;
+    cursor: pointer;
+    height: 7.5em;
+    padding: 0.5625em 0.75em 0.75em;
+    width: 20.875em;
+    margin-top: 0.75em;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: stretch;
+    -webkit-box-pack: justify;
+}
+
+.ItemDescriptionComponentStyle-captionDevice:hover {
+    box-shadow: rgb(191, 213, 255) 0em 0em 0em 2px;
+}
+
+.DeviceButtonComponentStyle-blockAlterations {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    z-index: 2;
+    position: relative;
+    width: inherit;
+    -webkit-box-align: center;
+    -webkit-box-pack: start;
+}
+
+.DeviceButtonComponentStyle-blockAlterations h2 {
+    color: rgb(191, 213, 255);
+    font-family: BaseFontMedium, FallbackFontMedium;
+    font-style: normal;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 1.125em;
+    margin: 0px 0px 0.75em;
+    overflow: hidden;
+}
+
+.GarageTurretsAlterationsComponentStyle-hotkeyG {
+    height: 1.5em;
+    left: 0px;
+    margin-right: 0.5em;
+    position: relative;
+    top: 0px;
+}
+
+.TanksPartBaseComponentStyle-buttonsContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    width: 22.5em;
+    max-width: 22.5em;
+    z-index: 1;
+    padding: 0.125em;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: center;
+    -webkit-box-pack: justify;
+}
+
+@media screen and (max-width: 640px),
+(max-height: 480px) {
+    .TanksPartBaseComponentStyle-buttonsContainer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-direction: row-reverse;
+        height: auto;
+        -webkit-box-align: center;
+        -webkit-box-pack: justify;
+        -webkit-box-orient: horizontal;
+        -webkit-box-direction: reverse;
+    }
+}
+
+@media screen and (max-width: 640px),
+(max-height: 480px) {
+    .-buttonsContainer {
+        height: 6em;
+        flex-direction: row-reverse;
+        -webkit-box-orient: horizontal;
+        -webkit-box-direction: reverse;
+    }
+}
+
+.TanksPartBaseComponentStyle-marginTop {
+    margin-top: 0.5em;
+}
+
+@media screen and (max-width: 640px),
+(max-height: 480px) {
+    .-buttonEstablished {
+        height: 6em;
+        margin-right: 0.5em;
+        margin-top: 0px;
+        width: 6em;
+    }
+
+    .-buttonEstablished span {
+        display: none;
+    }
+}
+
+.ItemDescriptionComponentStyle-descriptionBlockDevice {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    width: 22.5em;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: stretch;
+    -webkit-box-pack: start;
+}
+
+.ItemDescriptionComponentStyle-nameItem {
+    display: flex;
+    max-width: 22.5em;
+    min-height: 1.5em;
+    width: auto;
+    height: auto;
+}
+
+.-fontH4 {
+    font-size: 1em;
+}
+
+.ItemDescriptionComponentStyle-textClipped {
+    -webkit-line-clamp: 3;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-family: BaseFontRegular, FallbackFontRegular;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 1em;
+    margin: 0px;
+}
+
+.ItemDescriptionComponentStyle-linkToFullDescription {
+    color: rgb(191, 213, 255);
+    cursor: pointer;
+    font-family: BaseFontBold, FallbackFontBold;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 1em;
+    line-height: normal;
+    margin-left: 0.5em;
+    margin-top: 1em;
+    text-transform: uppercase;
+}
+
+.ItemDescriptionComponentStyle-marginP {
+    margin: 0.2em 0px 0px 0.2em;
+}
+
+.ItemDescriptionComponentStyle-marginP:hover {
+    color: rgb(255, 255, 255);
+}
+
+.DeviceButtonComponentStyle-deviceIcon {
+    width: 3em;
+    height: 3em;
+}
+
+.-flexStart {
+    display: flex;
+    justify-content: flex-start;
+    -webkit-box-pack: start;
+}
+
+.TanksPartComponentStyle-nameUpgradeable {
+    font-family: BaseFontMedium, FallbackFontMedium;
+    font-style: normal;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 1.5em;
+    margin: 0px;
+}
+
+.-fontH5 {
+    font-size: 0.75em;
+}
+
+.TanksPartComponentStyle-commonBlockDescriptionDevices {
+    display: flex;
+    height: 3em;
+    margin-top: 1.75em;
+    width: 22.5em;
+}
+
+.TanksPartComponentStyle-commonBlockDescriptionDevices img {
+    width: 3em;
+    height: 3em;
+}
+
+.TanksPartComponentStyle-commonBlockDescriptionDevices h5 {
+    font-family: BaseFontMedium, FallbackFontMedium;
+    font-style: normal;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 0.75em;
+    color: rgb(255, 255, 255);
+    margin: 0.125em 0px 0px;
+}
+
+.TanksPartComponentStyle-commonBlockDescriptionDevices span {
+    font-family: BaseFontMedium, FallbackFontMedium;
+    font-style: normal;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 1.125em;
+    margin-top: 0.125em;
+}
+
+@media screen and (max-width: 640px),
+(max-height: 480px) {
+    .-commonBlockDescriptionDevices {
+        left: 24em;
+        margin-top: 2.5em;
+        position: absolute;
+    }
+}
+
+.TanksPartComponentStyle-blockForImageResistanceModule {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: rgba(255, 255, 255, 0.25) 0em 0em 0em 0.063em;
+    border-radius: 0.5em;
+    height: 3em;
+    margin-right: 0.75em;
+    width: 3em;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.TanksPartComponentStyle-blockDescriptionComponent {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    height: 3em;
+    width: 18.75em;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: start;
+    -webkit-box-pack: start;
+}
+
+.-flexEnd {
+    display: flex;
+    justify-content: flex-end;
+    -webkit-box-pack: end;
+}
+
+@-webkit-keyframes ksc-keyframe-155 {
+    0% {
+        background-color: rgb(118, 255, 51);
+    }
+
+    50% {
+        background-color: rgba(118, 255, 51, 0.7);
+    }
+
+    100% {
+        background-color: rgb(118, 255, 51);
+    }
+}
+
+@keyframes ksc-keyframe-155 {
+    0% {
+        background-color: rgb(118, 255, 51);
+    }
+
+    50% {
+        background-color: rgba(118, 255, 51, 0.7);
+    }
+
+    100% {
+        background-color: rgb(118, 255, 51);
+    }
+}
+
+.GarageCommonStyle-positionContentAlteration {
+    height: 100%;
+    width: 100%;
+    margin-top: 1.5em;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    user-select: none;
+    -webkit-box-align: start;
+    -webkit-box-pack: start;
+}
+
+@media screen and (min-width: 1280px),
+(min-height: 950px) {
+    .GarageCommonStyle-positionContentAlteration {
+        margin-top: 4em;
+    }
+}
+
+.GarageCommonStyle-subMenu {
+    margin-top: 0px;
+    user-select: auto;
+}
+
+@media screen and (min-width: 1280px),
+(min-height: 950px) {
+    .GarageCommonStyle-subMenu {
+        margin-top: 0px;
+    }
+}
+
+.-alignSelfCenter {
+    align-self: center;
+}
+
+.GarageTurretsAlterationsComponentStyle-mountStandardButton {
+    bottom: 2em;
+    height: 6em;
+    width: 18.5em;
+}
+
+.GarageTurretsAlterationsComponentStyle-containerButton {
+    height: 6em;
+    min-width: 18.5em;
+    width: 18.5em;
+    border-radius: 0.75em;
+}
+
+.GarageTurretsAlterationsComponentStyle-styleDescriptionBlock {
+    width: 18.5em;
+}
+
+@-webkit-keyframes ksc-keyframe-169 {
+    0% {
+        background-color: rgba(191, 213, 255, 0.25);
+    }
+
+    50% {
+        background-color: rgba(191, 213, 255, 0.5);
+    }
+
+    100% {
+        background-color: rgba(191, 213, 255, 0.25);
+    }
+}
+
+@keyframes ksc-keyframe-169 {
+    0% {
+        background-color: rgba(191, 213, 255, 0.25);
+    }
+
+    50% {
+        background-color: rgba(191, 213, 255, 0.5);
+    }
+
+    100% {
+        background-color: rgba(191, 213, 255, 0.25);
+    }
+}
+
+.AlterationButtonStyle-commonButton {
+    border-radius: 0.1875em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    height: 9.75em;
+    position: relative;
+    width: 17.5em;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.AlterationButtonStyle-buyButton {
+    border-radius: 0.75em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    height: 6em;
+    position: relative;
+    width: 18.5em;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.-flexWrapNowrap {
+    flex-wrap: nowrap;
+}
+
+.BattleCreateComponentStyle-scrollBattlePick {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    height: 100%;
+    min-height: 44em;
+    margin-bottom: 2em;
+    margin-top: 2em;
+    overflow: auto hidden;
+    padding-bottom: 0.25em;
+    padding-top: 0.25em;
+    padding-right: 0.1875em;
+    position: relative;
+    width: 100%;
+    z-index: 3;
+    -webkit-box-align: start;
+    -webkit-box-pack: start;
+}
+
+@media screen and (max-width: 640px),
+(max-height: 480px) {
+    .BattleCreateComponentStyle-scrollBattlePick {
+        min-height: 30em;
+    }
+}
+
+.-scrollBarVisible {
+    scrollbar-color: rgba(255, 255, 255, 0.15) rgba(255, 255, 255, 0);
+    scrollbar-width: auto;
+}
+
+.-scrollBarVisible::-webkit-scrollbar {
+    height: 0.5em;
+    display: flex;
+}
+
+.-scrollBarVisible::-webkit-scrollbar-track {
+    background-color: transparent;
+    background-size: 0.5em;
+    margin-left: 2em;
+    margin-right: 2em;
+}
+
+.-scrollBarVisible::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-radius: 0.313em;
+}
+
+.-scrollBarVisible::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.SkinsComponentStyle-styleColumn {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    height: 100%;
+    width: 18.75em;
+    margin-right: 1em;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: stretch;
+    -webkit-box-pack: start;
+}
+
+.SkinsComponentStyle-styleColumn:first-child {
+    margin-left: 2em;
+}
+
+.SkinsComponentStyle-styleColumn:last-child {
+    margin-right: 2em;
+}
+
+.SkinCellStyle-widthHeight {
+    width: 18.75em;
+    max-width: 18.75em;
+    min-width: 18.75em;
+    height: calc(50% - 1em);
+    max-height: calc(50% - 1em);
+    min-height: calc(50% - 1em);
+}
+
+.SkinCellComponentStyle-gradientCategoryDevices-COMMON {
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center center;
+    height: 18.75em;
+    opacity: 0.25;
+    position: absolute;
+    top: 0px;
+    width: 18.75em;
+    z-index: 1;
+}
+
+.SkinCellComponentStyle-deviceCategoryIcons-COMMON {
+    background-image: url("");
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center center;
+    height: 1em;
+    left: 0px;
+    position: absolute;
+    top: 0px;
+    width: 1em;
+    z-index: 2;
+}
+
+.SkinCellStyle-nameDevices {
+    font-family: BaseFontMedium, FallbackFontMedium;
+    font-style: normal;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 1.125em;
+    margin: 0px;
+    padding: 1.125em;
+    position: absolute;
+    top: 0px;
+    z-index: 2;
+}
+
+.SkinCellStyle-iconCell {
+    width: 6em;
+    height: 6em;
+    z-index: 2;
+}
+
+.-alignSelfFlexEnd {
+    align-self: flex-end;
+}
+
+.SkinCellStyle-discountCell {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    align-self: flex-end;
+    bottom: 0px;
+    height: 2em;
+    position: absolute;
+    right: 0px;
+    z-index: 2;
+    -webkit-box-align: center;
+    -webkit-box-pack: end;
+}
+
+.SkinCellComponentStyle-gradientCategoryDevices-LEGENDARY {
+    background-image: radial-gradient(100% 100% at 0% 0%, rgb(255, 238, 0) 0%, rgba(255, 238, 0, 0) 100%);
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center center;
+    height: 18.75em;
+    opacity: 0.25;
+    position: absolute;
+    top: 0px;
+    width: 18.75em;
+    z-index: 1;
+}
+
+.SkinCellComponentStyle-deviceCategoryIcons-LEGENDARY {
+    background-image: url("https://s.eu.tankionline.com/static/images/legendary_icon.4e33cd2f.svg");
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center center;
+    height: 1em;
+    left: 0px;
+    position: absolute;
+    top: 0px;
+    width: 1em;
+    z-index: 2;
+}
+
+.SkinCellComponentStyle-gradientCategoryDevices-EPIC {
+    background-image: radial-gradient(100% 100% at 0% 0%, rgb(212, 127, 255) 0%, rgba(212, 127, 255, 0) 100%);
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center center;
+    height: 18.75em;
+    opacity: 0.25;
+    position: absolute;
+    top: 0px;
+    width: 18.75em;
+    z-index: 1;
+}
+
+.SkinCellComponentStyle-deviceCategoryIcons-EPIC {
+    background-image: url("https://s.eu.tankionline.com/static/images/epic_icon.e90a6782.svg");
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center center;
+    height: 1em;
+    left: 0px;
+    position: absolute;
+    top: 0px;
+    width: 1em;
+    z-index: 2;
+}
+
+.SkinCellComponentStyle-gradientCategoryDevices-RARE {
+    background-image: radial-gradient(100% 100% at 0% 0%, rgb(0, 212, 255) 0%, rgba(0, 212, 255, 0) 100%);
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center center;
+    height: 18.75em;
+    opacity: 0.25;
+    position: absolute;
+    top: 0px;
+    width: 18.75em;
+    z-index: 1;
+}
+
+.SkinCellComponentStyle-deviceCategoryIcons-RARE {
+    background-image: url("https://s.eu.tankionline.com/static/images/rare_icon.b7506278.svg");
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center center;
+    height: 1em;
+    left: 0px;
+    position: absolute;
+    top: 0px;
+    width: 1em;
+    z-index: 2;
+}
+
+.SkinCellStyle-mountIcon {
+    bottom: 0px;
+    height: 3em;
+    position: absolute;
+    right: 0px;
+    width: 3em;
+    z-index: 2;
+}
+
+.GarageItemComponentStyle-amountItemsScroll {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: BaseFontMedium, FallbackFontMedium;
+    font-style: normal;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 1em;
+    color: rgb(0, 25, 38);
+    background-color: rgb(191, 213, 255);
+    border-radius: 6.25em;
+    height: auto;
+    min-width: 1em;
+    padding-left: 0.375em;
+    padding-right: 0.375em;
+    width: auto;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.GarageItemComponentStyle-itemPriceInCrystals {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    margin-right: 0.75em;
+    -webkit-box-align: start;
+    -webkit-box-pack: start;
+}
+
+.GarageItemComponentStyle-itemPriceInCrystals span {
+    color: rgb(0, 215, 255);
+    font-family: BaseFontRegular, FallbackFontRegular;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 1em;
+}
+
+.GarageItemComponentStyle-itemPriceInCrystals img {
+    width: 1em;
+    height: 1em;
+    margin-right: 0.313em;
+}
+
+.GarageItemComponentStyle-unavailable {
+    height: 3em;
+    width: 3em;
+    top: 50%;
+    margin-top: -1.5em;
+}
+
+.GarageItemComponentStyle-improvementArrow {
+    bottom: 0px;
+    width: 2.4375em;
+    height: 2.4375em;
+    display: flex;
+    justify-content: flex-end;
+    right: 0px;
+    margin-top: 0px;
+    position: absolute;
+    -webkit-box-pack: end;
+}
+
+.GarageGrenadePreviewComponentStyle-view {
+    position: absolute;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    width: calc(100% - 51em);
+    height: calc(100% - 30em);
+    top: 13em;
+    -webkit-box-align: start;
+    -webkit-box-pack: center;
+}
+
+@media screen and (min-width: 1280px),
+(min-height: 950px) {
+    .GarageGrenadePreviewComponentStyle-view {
+        width: calc(100% - 70em);
+        height: calc(100% - 31em);
+        top: 15em;
+    }
+}
+
+.GarageSuppliesComponentStyle-containerButtons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 22.3em;
+    height: 9.75em;
+    margin-top: 1.25em;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: center;
+    -webkit-box-pack: start;
+}
+
+@media screen and (max-width: 640px),
+(max-height: 480px) {
+    .GarageSuppliesComponentStyle-containerButtons {
+        height: 6em;
+    }
+}
+
+.TanksPartComponentStyle-amountItems {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 1.5em;
+    background-color: rgb(118, 255, 51);
+    border-radius: 6.25em;
+    box-shadow: rgba(118, 255, 51, 0.99) 0px 0px 1.25rem 0px;
+    min-width: 2em;
+    width: auto;
+    margin-top: 1.5em;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.TanksPartComponentStyle-amountItems span {
+    font-size: 1em;
+    font-family: BaseFontMedium, FallbackFontMedium;
+    font-style: normal;
+    font-weight: 500;
+    text-transform: uppercase;
+    padding: 0.625rem;
+}
+
+@media screen and (min-width: 1280px),
+(min-height: 950px) {
+    .TanksPartComponentStyle-amountItems {
+        margin-top: 4em;
+    }
+}
+
+@-webkit-keyframes ksc-keyframe-195 {
+    0% {
+        background-color: rgb(0, 212, 255);
+    }
+
+    50% {
+        background-color: rgba(0, 212, 255, 0.8);
+    }
+
+    100% {
+        background-color: rgb(0, 212, 255);
+    }
+}
+
+@keyframes ksc-keyframe-195 {
+    0% {
+        background-color: rgb(0, 212, 255);
+    }
+
+    50% {
+        background-color: rgba(0, 212, 255, 0.8);
+    }
+
+    100% {
+        background-color: rgb(0, 212, 255);
+    }
+}
+
+.SquarePriceButtonComponentStyle-paddingPriceStyleButton {
+    padding: 0.5em;
+}
+
+.GarageCommonStyle-iconCoinSmall {
+    width: 1em;
+    height: 1em;
+}
+
+.GarageItemComponentStyle-itemResistanceIcon {
+    position: absolute;
+    width: 3em;
+    height: 3em;
+    margin-top: 1.125em;
+    z-index: 2;
+}
+
+.-flexSpaceBetweenAlignStretchColumn {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: space-between;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: stretch;
+    -webkit-box-pack: justify;
+}
+
+.GarageProtectionsComponentStyle-blockParametersProtection {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: space-between;
+    margin-left: 0px;
+    width: 21.875em;
+    z-index: 2;
+    margin-top: 1.5em;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: stretch;
+    -webkit-box-pack: justify;
+}
+
+.GarageProtectionsComponentStyle-blockParametersProtection h1 {
+    font-family: BaseFontMedium, FallbackFontMedium;
+    font-style: normal;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 1.5em;
+    margin-top: 0px;
+}
+
+.GarageProtectionsComponentStyle-blockParametersProtection h2 {
+    font-family: BaseFontRegular, FallbackFontRegular;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 1em;
+    margin-top: 0px;
+}
+
+.GarageProtectionsComponentStyle-blockParametersProtection h3 {
+    font-family: BaseFontRegular, FallbackFontRegular;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 1em;
+}
+
+@media screen and (min-width: 1280px),
+(min-height: 950px) {
+    .GarageProtectionsComponentStyle-blockParametersProtection {
+        margin-top: 4em;
+    }
+}
+
+.GarageProtectionsComponentStyle-aboutDefence span {
+    font-size: 1em;
+}
+
+.GarageProtectionsComponentStyle-containerEquipmentCannon {
+    background-color: transparent;
+    display: flex;
+    align-items: stretch;
+    justify-content: flex-start;
+    position: relative;
+    width: 18.25em;
+    height: auto;
+    margin-left: 0px;
+    -webkit-box-align: stretch;
+    -webkit-box-pack: start;
+}
+
+.GarageProtectionsComponentStyle-blockParameterEquip {
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    width: 18.25em;
+    height: 5em;
+    margin-left: 0px;
+    margin-top: 0px;
+    -webkit-box-align: stretch;
+    -webkit-box-pack: justify;
+}
+
+.GarageProtectionsComponentStyle-unequip {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: auto;
+    height: 1.563em;
+    -webkit-box-align: center;
+    -webkit-box-pack: start;
+}
+
+.-borderRadius4px {
+    border-radius: 0.25em;
+    box-sizing: border-box;
+}
+
+.-boxShadowForButton {
+    box-shadow: rgba(191, 213, 255, 0.5) 0px 0px 0px 0.063em;
+}
+
+.GarageProtectionsComponentStyle-equipmentResistance {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 4em;
+    height: 5em;
+    margin-left: 0px;
+    position: relative;
+    cursor: pointer;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.GarageProtectionsComponentStyle-mountedResist {
+    background-image: url("https://s.eu.tankionline.com/static/images/protectionSlotEquip.5f03fffe.svg");
+    background-repeat: no-repeat;
+    background-size: 100%;
+    background-position: center center;
+}
+
+.GarageProtectionsComponentStyle-mountedResist:hover {
+    background-image: url("https://s.eu.tankionline.com/static/images/hoverProtectionEquipSlot.53a400d5.svg");
+    background-repeat: no-repeat;
+    background-size: 100%;
+    background-position: center center;
+}
+
+.GarageProtectionsComponentStyle-resistanceIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2em;
+    height: 2em;
+    position: relative;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.GarageProtectionsComponentStyle-resistanceIconContainer {
+    width: 4.688em;
+    height: 3.563em;
+}
+
+.GarageProtectionsComponentStyle-resistanceIconContainer img {
+    width: 3.75em;
+    height: auto;
+}
+
+.-buttonNeutralHover {
+    background-color: rgba(191, 213, 255, 0.05);
+    box-shadow: rgb(191, 213, 255) 0em 0em 0em 0.125em;
+}
+
+.SettingsComponentStyle-blockContentOptions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+    width: 72.25em;
+    height: calc(100% - 8.5em);
+    margin-left: 0px;
+    padding-top: 4.5em;
+    position: relative;
+    -webkit-box-pack: start;
+    -webkit-box-align: start;
+}
+
+.SettingsComponentStyle-containerBlock {
+    align-items: flex-start;
+    width: 50.625em;
+    height: 100%;
+    padding-left: 2.625em;
+    -webkit-box-align: start;
+}
+
+@media screen and (max-width: 640px),
+(max-height: 480px) {
+    .SettingsComponentStyle-containerBlock {
+        min-height: 9.5em;
+    }
+}
+
+.ksc-527 {
+    width: 1.75em;
+    height: 1.75em;
+    margin-left: 0.75em;
+    opacity: 0;
+    border-radius: 50%;
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.25);
+    border-style: solid;
+    background-image: url("https://s.eu.tankionline.com/static/images/info.78c2fe48.svg");
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    background-size: 0.5em;
+}
+
+.ksc-528 {
+    height: calc(100% - 6em);
+}
+
+.SettingsMenuComponentStyle-blockMenuOptions {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    width: 18em;
+    height: 27.5em;
+    margin-left: 0px;
+    margin-top: -1.5em;
+    padding-left: 0px;
+    position: relative;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-pack: start;
+    -webkit-box-align: start;
+}
+
+.SettingsMenuComponentStyle-blockMenuOptions ul {
+    height: 100%;
+    padding-left: 0px;
+}
+
+.SettingsMenuComponentStyle-menuItemOptions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 18em;
+    height: 5em;
+    position: relative;
+    margin-top: 0px;
+    z-index: 4;
+    cursor: pointer;
+    -webkit-box-align: center;
+    -webkit-box-pack: start;
+}
+
+.SettingsMenuComponentStyle-menuItemOptions span {
+    font-family: BaseFontBold, FallbackFontBold;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 1.125em;
+    line-height: normal;
+    text-transform: uppercase;
+    margin-left: 1.875em;
+    margin-top: 0.1em;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.SettingsMenuComponentStyle-menuItemOptions span:hover {
+    color: white;
+    transition: 0.5s;
+}
+
+.SettingsMenuComponentStyle-activeItemOptions span {
+    color: white;
+    transition: 0.5s;
+}
+
+.SettingsMenuComponentStyle-slideMenuOptions {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: linear-gradient(to right, rgb(46, 50, 53), rgba(46, 50, 53, 0));
+    width: 18em;
+    height: 2.5em;
+    margin-left: 0px;
+    margin-top: -23.6em;
+    text-align: left;
+    position: relative;
+    color: rgb(255, 188, 9);
+    z-index: 1;
+    top: 0px;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-pack: center;
+    transition: 0.1s ease-in-out;
+}
+
+.SettingsMenuComponentStyle-yellowLineMenuOptions {
+    background-color: rgb(255, 188, 9);
+    box-shadow: rgb(255, 188, 9) 0px 0px 0.676em 0px;
+    width: 0.313em;
+    height: 2.5em;
+    position: absolute;
+    margin-left: 0px;
+    margin-top: 0px;
+    opacity: 1;
+    z-index: 3;
+}
+
+.SettingsComponentStyle-settingsBlockOptions {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    width: 46.875em;
+    height: 100%;
+    margin-left: 0px;
+    margin-top: 0px;
+    padding: 1.875em 1.875em 0px;
+    position: relative;
+    background-color: rgba(255, 255, 255, 0.1);
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: stretch;
+    -webkit-box-pack: start;
+}
+
+@media screen and (max-width: 640px),
+(max-height: 480px) {
+    .SettingsComponentStyle-settingsBlockOptions {
+        height: calc(100% - 49em);
+        min-height: 26.5em;
+        overflow-y: scroll;
+    }
+}
+
+.SettingsComponentStyle-scroll {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    width: 46.875em;
+    overflow: hidden scroll;
+    scrollbar-color: rgb(188, 188, 188) rgba(255, 255, 255, 0.2);
+    scrollbar-width: thin;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-pack: start;
+}
+
+.SettingsComponentStyle-scroll::-webkit-scrollbar-thumb {
+    background-color: rgb(188, 188, 188);
+    border-radius: 0.313em;
+}
+
+.SettingsComponentStyle-scroll::-webkit-scrollbar {
+    width: 0.438em;
+    height: auto;
+    display: flex;
+}
+
+.SettingsComponentStyle-scroll::-webkit-scrollbar-track {
+    background-color: rgba(255, 255, 255, 0.2);
+    background-size: 0.063em 0.25em;
+    background-clip: content-box;
+    border: 0.156em solid rgba(50, 54, 62, 0.1);
+}
+
+.SettingsComponentStyle-scrollingMenu {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    width: 46.875em;
+    height: 100%;
+    margin-left: 0px;
+    margin-top: 0px;
+    padding: 1.875em 1.875em 0px;
+    position: relative;
+    background-color: rgba(255, 255, 255, 0.1);
+    overflow: hidden scroll;
+    scrollbar-color: rgb(188, 188, 188) rgba(255, 255, 255, 0.2);
+    scrollbar-width: thin;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: stretch;
+    -webkit-box-pack: start;
+}
+
+.SettingsComponentStyle-scrollingMenu::-webkit-scrollbar-thumb {
+    background-color: rgb(188, 188, 188);
+    border-radius: 0.313em;
+}
+
+@media screen and (max-width: 640px),
+(max-height: 480px) {
+    .SettingsComponentStyle-scrollingMenu {
+        height: calc(100% - 49em);
+        min-height: 26.5em;
+        overflow-y: scroll;
+    }
+}
+
+.SettingsComponentStyle-scrollingMenu::-webkit-scrollbar {
+    width: 0.438em;
+    height: auto;
+    display: flex;
+}
+
+.SettingsComponentStyle-scrollingMenu::-webkit-scrollbar-track {
+    background-color: rgba(255, 255, 255, 0.2);
+    background-size: 0.063em 0.25em;
+    background-clip: content-box;
+    border: 0.156em solid rgba(50, 54, 62, 0.1);
+}
+
+.SettingsComponentStyle-dropDownTitle {
+    font-family: BaseFontRegular, FallbackFontRegular;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 1em;
+    line-height: normal;
+    margin-top: 0px;
+    margin-bottom: 1em;
+}
+
+.SettingsComponentStyle-dropDown {
+    width: 30.625em;
+    margin-bottom: 1.75em;
+}
+
+.GameSettingsStyle-gameSettingsBlock {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    width: 100%;
+    height: 100%;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-pack: start;
+}
+
+.SettingsComponentStyle-borderLineOption {
+    background-color: rgba(255, 255, 255, 0.1);
+    width: 49.125em;
+    height: 0.063em;
+    margin-bottom: 1.875em;
+    margin-left: -1.875em;
+}
+
+.SettingsComponentStyle-commonBlock {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    height: auto;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-pack: start;
+    -webkit-box-align: center;
+}
+
+.GameSettingsStyle-containerFormOptions {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    height: auto;
+    margin-left: 0.9em;
+    margin-bottom: 1em;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-pack: start;
+}
+
+.GameSettingsStyle-containerFormOptions p {
+    font-family: BaseFontBold, FallbackFontBold;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 1.125em;
+    line-height: normal;
+    text-transform: uppercase;
+    margin: 0px 0px 1.875em;
+}
+
+.SettingsComponentStyle-textHeadlineOptions {
+    font-family: BaseFontBold, FallbackFontBold;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 1.125em;
+    line-height: normal;
+    text-transform: uppercase;
+}
+
+.GameSettingsStyle-notificationsTextAndButtonBlock {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+    width: 46.4em;
+    margin-right: 1em;
+    margin-top: -1em;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    -webkit-box-pack: justify;
+    -webkit-box-align: end;
+}
+
+.GameSettingsStyle-notificationTextBlock {
+    margin-bottom: 0.2em;
+    height: 3em;
+    width: 29.5em;
+}
+
+.GameSettingsStyle-notificationText {
+    margin-left: 0px;
+    margin-top: 0px;
+    text-align: left;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.GameSettingsStyle-button {
+    min-width: 15em;
+    width: auto;
+    height: 3.125em;
+    margin-bottom: 0.2em;
+}
+
+.DropDownStyle-dropdownRoot {
+    width: 100%;
+    position: relative;
+}
+
+.DropDownStyle-dropdownControl {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 4.375em;
+    width: 100%;
+    height: 3.125em;
+    border: 0.063em solid rgba(255, 255, 255, 0.2);
+    box-sizing: border-box;
+    background-color: rgba(255, 255, 255, 0.1);
+    padding-left: 0.875em;
+    padding-right: 0.875em;
+    -webkit-box-align: center;
+    -webkit-box-pack: justify;
+}
+
+.DropDownStyle-dropdownControl:hover {
+    cursor: pointer;
+}
+
+.DropDownStyle-dropdownPlaceholder {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    -webkit-box-align: center;
+    -webkit-box-pack: start;
+}
+
+.DropDownStyle-dropdownPlaceholder span {
+    margin: 0.2em 0px 0.3em;
+    white-space: nowrap;
+}
+
+.SettingsComponentStyle-dropdownPlaceholder {
+    display: flex;
+    width: 100%;
+    justify-content: flex-start;
+    align-items: center;
+    -webkit-box-pack: start;
+    -webkit-box-align: center;
+}
+
+.SettingsComponentStyle-dropdownPlaceholder span {
+    margin: 0.2em 0px 0.3em 0.3em;
+    white-space: nowrap;
+}
+
+.SettingsComponentStyle-dropdownPlaceholder img {
+    width: 1.5em;
+    height: 1em;
+}
+
+.DropDownStyle-arrowDropDown {
+    background-color: rgb(191, 213, 255);
+    width: 0.813em;
+    height: 0.75em;
+    mask-image: url("https://s.eu.tankionline.com/static/images/arrow-gray.75f5f8a5.svg");
+    mask-position: center center;
+    mask-repeat: no-repeat;
+    mask-size: contain;
+}
+
+.DropDownStyle-dropdownRoot:hover .DropDownStyle-arrowDropDown {
+    background-color: rgb(255, 255, 255);
+    width: 0.813em;
+    height: 0.75em;
+    mask-image: url("https://s.eu.tankionline.com/static/images/arrow-gray.75f5f8a5.svg");
+    mask-position: center center;
+    mask-repeat: no-repeat;
+    mask-size: contain;
+}
+
+.ksc-531.ksc-531 {
+    width: 30.625em;
+    margin-bottom: 1.75em;
+}
+
+.CheckBoxComponentStyle-oneSetting {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    height: 2.25em;
+    margin-bottom: 1.25em;
+    -webkit-box-align: center;
+    -webkit-box-pack: start;
+}
+
+.CheckBoxStyle-checkbox {
+    display: flex;
+    z-index: 1;
+}
+
+.ksc-533 {
+    display: inline-block;
+    width: max-content;
+    height: max-content;
+}
+
+.ksc-534 {
+    display: none;
+}
+
+.ksc-535 {
+    width: 2.75em;
+    height: 1.5em;
+    border: 0.063em solid rgba(255, 255, 255, 0.2);
+    border-radius: 6.25rem;
+    cursor: pointer;
+    background-color: rgba(118, 255, 51, 0.25);
+}
+
+.ksc-535::before {
+    content: "";
+    position: relative;
+    background: url("https://s.eu.tankionline.com/static/images/correct.afad1b22.svg") 50% 50% / 100% 100% no-repeat;
+    width: 1rem;
+    height: auto;
+    left: 1.5em;
+    margin-top: 0px;
+    transition: 0.2s;
+}
+
+.ksc-536 {
+    width: max-content;
+    height: 3em;
+    margin-left: 0px;
+    position: relative;
+    cursor: pointer;
+}
+
+.ksc-536 label {
+    color: rgb(255, 255, 255);
+    font-family: BaseFontRegular, FallbackFontRegular;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 1em;
+    line-height: normal;
+    margin-left: 1em;
+    margin-right: 1em;
+    z-index: 2;
+    cursor: pointer;
+}
+
+.ksc-537 {
+    width: 2.75em;
+    height: 1.5em;
+    border: 0.063em solid rgba(255, 255, 255, 0.2);
+    border-radius: 6.25rem;
+    cursor: pointer;
+    background-color: rgba(191, 213, 255, 0.25);
+}
+
+.ksc-537::before {
+    content: "";
+    position: relative;
+    background: url("https://s.eu.tankionline.com/static/images/incorrectCheck.1918884a.svg") 50% 50% / 100% 100% no-repeat;
+    width: 1rem;
+    height: auto;
+    left: 0.25em;
+    margin-top: 0px;
+    transition: 0.2s;
+}
+
+.ksc-538 {
+    width: max-content;
+    height: 3em;
+    margin-left: 0px;
+    position: relative;
+    cursor: pointer;
+}
+
+.ksc-538 label {
+    color: rgba(255, 255, 255, 0.5);
+    font-family: BaseFontRegular, FallbackFontRegular;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 1em;
+    line-height: normal;
+    margin-left: 1em;
+    margin-right: 1em;
+    z-index: 2;
+    cursor: pointer;
+}
+
+.ksc-540 {
+    white-space: nowrap;
+}
+
+.SettingsButtonsComponentStyle-containerGroupButton {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: 100%;
+    height: 3.125em;
+    background-color: transparent;
+    align-self: flex-end;
+    padding-bottom: 1.875em;
+    -webkit-box-align: center;
+    -webkit-box-pack: end;
+}
+
+.SettingsButtonsComponentStyle-buttonsWidthBackReset {
+    width: 15.625em;
+}
+
+.ksc-541 {
+    width: 12.375em;
+    height: 3em;
+    position: relative;
+    margin-top: 0px;
+    margin-right: 0px;
+    text-align: center;
+    border-radius: 0.75em;
+    cursor: pointer;
+    background-color: rgb(255, 255, 255);
+    transition: background 0.3s;
+}
+
+.ksc-541 span {
+    font-family: BaseFontBold, FallbackFontBold;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 1em;
+    line-height: normal;
+    text-transform: uppercase;
+    text-wrap: nowrap;
+}
+
+.ksc-541 img {
+    margin-left: 0.625em;
+    margin-right: 0.625em;
+}
+
+.ksc-541 span {
+    color: rgb(0, 25, 38);
+}
+
+.ksc-541:hover {
+    background-color: rgb(255, 255, 255);
+    box-shadow: rgb(255, 255, 255) 0em 0em 0em 2px;
+}
+
+.ksc-541.ksc-541 {
+    width: 15.625em;
+}
+
+.TooltipStyle-tooltip {
+    position: absolute;
+    background-color: rgba(0, 25, 38, 0.9);
+    border: 0.063em solid rgba(191, 213, 255, 0.25);
+    border-radius: 0.25em;
+    backdrop-filter: blur(0.313em);
+    z-index: inherit;
+}
+
+.AccountSettingsComponentStyle-blockTextOptions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    height: 100%;
+    padding: 1em;
+    width: 100%;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: start;
+    -webkit-box-pack: start;
+}
+
+.AccountSettingsComponentStyle-blockTextOptions h1 {
+    color: rgb(118, 255, 51);
+    font-family: BaseFontMedium, FallbackFontMedium;
+    font-style: normal;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 1.125em;
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.AccountSettingsComponentStyle-blockTextOptions span {
+    font-family: BaseFontRegular, FallbackFontRegular;
+    font-style: normal;
+    font-weight: normal;
+    line-height: inherit;
+    font-size: 1em;
+    margin-top: 0.375em;
+}
+
+.ksc-542 {
+    top: 0px;
+}
+
+.InputRangeComponentStyle-blockSoundVolume {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    height: 3.188em;
+    min-height: 3.188em;
+    margin-bottom: 1.75em;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-pack: justify;
+    -webkit-box-align: start;
+}
+
+.InputRangeComponentStyle-blockSoundVolume p {
+    color: rgb(255, 255, 255);
+    font-size: 0.9375em;
+    margin-top: 0px;
+}
+
+.InputRangeComponentStyle-blockSoundVolume p span {
+    margin-left: 0.2em;
+}
+
+.SettingsComponentStyle-slider {
+    width: 31.25em;
+}
+
+.InputRangeComponentStyle-soundVolume {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    width: 100%;
+    height: 1.25em;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-pack: start;
+    -webkit-box-align: start;
+}
+
+.InputRangeComponentStyle-range {
+    cursor: pointer;
+    appearance: none;
+    width: 100%;
+    height: 0.563em;
+    background-color: transparent;
+}
+
+.InputRangeComponentStyle-range::-webkit-slider-thumb {
+    appearance: none;
+    cursor: pointer;
+}
+
+.InputRangeComponentStyle-range::-webkit-slider-runnable-track {
+    width: 30.625em;
+    height: 0.375em;
+}
+
+.InputRangeComponentStyle-range::-webkit-slider-thumb {
+    appearance: none;
+    background-color: rgb(255, 188, 9);
+    border-radius: 0.25em;
+    width: 1.875em;
+    height: 1em;
+    margin-top: -0.3em;
+}
+
+.ksc-543 {
+    color: rgb(162, 255, 106);
+}
+
+.ksc-544 {
+    background: linear-gradient(to right, rgb(255, 188, 9) 0%, rgb(255, 188, 9) 75%, rgba(255, 255, 255, 0.1) 75%, rgba(255, 255, 255, 0.1) 100%);
+}
+
+.ksc-545 {
+    background: linear-gradient(to right, rgb(255, 188, 9) 0%, rgb(255, 188, 9) 100%, rgba(255, 255, 255, 0.1) 100%, rgba(255, 255, 255, 0.1) 100%);
+}
+
+.ksc-546 {
+    background: linear-gradient(to right, rgb(255, 188, 9) 0%, rgb(255, 188, 9) 70%, rgba(255, 255, 255, 0.1) 70%, rgba(255, 255, 255, 0.1) 100%);
+}
+
+.DropDownStyle-dropdownMenu {
+    width: 100%;
+    min-width: 4.375em;
+    max-height: 15.75em;
+    overflow: auto;
+    position: absolute;
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 4px 4px 0px;
+    z-index: 3;
+    background-color: transparent;
+}
+
+.DropDownStyle-outerContainerStyle {
+    width: 100%;
+    min-width: 4.375em;
+    max-height: 15.75em;
+    position: absolute;
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 4px 4px 0px;
+    z-index: 3;
+    background-color: transparent;
+    display: flex;
+    overflow: hidden auto;
+    scrollbar-width: thin;
+}
+
+.DropDownStyle-outerContainerStyle::-webkit-scrollbar {
+    width: 0.438em;
+    height: auto;
+    display: flex;
+}
+
+.DropDownStyle-outerContainerStyle::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-radius: 0px;
+}
+
+.DropDownStyle-outerContainerStyle::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+.VerticalScrollStyle-outerContainerStyle {
+    display: flex;
+    flex-flow: wrap;
+    justify-content: flex-start;
+    overflow: hidden auto;
+    z-index: 3;
+    scrollbar-color: rgb(188, 188, 188) rgba(255, 255, 255, 0.2);
+    scrollbar-width: thin;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    -webkit-box-pack: start;
+}
+
+.VerticalScrollStyle-outerContainerStyle::-webkit-scrollbar {
+    width: 0.438em;
+    height: auto;
+    display: flex;
+}
+
+.VerticalScrollStyle-outerContainerStyle::-webkit-scrollbar-track {
+    background-color: rgba(255, 255, 255, 0.2);
+    background-size: 0.5em;
+}
+
+.VerticalScrollStyle-outerContainerStyle::-webkit-scrollbar-thumb {
+    background-color: rgb(188, 188, 188);
+    border-radius: 0.313em;
+}
+
+.VerticalScrollStyle-outerContainerStyle::-webkit-scrollbar-thumb:hover {
+    background-color: rgb(176, 176, 176);
+}
+
+.VerticalScrollStyle-innerContainerStyle {
+    display: flex;
+    flex-flow: wrap;
+    justify-content: flex-start;
+    height: max-content;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    -webkit-box-pack: start;
+}
+
+.DropDownStyle-innerContainerStyle {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    height: max-content;
+    width: 100%;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-align: stretch;
+    -webkit-box-pack: start;
+}
+
+.ksc-547.ksc-547 {
+    width: 100%;
+    min-width: 4.375em;
+    max-height: 15.75em;
+    position: absolute;
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 4px 4px 0px;
+    z-index: 3;
+    background-color: transparent;
+    display: flex;
+    overflow: hidden auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgb(188, 188, 188) rgba(255, 255, 255, 0.2);
+}
+
+.ksc-547.ksc-547::-webkit-scrollbar {
+    width: 0.438em;
+    height: auto;
+    display: flex;
+}
+
+.ksc-547.ksc-547::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-radius: 0px;
+}
+
+.ksc-547.ksc-547::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+.ksc-547.ksc-547::-webkit-scrollbar-track {
+    background-size: 0.5em;
+    background-color: rgb(16, 48, 64);
+}
+
+.ksc-548 {
+    min-height: 3em;
+    padding-left: 0.6875em;
+    padding-right: 1em;
+    background: rgb(1, 47, 66);
+    cursor: pointer;
+}
+
+.ksc-548 span {
+    margin: 0.2em 0px 0.3em 0.3em;
+}
+
+.ksc-548:hover {
+    background: rgb(27, 68, 89);
+}
