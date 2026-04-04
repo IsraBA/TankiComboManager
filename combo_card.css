@@ -420,7 +420,7 @@
     -webkit-box-pack: center;
 }
 
-/* כפתור EQUIP */
+/* כפתור EQUIP - מוסתר כברירת מחדל, מופיע בhover על הכרטיס */
 .cme_combo-equip-btn {
     flex: 1;
     position: relative;
@@ -428,7 +428,7 @@
     border-radius: 0.25em;
     box-sizing: border-box;
     cursor: pointer;
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
     padding: 0.25em 0.35em 0.25em 0.25em;
@@ -437,6 +437,10 @@
     transition: box-shadow 0.2s ease;
     -webkit-box-align: center;
     -webkit-box-pack: center;
+}
+
+.cme_combo-card:hover .cme_combo-equip-btn {
+    display: flex;
 }
 
 .cme_combo-equip-btn:hover {
