@@ -18,9 +18,8 @@
       if (!menuContainer) return;
 
       // בדיקה האם הכפתור כבר קיים פיזית (למקרה שהמשתנה injected משקר)
-      // אנחנו מחפשים כפתור שיש לו את הטקסט "COMBOS"
       const existingBtn = Array.from(menuContainer.children).find(
-        (el) => el.innerText === "COMBOS",
+        (el) => el.dataset.cmeComboTab,
       );
 
       if (existingBtn) {
@@ -30,9 +29,16 @@
 
       // console.log("Tanki Combos: Injecting Menu Button...");
 
+      // קבלת שם הטאב בשפה הנוכחית
+      const LanguageManager = window.TankiComboManager?.LanguageManager;
+      const comboTabText = LanguageManager
+        ? LanguageManager.getUIText("combosTab")
+        : "COMBOS";
+
       const comboTab = document.createElement("div");
       comboTab.className = DOM.TAB_ITEM_CLASS;
-      comboTab.innerText = "COMBOS";
+      comboTab.innerText = comboTabText;
+      comboTab.dataset.cmeComboTab = "true";
       comboTab.style.order = "99";
       comboTab.style.cursor = "pointer";
 
@@ -176,16 +182,19 @@
       const allTabs = container.querySelectorAll(`.${DOM.TAB_ITEM_CLASS}`);
       let paintsTab = null;
 
+      // קבלת שם טאב Paints בשפה הנוכחית
+      const LanguageManager = window.TankiComboManager?.LanguageManager;
+      const paintsTabName = LanguageManager
+        ? LanguageManager.getTabName("Paints").toLowerCase()
+        : "paints";
+
       for (let tab of allTabs) {
         const tabText = tab.textContent ? tab.textContent.trim() : "";
         const tabTextLower = tabText.toLowerCase();
-        // חיפוש טאב Paints
-        if (tabTextLower === "paints" || tabTextLower.includes("paint")) {
-          // ודא שזה לא הטאב שלנו (COMBOS)
-          if (!tabTextLower.includes("combo")) {
-            paintsTab = tab;
-            break;
-          }
+        // חיפוש טאב Paints לפי השפה הנוכחית
+        if (tabTextLower === paintsTabName) {
+          paintsTab = tab;
+          break;
         }
       }
 
@@ -347,7 +356,7 @@
       const menuContainer = document.querySelector(DOM.MENU_CONTAINER);
       if (menuContainer) {
         const existingBtn = Array.from(menuContainer.children).find(
-          (el) => el.innerText === "COMBOS",
+          (el) => el.dataset.cmeComboTab,
         );
         if (!existingBtn) {
           this.injected = false; // הכפתור נמחק, צריך להזריק שוב

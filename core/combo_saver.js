@@ -79,7 +79,7 @@
           const menuContainer = document.querySelector(DOM.MENU_CONTAINER);
           if (menuContainer) {
             const comboTab = Array.from(menuContainer.children).find(
-              (el) => el.innerText === "COMBOS",
+              (el) => el.dataset.cmeComboTab,
             );
             if (comboTab) {
               const underline = comboTab.querySelector(

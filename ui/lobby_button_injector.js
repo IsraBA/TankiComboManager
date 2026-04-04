@@ -71,8 +71,11 @@
       const titleContainer = document.createElement("div");
       titleContainer.className = "cme_MountedItemsStyle-tankPartNameContainer";
 
+      const LanguageManager = window.TankiComboManager?.LanguageManager;
       const title = document.createElement("h1");
-      title.textContent = "Combos";
+      title.textContent = LanguageManager
+        ? LanguageManager.getUIText("combosTab")
+        : "COMBOS";
       titleContainer.appendChild(title);
       horizontalContainer.appendChild(titleContainer);
 

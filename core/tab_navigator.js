@@ -295,8 +295,8 @@
           tabTextLower === searchNameLower ||
           tabTextLower.includes(searchNameLower)
         ) {
-          // ודא שזה לא הטאב שלנו (COMBOS)
-          if (!tabTextLower.includes("combo")) {
+          // ודא שזה לא הטאב שלנו (COMBOS) - לפי data attribute
+          if (!tab.dataset.cmeComboTab) {
             targetTab = tab;
             break;
           }

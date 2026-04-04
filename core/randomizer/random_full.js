@@ -22,10 +22,14 @@
       // אובייקט תוצאה — ייאסף תוך כדי מעבר על הכרטיסיות
       const result = {};
 
-      // רשימת שמות לסינון לפי קטגוריה
+      // רשימת שמות לסינון לפי קטגוריה (בשפה הנוכחית)
       const excludeNames = {};
-      if (advanced.excludeBrutus) excludeNames["drones"] = ["BRUTUS"];
-      if (advanced.excludeTsarGrenade) excludeNames["grenades"] = ["TSAR"];
+      const LanguageManager = window.TankiComboManager.LanguageManager;
+      const lang = LanguageManager.getCurrentLanguage();
+      const brutusName = lang.itemNames?.brutus || "BRUTUS";
+      const tsarName = lang.itemNames?.tsar || "TSAR";
+      if (advanced.excludeBrutus) excludeNames["drones"] = [brutusName];
+      if (advanced.excludeTsarGrenade) excludeNames["grenades"] = [tsarName];
 
       // רשימת קטגוריות בסדר הביצוע
       const sequence = [
