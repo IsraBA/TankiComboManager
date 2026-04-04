@@ -9,13 +9,19 @@
 
     window.TankiComboManager.RandomFull = {
 
-        // ביצוע רנדום מלא לפי ההגדרות
+        // ביצוע רנדום מלא לפי ההגדרות — מחזיר אובייקט data מלא של הקומבו הסופי
         async execute(settings) {
             const categories = settings.categories;
             const advanced = settings.advanced;
             const TabNavigator = window.TankiComboManager.TabNavigator;
             const ComboLoader = window.TankiComboManager.ComboLoader;
             const ItemListScanner = window.TankiComboManager.ItemListScanner;
+            const BaseItemScanner = window.TankiComboManager.BaseItemScanner;
+            const AugmentScanner = window.TankiComboManager.AugmentScanner;
+            const ProtectionScanner = window.TankiComboManager.ProtectionScanner;
+
+            // אובייקט תוצאה — ייאסף תוך כדי מעבר על הכרטיסיות
+            const result = {};
 
             // רשימת שמות לסינון לפי קטגוריה
             const excludeNames = {};
@@ -24,31 +30,85 @@
 
             // רשימת קטגוריות בסדר הביצוע
             const sequence = [
-                { key: 'turrets', tabKey: 'Turrets', augmentKey: 'turretAugment', itemType: 'Turret' },
-                { key: 'hulls', tabKey: 'Hulls', augmentKey: 'hullAugment', itemType: 'Hull' },
-                { key: 'grenades', tabKey: 'Grenades', augmentKey: null, itemType: 'Grenade' },
-                { key: 'drones', tabKey: 'Drones', augmentKey: null, itemType: 'Drone' }
+                {
+                    key: 'turrets',
+                    tabKey: 'Turrets',
+                    augmentKey: 'turretAugment',
+                    resultKey: 'turret',
+                    augResultKey: 'turretAugment',
+                    hasAugment: true
+                },
+
+                {
+                    key: 'hulls',
+                    tabKey: 'Hulls',
+                    augmentKey: 'hullAugment',
+                    resultKey: 'hull',
+                    augResultKey: 'hullAugment',
+                    hasAugment: true
+                },
+
+                {
+                    key: 'grenades',
+                    tabKey: 'Grenades',
+                    augmentKey: null,
+                    resultKey: 'grenade',
+                    augResultKey: null,
+                    hasAugment: false,
+                    cleanNameFn: null
+                },
+                {
+                    key: 'drones',
+                    tabKey: 'Drones',
+                    augmentKey: null,
+                    resultKey: 'drone',
+                    augResultKey: null,
+                    hasAugment: false,
+                    cleanNameFn: BaseItemScanner.cleanDroneName.bind(BaseItemScanner)
+                }
             ];
 
             try {
-                // מעבר על כל קטגוריה
                 for (const cat of sequence) {
-                    if (!categories[cat.key]) continue;
-                    await this._equipRandomInCategory(cat, categories, advanced, excludeNames[cat.key] || [], TabNavigator, ComboLoader, ItemListScanner);
+                    // ניווט לכרטיסייה — תמיד, גם אם הקטגוריה כבויה (כדי לסרוק)
+                    await TabNavigator.navigateToTab(cat.tabKey);
+
+                    if (categories[cat.key]) {
+                        // קטגוריה מופעלת — מצטיידים בפריט רנדומלי
+                        await this._equipRandomItem(cat, advanced, excludeNames[cat.key] || [], ComboLoader, ItemListScanner);
+                    }
+
+                    // אוגמנט — אם מופעל, גם אם הפריט הראשי כבוי (מחליף אוגמנט על הפריט הנוכחי)
+                    if (cat.hasAugment && cat.augmentKey && categories[cat.augmentKey]) {
+                        await this._equipRandomAugmentForCurrentItem(advanced.legendaryOnly, ComboLoader, ItemListScanner);
+                    }
+
+                    // סריקת הפריט המצויד כרגע (בין אם שינינו אותו או לא)
+                    result[cat.resultKey] = BaseItemScanner.scanItem(cat.cleanNameFn || null);
+
+                    // סריקת אוגמנט (אם הקטגוריה תומכת באוגמנטים)
+                    if (cat.hasAugment && AugmentScanner) {
+                        result[cat.augResultKey] = await AugmentScanner.scanAugment();
+                    }
                 }
+
+                // סריקת הגנות — תמיד סורקים (אין רנדום להגנות)
+                await TabNavigator.navigateToTab('Protection');
+                result.protection = ProtectionScanner ? ProtectionScanner.scanProtection() : null;
 
                 // חזרה לכרטיסיית COMBOS
                 await this._navigateBackToCombos();
+
+                return result;
             } catch (error) {
                 console.error('[ComboManager] Randomizer error:', error);
             }
+
+            return null;
         },
 
-        // הצטיידות בפריט אקראי בקטגוריה מסוימת
-        async _equipRandomInCategory(cat, categories, advanced, excludeList, TabNavigator, ComboLoader, ItemListScanner) {
-            // ניווט לכרטיסייה
-            await TabNavigator.navigateToTab(cat.tabKey);
-
+        // הצטיידות בפריט אקראי בקטגוריה מסוימת (כבר נמצאים בכרטיסייה הנכונה)
+        async _equipRandomItem(cat, advanced, excludeList, ComboLoader, ItemListScanner) {
             // סריקת כל הפריטים הנרכשים (עם סינון MAX אם נדרש, ועם דרישת כמות לרימונים)
             const requireQuantity = cat.key === 'grenades';
             let items = ItemListScanner.scanAllPurchasedItems(advanced.maxEquipmentOnly, requireQuantity);
@@ -62,15 +122,35 @@
             if (items.length === 0) return;
 
             // בחירת פריט אקראי
-            let randomIdx = Math.floor(Math.random() * items.length);
-            const selectedItem = items[randomIdx];
+            const randomIdx = Math.floor(Math.random() * items.length);
+            await this._clickAndEquipItem(items[randomIdx], ComboLoader);
+        },
 
-            // לחיצה על הפריט והצטיידות
-            await this._clickAndEquipItem(selectedItem, ComboLoader);
+        // הצטיידות באוגמנט אקראי לפריט הנוכחי (בלי retry עם פריטים אחרים)
+        async _equipRandomAugmentForCurrentItem(legendaryOnly, ComboLoader, ItemListScanner) {
+            // פתיחת מסך אוגמנטים
+            const openBtn = document.querySelector(DOM.OPEN_AUGMENTS_BTN);
+            if (!openBtn) return;
+            openBtn.click();
+            await Utils.sleep(50);
 
-            // אוגמנטים — רק ל-turrets/hulls, אם מופעל בקטגוריות
-            if (cat.augmentKey && categories[cat.augmentKey]) {
-                await this._equipRandomAugment(items, randomIdx, advanced.legendaryOnly, ComboLoader, ItemListScanner);
+            // סריקת אוגמנטים נרכשים
+            const augments = ItemListScanner.scanAllPurchasedAugments(legendaryOnly);
+
+            if (augments.length > 0) {
+                // בחירת אוגמנט אקראי
+                const randomAug = augments[Math.floor(Math.random() * augments.length)];
+                await ComboLoader.clickWithCoordinates(randomAug.element);
+                await Utils.sleep(50);
+                await ComboLoader.clickEquipButton();
+                await Utils.sleep(50);
+            }
+
+            // יציאה ממסך אוגמנטים
+            const backBtn = document.querySelector(DOM.BACK_BUTTON);
+            if (backBtn) {
+                backBtn.click();
+                await Utils.sleep(50);
             }
         },
 
@@ -85,61 +165,6 @@
             await Utils.sleep(50);
             await ComboLoader.clickEquipButton();
         },
-
-        // הצטיידות באוגמנט אקראי — עם retry אם אין אוגמנט מתאים
-        async _equipRandomAugment(allItems, currentIdx, legendaryOnly, ComboLoader, ItemListScanner) {
-            const triedIndices = new Set();
-
-            while (triedIndices.size < allItems.length) {
-                triedIndices.add(currentIdx);
-
-                // פתיחת מסך אוגמנטים
-                const openBtn = document.querySelector(DOM.OPEN_AUGMENTS_BTN);
-                if (!openBtn) return;
-                openBtn.click();
-                await Utils.sleep(50);
-
-                // סריקת אוגמנטים נרכשים
-                const augments = ItemListScanner.scanAllPurchasedAugments(legendaryOnly);
-
-                if (augments.length > 0) {
-                    // בחירת אוגמנט אקראי
-                    const randomAug = augments[Math.floor(Math.random() * augments.length)];
-                    await ComboLoader.clickWithCoordinates(randomAug.element);
-                    await Utils.sleep(50);
-                    await ComboLoader.clickEquipButton();
-                    await Utils.sleep(50);
-
-                    // יציאה ממסך אוגמנטים
-                    const backBtn = document.querySelector(DOM.BACK_BUTTON);
-                    if (backBtn) {
-                        backBtn.click();
-                        await Utils.sleep(50);
-                    }
-                    return; // מצאנו אוגמנט — סיום
-                }
-
-                // אין אוגמנטים מתאימים — חזרה וניסיון עם פריט אחר
-                const backBtn = document.querySelector(DOM.BACK_BUTTON);
-                if (backBtn) {
-                    backBtn.click();
-                    await Utils.sleep(50);
-                }
-
-                // מציאת אינדקסים שעוד לא ניסינו
-                const untried = [];
-                for (let i = 0; i < allItems.length; i++) {
-                    if (!triedIndices.has(i)) untried.push(i);
-                }
-                if (untried.length === 0) return; // ניסינו הכל — מוותרים
-
-                // בחירת פריט אחר
-                currentIdx = untried[Math.floor(Math.random() * untried.length)];
-                await this._clickAndEquipItem(allItems[currentIdx], ComboLoader);
-            }
-        },
-
-
 
         // ניווט חזרה לכרטיסיית COMBOS עם delay ארוך יותר (כמו אחרי equipCombo)
         // כדי שאלמנטי Paints ירנדרו לפני שנסתיר אותם

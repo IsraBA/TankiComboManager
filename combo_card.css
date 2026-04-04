@@ -536,6 +536,52 @@
     cursor: text;
 }
 
+/* === Temporary Random Card === */
+
+/* כרטיס זמני — מסגרת ירוקה */
+.cme_combo-card-temporary .cme_combo-preview-container {
+    border: 0.125em solid rgb(118, 255, 51);
+    border-radius: 0.5em;
+}
+
+/* כותרת זמנית — ירוקה, לא ניתנת לעריכה */
+.cme_combo-title-temporary h1 {
+    color: rgb(118, 255, 51) !important;
+    cursor: default !important;
+}
+
+/* ביטול כל האינטראקציות על כרטיס זמני — pointer-events: none על כל הילדים */
+.cme_combo-card-temporary {
+    pointer-events: none;
+    cursor: default;
+}
+
+/* ביטול hover על הכרטיס כולו */
+.cme_combo-card-temporary:hover .cme_combo-preview-container {
+    box-shadow: none;
+}
+
+/* הסתרת כפתור equip */
+.cme_combo-card-temporary .cme_combo-equip-btn {
+    display: none !important;
+}
+
+/* הסתרת כפתור מחיקה */
+.cme_combo-card-temporary .cme_delete-btn {
+    display: none !important;
+}
+
+/* הסתרת X להסרת פריטים */
+.cme_combo-card-temporary .cme_combo-item-remove-icon {
+    display: none !important;
+}
+
+/* ביטול hover אדום על תמונות פריטים */
+.cme_combo-card-temporary .cme_combo-item-removable:hover img {
+    filter: none !important;
+    opacity: 1 !important;
+}
+
 /* === Delete Animation - Shredder Effect === */
 
 /* רעידה קצרה לפני הגריסה */

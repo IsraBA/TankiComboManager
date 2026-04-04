@@ -8,7 +8,7 @@
 
     window.TankiComboManager.RandomFromSaved = {
 
-        // ביצוע רנדום מתוך קומבואים שמורים
+        // ביצוע רנדום מתוך קומבואים שמורים — מחזיר את ה-data של הקומבו שנבחר
         async execute() {
             const ComboLoader = window.TankiComboManager.ComboLoader;
             const LanguageManager = window.TankiComboManager.LanguageManager;
@@ -25,7 +25,7 @@
 
             if (filtered.length === 0) {
                 console.warn('[ComboManager] Randomizer: No saved combos to pick from');
-                return;
+                return null;
             }
 
             // בחירה אקראית
@@ -37,6 +37,9 @@
 
             // חזרה לכרטיסיית COMBOS
             await this._navigateBackToCombos();
+
+            // החזרת data הקומבו שנבחר (ללא removedItems)
+            return randomCombo.data || null;
         },
 
         // טעינת קומבואים מ-chrome.storage.local (עטיפת callback ב-Promise)

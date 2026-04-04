@@ -197,6 +197,37 @@
             `;
         },
 
+        // יצירת כרטיס זמני לתוצאת רנדום — ללא עריכה/מחיקה/drag, עם מסגרת ירוקה
+        createTemporaryCard(comboData) {
+            const LM = window.TankiComboManager.LanguageManager;
+            const card = document.createElement('div');
+            card.className = 'cme_combo-card cme_combo-card-temporary';
+            card.setAttribute('data-temporary', 'true');
+
+            // יצירת 4 השורות (ללא removedItems)
+            const rowsHTML = this.createRowsHTML(comboData, {});
+
+            // כותרת — "RANDOM COMBO" לא ניתנת לעריכה
+            const titleHTML = `
+                <div class="cme_combo-title cme_combo-title-temporary">
+                    <h1>${LM ? LM.getUIText('randomCombo') : 'RANDOM COMBO'}</h1>
+                </div>
+            `;
+
+            card.innerHTML = `
+                <div class="cme_combo-preview-container">
+                    ${titleHTML}
+                    <div class="cme_combo-rows">
+                        ${rowsHTML}
+                    </div>
+                </div>
+            `;
+
+            // אין אירועים של עריכה/מחיקה/הסרת פריטים — הכרטיס רק לצפייה
+
+            return card;
+        },
+
         // חיבור אירועים לכרטיס קומבו
         bindComboCardEvents(card, combo, viewRenderer) {
             // כפתור מחיקה

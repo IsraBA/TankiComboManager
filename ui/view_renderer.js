@@ -11,6 +11,7 @@
         viewElement: null,
         enterKeyHandler: null,
         dragHandlerInitialized: false,
+        temporaryCardColumn: null,
 
         async init() {
             // זיהוי השפה הנוכחית כשמתחילים
@@ -707,6 +708,9 @@
         hide() {
             if (this.viewElement) this.viewElement.style.display = 'none';
 
+            // הסרת כרטיס זמני בעת יציאה מכרטיסיית COMBOS
+            this.removeTemporaryCard();
+
             // החזרת כל האלמנטים שהסתרנו
             const elementsToRestore = document.querySelectorAll(DOM.ELEMENTS_TO_HIDE);
             elementsToRestore.forEach(el => el.style.display = '');
@@ -717,6 +721,41 @@
 
             // הסרת מאזין Enter (אבל לא ממש מסירים אותו כי הוא צריך לעבוד גם כשה-view מוסתר)
             // המאזין בודק בעצמו אם ה-view גלוי
+        },
+
+        // הצגת כרטיס זמני עם תוצאת רנדום בתחילת רשימת הקומבואים
+        showTemporaryCard(comboData) {
+            const container = this.viewElement ? this.viewElement.querySelector('#combos-grid-container') : null;
+            if (!container) return;
+
+            // הסרת כרטיס זמני קודם אם קיים
+            this.removeTemporaryCard();
+
+            // יצירת הכרטיס הזמני
+            const CardRenderer = window.TankiComboManager.ComboCardRenderer;
+            if (!CardRenderer || !CardRenderer.createTemporaryCard) return;
+
+            const card = CardRenderer.createTemporaryCard(comboData);
+
+            // עטיפה ב-column כמו שאר הכרטיסים
+            const column = document.createElement('div');
+            column.className = 'cme_flexSpaceBetweenAlignCenterColumn cme_temporary-card-column';
+            column.appendChild(card);
+
+            // הוספה בתחילת הרשימה
+            container.insertBefore(column, container.firstChild);
+            this.temporaryCardColumn = column;
+
+            // גלילה לתחילת הרשימה כדי לראות את הכרטיס
+            container.scrollLeft = 0;
+        },
+
+        // הסרת הכרטיס הזמני
+        removeTemporaryCard() {
+            if (this.temporaryCardColumn) {
+                this.temporaryCardColumn.remove();
+                this.temporaryCardColumn = null;
+            }
         }
     };
 })();

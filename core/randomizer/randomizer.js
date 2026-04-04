@@ -27,6 +27,9 @@
         }
     };
 
+    // שורה אחת לכיבוי/הדלקה של כרטיס זמני אחרי רנדום
+    const SHOW_TEMPORARY_CARD = true;
+
     window.TankiComboManager.Randomizer = {
 
         // הפעלת הרנדומייזר
@@ -41,17 +44,26 @@
 
             // טעינת הגדרות
             const settings = await this.loadSettings();
+            let resultData = null;
 
             // הפעלת המצב המתאים
             if (settings.mode === 'from_saved') {
                 const RandomFromSaved = window.TankiComboManager.RandomFromSaved;
                 if (RandomFromSaved) {
-                    await RandomFromSaved.execute();
+                    resultData = await RandomFromSaved.execute();
                 }
             } else {
                 const RandomFull = window.TankiComboManager.RandomFull;
                 if (RandomFull) {
-                    await RandomFull.execute(settings);
+                    resultData = await RandomFull.execute(settings);
+                }
+            }
+
+            // הצגת כרטיס זמני עם התוצאה (אם מופעל ויש תוצאה)
+            if (SHOW_TEMPORARY_CARD && resultData) {
+                const ViewRenderer = window.TankiComboManager.ViewRenderer;
+                if (ViewRenderer && ViewRenderer.showTemporaryCard) {
+                    ViewRenderer.showTemporaryCard(resultData);
                 }
             }
         },
