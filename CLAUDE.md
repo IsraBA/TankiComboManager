@@ -45,6 +45,8 @@ TankiComboManager/
 │   ├── lobby_shortcut_handler.js # Keyboard shortcut (C key) in lobby
 │   ├── randomizer_settings.js    # Randomizer settings drawer content
 │   ├── randomizer_settings.css   # Randomizer settings drawer styles
+│   ├── import_export.js          # Import/export combos logic and modals
+│   ├── import_export.css         # Import/export button and modal styles
 │   └── components/
 │       ├── drawer/
 │       │   ├── drawer.js            # Generic drawer component (side panel + overlay)
@@ -57,9 +59,18 @@ TankiComboManager/
 │           └── select.css           # Select styles
 ├── styles.css                 # Main extension styles
 ├── combo_card.css             # Combo card styles
-└── ui/
-    ├── lobby_button.css       # Lobby button styles
-    └── delete_combo_modal.css # Delete modal styles
+├── ui/
+│   ├── lobby_button.css       # Lobby button styles
+│   └── delete_combo_modal.css # Delete modal styles
+└── HTML-examples/             # Game HTML & CSS samples (see Rule 1)
+    ├── augment/
+    ├── drawer/
+    ├── drones/
+    ├── grenades/
+    ├── hulls/
+    ├── protection/
+    ├── settings/
+    └── turrets/
 ```
 
 ## Critical Rules
@@ -69,6 +80,10 @@ TankiComboManager/
 The extension manipulates Tanki Online's live DOM. **When developing a feature that requires knowledge of the game's current HTML structure and it's not clear from the existing code how to do it — ask the developer for the relevant HTML snippet.** Do not guess selectors or HTML structure.
 
 The same applies to styling: the extension is designed to look **native and seamless** within the game — not like an obvious third-party addition. **When a feature needs to visually match the game's look and feel, and the existing code doesn't already show how that element is styled — ask the developer for the exact CSS from the game**, including hover effects, transitions, colors, fonts, and any other visual details. Never guess how game elements are styled.
+
+**Reference: `HTML-examples/`** — This directory contains real HTML and CSS samples captured from the game's UI, organized by category (turrets, hulls, augments, etc.). When you need to understand how a game element is structured or styled, **check the relevant folder in `HTML-examples/` first** before asking the developer. These samples can answer many questions about the game's DOM structure, layout patterns, and visual styling.
+
+**Important: game CSS classes are auto-generated** — The game dynamically generates its CSS class names on each build (e.g., `ksc-13574`). These class names change frequently and **must never be used directly in extension code**. Instead, create new classes with the `cme_` prefix that replicate the game's exact styling (colors, fonts, hover effects, transitions, etc.) by inspecting the computed styles in the `HTML-examples/` samples.
 
 ### 2. Keep Code Modular and Clear
 

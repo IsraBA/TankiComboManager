@@ -161,6 +161,16 @@
             </div>
             <div id="cme_randomizer-settings-gear" class="cme_randomizer-gear" title="${LM.getUIText("randomizerSettings")}"></div>
         </div>
+        <div class="cme_import-export-row">
+            <div id="cme_import-btn" class="cme_import-export-btn">
+                <div class="cme_import-export-icon"></div>
+                <span class="Font-bold">${LM.getUIText("importCombos")}</span>
+            </div>
+            <div id="cme_export-btn" class="cme_import-export-btn">
+                <div class="cme_import-export-icon cme_import-export-icon--export"></div>
+                <span class="Font-bold">${LM.getUIText("exportCombos")}</span>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -294,6 +304,25 @@
             window.TankiComboManager.RandomizerSettings.show();
           }
         });
+      }
+
+      // כפתורי ייבוא וייצוא
+      const importBtn = this.viewElement.querySelector("#cme_import-btn");
+      if (importBtn) {
+        importBtn.onclick = () => {
+          if (window.TankiComboManager.ImportExport) {
+            window.TankiComboManager.ImportExport.importCombos();
+          }
+        };
+      }
+
+      const exportBtn = this.viewElement.querySelector("#cme_export-btn");
+      if (exportBtn) {
+        exportBtn.onclick = () => {
+          if (window.TankiComboManager.ImportExport) {
+            window.TankiComboManager.ImportExport.exportCombos();
+          }
+        };
       }
 
       // יצירת Switch לפתיחה אוטומטית של כרטיסיית קומבואים

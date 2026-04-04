@@ -1,0 +1,82 @@
+/* ui/import_export.css */
+/* סגנון כפתורי ייבוא/ייצוא ומודאל ייבוא */
+
+/* === Modal Root === */
+#cme_import-modal-root {
+  pointer-events: none;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+}
+
+/* === Import/Export Buttons Row === */
+.cme_import-export-row {
+  display: flex;
+  gap: 0.625em;
+  width: inherit;
+  margin-top: 0.75em;
+}
+
+/* === Import/Export Button === */
+.cme_import-export-btn {
+  flex: 1;
+  height: 3em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  border-radius: 0.75em;
+  box-sizing: border-box;
+  cursor: pointer;
+  position: relative;
+  background: radial-gradient(
+      50% 100% at 50% 0%,
+      rgba(118, 255, 51, 0.25) 0%,
+      rgba(118, 255, 51, 0) 100%
+    )
+    transparent;
+  box-shadow: rgba(118, 255, 51, 0.25) 0em 0em 0em 0.063em;
+  transition: box-shadow 0.3s;
+  -webkit-box-align: center;
+  -webkit-box-pack: center;
+}
+
+.cme_import-export-btn:hover {
+  box-shadow: rgba(118, 255, 51, 0.5) 0em 0em 0em 0.125em;
+}
+
+.cme_import-export-btn span {
+  font-family: BaseFontMedium, FallbackFontMedium;
+  font-style: normal;
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 0.8em;
+  color: rgb(118, 255, 51);
+  white-space: nowrap;
+}
+
+/* === Import/Export Icon (same as SAVE COMBO icon) === */
+.cme_import-export-icon {
+  width: 1.0em;
+  height: 1.0em;
+  flex-shrink: 0;
+  background-color: rgb(118, 255, 51);
+  -webkit-mask-image: url(/play/static/images/ic_mountBlack.101d5e3f.svg);
+  mask-image: url(/play/static/images/ic_mountBlack.101d5e3f.svg);
+  -webkit-mask-size: 200% 200%;
+  mask-size: 200% 200%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+}
+
+/* Export icon — rotated 180 degrees */
+.cme_import-export-icon--export {
+  transform: rotate(180deg);
+}

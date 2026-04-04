@@ -22,7 +22,8 @@
         "ui/components/drawer/drawer.css",
         "ui/components/switch/switch.css",
         "ui/components/select/select.css",
-        "ui/randomizer_settings.css"
+        "ui/randomizer_settings.css",
+        "ui/import_export.css"
       ],
       "js": [
         "lib/constants.js",
@@ -54,6 +55,7 @@
         "ui/components/switch/switch.js",
         "ui/components/select/select.js",
         "ui/randomizer_settings.js",
+        "ui/import_export.js",
         "ui/combo_card_renderer.js",
         "ui/view_renderer.js",
         "main.js"
