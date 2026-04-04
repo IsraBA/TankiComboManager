@@ -2,191 +2,194 @@
 
 /* === Combo Card Styles === */
 .cme_combo-card {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    min-width: 0;
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    cursor: pointer;
-    transition: transform 0.2s ease;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-    -webkit-box-align: center;
-    -webkit-box-pack: start;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-box-align: center;
+  -webkit-box-pack: start;
 }
 
 .cme_combo-preview-container {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    max-height: 100%;
-    min-height: 12.5em;
-    min-width: 0;
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    justify-content: flex-start;
-    background-color: rgba(191, 213, 255, 0.15);
-    border-radius: 0.75em;
-    overflow: hidden;
-    border: 0.125em solid rgba(255, 255, 255, 0.15);
-    transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-    -webkit-box-align: stretch;
-    -webkit-box-pack: start;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
+  min-height: 12.5em;
+  min-width: 0;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  background-color: rgba(191, 213, 255, 0.15);
+  border-radius: 0.75em;
+  overflow: hidden;
+  border: 0.125em solid rgba(255, 255, 255, 0.15);
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-box-align: stretch;
+  -webkit-box-pack: start;
 }
 
 /* אזור השורות */
 .cme_combo-rows {
-    position: relative;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5em;
-    padding: 0.5em;
-    padding-top: 2em;
-    min-height: 0;
-    max-height: 100%;
-    overflow: hidden;
-    box-sizing: border-box;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  padding: 0.5em;
+  padding-top: 2em;
+  min-height: 0;
+  max-height: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
 }
 
 /* שורה */
 .cme_combo-row {
-    flex: 1 1 0;
-    min-height: 0;
-    display: flex;
-    flex-direction: row;
-    gap: 0.5em;
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: row;
+  gap: 0.5em;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
 }
 
 /* שורה רביעית - חצי גובה */
 .cme_combo-row-4 {
-    flex: 0.5 1 0;
+  flex: 0.5 1 0;
 }
 
 /* ריבוע (שורה ראשונה) */
 .cme_combo-square {
-    flex: 1;
-    position: relative;
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 0.25em;
-    border: 0.0625em solid rgba(255, 255, 255, 0.1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    padding: 0.375em;
-    -webkit-box-align: center;
-    -webkit-box-pack: center;
+  flex: 1;
+  position: relative;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 0.25em;
+  border: 0.0625em solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 0.375em;
+  -webkit-box-align: center;
+  -webkit-box-pack: center;
 }
 
 .cme_combo-square img {
-    width: auto;
-    height: auto;
-    object-fit: contain;
+  width: auto;
+  height: auto;
+  object-fit: contain;
 }
 
 /* תמונת דרון - 100% גובה ורוחב */
 .cme_combo-drone-image {
-    max-width: 100%;
-    max-height: 100%
+  max-width: 100%;
+  max-height: 100%;
 }
 
 /* תמונת רימון - 60% גובה ורוחב */
 .cme_combo-grenade-image {
-    max-width: 68%;
-    max-height: 68%;
+  max-width: 68%;
+  max-height: 68%;
 }
 
 /* מלבן (שורה שניה ושלישית) */
 .cme_combo-rectangle {
-    flex: 1;
-    position: relative;
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 0.25em;
-    border: 0.0625em solid rgba(255, 255, 255, 0.1);
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    overflow: hidden;
-    padding: 0.575em;
-    padding-left: 1.3em;
-    -webkit-box-align: center;
-    -webkit-box-pack: end;
+  flex: 1;
+  position: relative;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 0.25em;
+  border: 0.0625em solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  overflow: hidden;
+  padding: 0.575em;
+  padding-left: 1.3em;
+  -webkit-box-align: center;
+  -webkit-box-pack: end;
 }
 
 /* תמונת תותח */
 .cme_combo-turret-image {
-    max-width: 60%;
-    max-height: 60%;
-    width: auto;
-    height: auto;
-    object-fit: contain;
+  max-width: 60%;
+  max-height: 60%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
 }
 
 /* תמונת hull */
 .cme_combo-hull-image {
-    max-width: 60%;
-    max-height: 60%;
-    width: auto;
-    height: auto;
-    object-fit: contain;
+  max-width: 60%;
+  max-height: 60%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
 }
 
 /* מלבן עם 4 ההגנות */
 .cme_combo-protections {
-    flex: 2;
-    position: relative;
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 0.25em;
-    border: 0.0625em solid rgba(255, 255, 255, 0.1);
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-around;
-    overflow: hidden;
-    padding: 0.25em;
-    gap: 0.25em;
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
+  flex: 2;
+  position: relative;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 0.25em;
+  border: 0.0625em solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+  overflow: hidden;
+  padding: 0.25em;
+  gap: 0.25em;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
 }
 
 /* כל הגנה */
 .cme_combo-protection-item {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    min-width: 0;
-    height: 100%;
-    border-radius: 0.125em;
-    -webkit-box-align: center;
-    -webkit-box-pack: center;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  min-width: 0;
+  height: 100%;
+  border-radius: 0.125em;
+  -webkit-box-align: center;
+  -webkit-box-pack: center;
 }
 
 /* ריבוע ריק - מציג border */
 .cme_combo-protection-item-empty {
-    border: 0.0625em dashed rgba(255, 255, 255, 0.2);
+  border: 0.0625em dashed rgba(255, 255, 255, 0.2);
 }
 
 .cme_combo-protection-item img {
-    width: auto;
-    height: 100%;
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
+  width: auto;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
 }
 
 /* ריבוע עם תמונת הצבע - בוטל */
@@ -216,311 +219,314 @@
 
 /* תג augment בפינה השמאלית התחתונה */
 .cme_combo-augment-badge {
-    position: absolute;
-    bottom: 0.45em;
-    left: 0.45em;
-    width: 2.1em;
-    height: 2.1em;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 5;
-    -webkit-box-align: center;
-    -webkit-box-pack: center;
+  position: absolute;
+  bottom: 0.45em;
+  left: 0.45em;
+  width: 2.1em;
+  height: 2.1em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  -webkit-box-align: center;
+  -webkit-box-pack: center;
 }
 
 .cme_combo-augment-badge img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .cme_combo-card:hover .cme_combo-preview-container {
-    box-shadow: rgb(191, 213, 255) 0em 0em 0em 0.125em;
+  box-shadow: rgb(191, 213, 255) 0em 0em 0em 0.125em;
 }
 
 /* כותרת הקומבו (ללא רקע כהה) */
 .cme_combo-title {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    padding: 0.5em 1em;
-    z-index: 6;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 0.5em 1em;
+  z-index: 6;
 }
 
 /* כותרת הקומבו */
 .cme_combo-title h1 {
-    font-family: BaseFontMedium, FallbackFontMedium;
-    font-size: 0.875em;
-    font-weight: 500;
-    text-transform: uppercase;
-    color: white;
-    margin: 0;
-    padding: 0;
-    outline: none;
-    cursor: text;
-    letter-spacing: 0.05em;
+  font-family: BaseFontMedium, FallbackFontMedium;
+  font-size: 0.875em;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: white;
+  margin: 0;
+  padding: 0;
+  outline: none;
+  cursor: text;
+  letter-spacing: 0.05em;
 }
 
 .cme_combo-title h1:focus {
-    color: rgb(118, 255, 51);
+  color: rgb(118, 255, 51);
 }
 
 /* שם הפריט בפינה השמאלית העליונה */
 .cme_combo-item-name {
-    position: absolute;
-    top: 0.25em;
-    left: 0.375em;
-    font-family: BaseFontMedium, FallbackFontMedium;
-    font-size: 0.625em;
-    font-weight: 500;
-    text-transform: uppercase;
-    color: white;
-    z-index: 6;
-    padding: 0.125em 0.375em;
-    border-radius: 0.125em;
-    pointer-events: none;
+  position: absolute;
+  top: 0.25em;
+  left: 0.375em;
+  font-family: BaseFontMedium, FallbackFontMedium;
+  font-size: 0.625em;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: white;
+  z-index: 6;
+  padding: 0.125em 0.375em;
+  border-radius: 0.125em;
+  pointer-events: none;
 }
 
 /* כפתור מחיקה */
 .cme_delete-btn {
-    position: absolute;
-    top: 0.5em;
-    right: 0.5em;
-    width: 1em;
-    height: 1em;
-    cursor: pointer;
-    background-image: url(https://s.eu.tankionline.com/static/images/iconDelete.b879b0ab.svg);
-    background-repeat: no-repeat;
-    background-size: contain;
-    background-position: center center;
-    opacity: 0;
-    transition: opacity 0.2s ease, background-image 0.2s ease;
-    z-index: 20;
+  position: absolute;
+  top: 0.5em;
+  right: 0.5em;
+  width: 1em;
+  height: 1em;
+  cursor: pointer;
+  background-image: url(https://s.eu.tankionline.com/static/images/iconDelete.b879b0ab.svg);
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center center;
+  opacity: 0;
+  transition:
+    opacity 0.2s ease,
+    background-image 0.2s ease;
+  z-index: 20;
 }
 
 .cme_combo-card:hover .cme_delete-btn {
-    opacity: 1;
+  opacity: 1;
 }
 
 .cme_delete-btn:hover {
-    background-image: url(https://s.eu.tankionline.com/static/images/deleteHoverModal.3aceb055.svg);
-    background-repeat: no-repeat;
-    background-size: contain;
-    background-position: center center;
+  background-image: url(https://s.eu.tankionline.com/static/images/deleteHoverModal.3aceb055.svg);
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center center;
 }
 
 /* === Item Removal Styles === */
 /* עטיפה לתמונות שניתן להסיר */
 .cme_combo-item-removable {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 }
 
 /* פילטר אדום בעת hover */
 .cme_combo-item-removable:hover img {
-    filter: brightness(0.5) sepia(1) hue-rotate(0deg) saturate(2);
-    transition: filter 0.2s ease;
+  filter: brightness(0.5) sepia(1) hue-rotate(0deg) saturate(2);
+  transition: filter 0.2s ease;
 }
 
 /* SVG איקס - מוסתר כברירת מחדל */
 .cme_combo-item-remove-icon {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    opacity: 0;
-    transition: opacity 0.2s ease;
-    z-index: 10;
-    pointer-events: none;
-    width: 0;
-    height: 0;
-    filter: drop-shadow(0 0 0.125em rgba(0, 0, 0, 0.8));
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 10;
+  pointer-events: none;
+  width: 0;
+  height: 0;
+  filter: drop-shadow(0 0 0.125em rgba(0, 0, 0, 0.8));
 }
 
 /* גודל האיקס - חצי מהקונטיינר (שגודלו כגודל התמונה) בעת hover */
 .cme_combo-item-removable:hover .cme_combo-item-remove-icon {
-    opacity: 1;
-    width: 50%;
-    height: 50%;
+  opacity: 1;
+  width: 50%;
+  height: 50%;
 }
 
 /* גודל איקס גדול - תותח וגוף (70%) */
 .cme_combo-item-removable:hover .cme_combo-item-remove-icon-large {
-    width: 70%;
-    height: 70%;
+  width: 70%;
+  height: 70%;
 }
 
 /* גודל איקס קטן - רימון ודרון (30%) */
 .cme_combo-item-removable:hover .cme_combo-item-remove-icon-small {
-    width: 30%;
-    height: 30%;
+  width: 30%;
+  height: 30%;
 }
 
 /* התאמה לפריטים בתוך ריבועים ומלבנים */
 .cme_combo-square .cme_combo-item-removable {
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 }
 
 /* במלבנים, ה-wrapper צריך להיות בגודל התמונה ולא למלא את כל הרוחב */
 .cme_combo-rectangle .cme_combo-item-removable {
-    display: inline-flex;
-    width: auto;
-    height: auto;
-    max-width: 85%;
-    max-height: 85%;
-    flex-shrink: 0;
-    vertical-align: middle;
+  display: inline-flex;
+  width: auto;
+  height: auto;
+  max-width: 85%;
+  max-height: 85%;
+  flex-shrink: 0;
+  vertical-align: middle;
 }
 
 .cme_combo-rectangle .cme_combo-item-removable {
-    max-width: 90%;
-    max-height: 100%;
+  max-width: 90%;
+  max-height: 100%;
 }
 
 /* התאמה לפריטי הגנה */
 .cme_combo-protection-item .cme_combo-item-removable {
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 }
 
 /* התאמה לתג augment */
 .cme_combo-augment-badge .cme_combo-item-removable {
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 }
 
 .cme_combo-augment-badge .cme_combo-item-removable img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 /* טקסט "NO X" כשאין פריט */
 .cme_combo-no-item {
-    font-family: BaseFontMedium, FallbackFontMedium;
-    font-size: 0.75em;
-    font-weight: 500;
-    text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.5);
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    -webkit-box-align: center;
-    -webkit-box-pack: center;
+  font-family: BaseFontMedium, FallbackFontMedium;
+  font-size: 0.75em;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  -webkit-box-align: center;
+  -webkit-box-pack: center;
 }
 
 /* כפתור EQUIP - מוסתר כברירת מחדל, מופיע בhover על הכרטיס */
 .cme_combo-equip-btn {
-    flex: 1;
-    position: relative;
-    background-color: rgb(118, 255, 51);
-    border-radius: 0.25em;
-    box-sizing: border-box;
-    cursor: pointer;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 0.25em 0.35em 0.25em 0.25em;
-    height: 85%;
-    margin: auto 0;
-    transition: box-shadow 0.2s ease;
-    -webkit-box-align: center;
-    -webkit-box-pack: center;
+  flex: 1;
+  position: relative;
+  background-color: rgb(118, 255, 51);
+  border-radius: 0.25em;
+  box-sizing: border-box;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25em 0.35em 0.25em 0.25em;
+  height: 85%;
+  margin: auto 0;
+  transition: box-shadow 0.2s ease;
+  -webkit-box-align: center;
+  -webkit-box-pack: center;
 }
 
 .cme_combo-card:hover .cme_combo-equip-btn {
-    display: flex;
+  display: flex;
 }
 
 .cme_combo-equip-btn:hover {
-    box-shadow: rgb(255, 255, 255) 0em 0em 0em 0.125em;
+  box-shadow: rgb(255, 255, 255) 0em 0em 0em 0.125em;
 }
 
 .cme_combo-equip-btn-inner {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    -webkit-box-align: center;
-    -webkit-box-pack: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  -webkit-box-align: center;
+  -webkit-box-pack: center;
 }
 
 .cme_combo-equip-icon {
-    background-repeat: no-repeat;
-    background-size: contain;
-    background-position: center center;
-    background-image: url(/play/static/images/ic_mountBlack.101d5e3f.svg);
-    width: 1.25em;
-    height: 1.25em;
-    flex-shrink: 0;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center center;
+  background-image: url(/play/static/images/ic_mountBlack.101d5e3f.svg);
+  width: 1.25em;
+  height: 1.25em;
+  flex-shrink: 0;
 }
 
 .cme_combo-equip-text {
-    font-family: BaseFontMedium, FallbackFontMedium;
-    font-style: normal;
-    font-weight: 700;
-    text-transform: uppercase;
-    font-size: 0.625em;
-    color: rgb(0, 25, 38);
-    line-height: 1.25em;
-    white-space: nowrap;
+  font-family: BaseFontMedium, FallbackFontMedium;
+  font-style: normal;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.625em;
+  color: rgb(0, 25, 38);
+  line-height: 1.25em;
+  white-space: nowrap;
 }
 
 /* === Drag and Drop Styles === */
 
 /* כרטיס בזמן גרירה - חצי שקיפות */
 .cme_combo-card.cme_dragging {
-    opacity: 0.5;
-    cursor: grabbing !important;
+  opacity: 0.5;
+  cursor: grabbing !important;
 }
 
 /* הקונטיינר שמכיל את הכרטיסים */
 .cme_flexSpaceBetweenAlignCenterColumn.cme_dragging {
-    opacity: 0.5;
+  opacity: 0.5;
 }
 
 /* אינדיקטור drop - פס בין כרטיסים */
 .cme_drop-indicator {
-    width: 0.25em;
-    height: 100%;
-    background: rgb(118, 255, 51);
-    border-radius: 0.125em;
-    box-shadow: 0 0 0.5em rgba(118, 255, 51, 0.5);
-    flex-shrink: 0;
-    margin: 0 0.25em;
-    animation: pulse-indicator 1s ease-in-out infinite;
+  width: 0.25em;
+  height: 100%;
+  background: rgb(118, 255, 51);
+  border-radius: 0.125em;
+  box-shadow: 0 0 0.5em rgba(118, 255, 51, 0.5);
+  flex-shrink: 0;
+  margin: 0 0.25em;
+  animation: pulse-indicator 1s ease-in-out infinite;
 }
 
 @keyframes pulse-indicator {
-    0%, 100% {
-        opacity: 1;
-        transform: scaleX(1);
-    }
-    50% {
-        opacity: 0.6;
-        transform: scaleX(0.8);
-    }
+  0%,
+  100% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scaleX(0.8);
+  }
 }
 
 /* cursor בזמן גרירה */
 .cme_combo-card[draggable="true"] {
-    cursor: grab;
+  cursor: grab;
 }
 
 .cme_combo-card[draggable="true"]:active {
-    cursor: grabbing;
+  cursor: grabbing;
 }
 
 /* למנוע cursor grab על אלמנטים ספציפיים */
@@ -529,87 +535,104 @@
 .cme_combo-card[draggable="true"] .cme_combo-equip-btn,
 .cme_combo-card[draggable="true"] .cme_delete-btn,
 .cme_combo-card[draggable="true"] .cme_combo-item-removable {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .cme_combo-card[draggable="true"] .cme_combo-title h1 {
-    cursor: text;
+  cursor: text;
 }
 
 /* === Temporary Random Card === */
 
 /* כרטיס זמני — מסגרת ירוקה */
 .cme_combo-card-temporary .cme_combo-preview-container {
-    border: 0.125em solid rgb(118, 255, 51);
-    border-radius: 0.5em;
+  border: 0.125em solid rgb(118, 255, 51);
+  border-radius: 0.5em;
 }
 
 /* כותרת זמנית — ירוקה, לא ניתנת לעריכה */
 .cme_combo-title-temporary h1 {
-    color: rgb(118, 255, 51) !important;
-    cursor: default !important;
+  color: rgb(118, 255, 51) !important;
+  cursor: default !important;
 }
 
 /* ביטול כל האינטראקציות על כרטיס זמני — pointer-events: none על כל הילדים */
 .cme_combo-card-temporary {
-    pointer-events: none;
-    cursor: default;
+  pointer-events: none;
+  cursor: default;
 }
 
 /* ביטול hover על הכרטיס כולו */
 .cme_combo-card-temporary:hover .cme_combo-preview-container {
-    box-shadow: none;
+  box-shadow: none;
 }
 
 /* הסתרת כפתור equip */
 .cme_combo-card-temporary .cme_combo-equip-btn {
-    display: none !important;
+  display: none !important;
 }
 
 /* הסתרת כפתור מחיקה */
 .cme_combo-card-temporary .cme_delete-btn {
-    display: none !important;
+  display: none !important;
 }
 
 /* הסתרת X להסרת פריטים */
 .cme_combo-card-temporary .cme_combo-item-remove-icon {
-    display: none !important;
+  display: none !important;
 }
 
 /* ביטול hover אדום על תמונות פריטים */
 .cme_combo-card-temporary .cme_combo-item-removable:hover img {
-    filter: none !important;
-    opacity: 1 !important;
+  filter: none !important;
+  opacity: 1 !important;
 }
 
 /* === Delete Animation - Shredder Effect === */
 
 /* רעידה קצרה לפני הגריסה */
 .cme_combo-card.cme_shake {
-    animation: cme_shake 0.3s ease-in-out;
+  animation: cme_shake 0.3s ease-in-out;
 }
 
 @keyframes cme_shake {
-    0%, 100% { transform: translateX(0); }
-    15% { transform: translateX(-4px) rotate(-1deg); }
-    30% { transform: translateX(3px) rotate(0.5deg); }
-    45% { transform: translateX(-3px) rotate(-0.5deg); }
-    60% { transform: translateX(2px) rotate(0.3deg); }
-    80% { transform: translateX(-1px); }
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  15% {
+    transform: translateX(-4px) rotate(-1deg);
+  }
+  30% {
+    transform: translateX(3px) rotate(0.5deg);
+  }
+  45% {
+    transform: translateX(-3px) rotate(-0.5deg);
+  }
+  60% {
+    transform: translateX(2px) rotate(0.3deg);
+  }
+  80% {
+    transform: translateX(-1px);
+  }
 }
 
 /* רצועת גריסה */
 .cme_shred-strip {
-    pointer-events: none !important;
-    will-change: transform, opacity;
+  pointer-events: none !important;
+  will-change: transform, opacity;
 }
 
 /* קריסת העמודה אחרי הגריסה */
 .cme_flexSpaceBetweenAlignCenterColumn.cme_column-collapsing {
-    transition: width 0.3s ease-in, margin-right 0.3s ease-in, min-width 0.3s ease-in, padding 0.3s ease-in;
-    width: 0 !important;
-    min-width: 0 !important;
-    margin-right: 0 !important;
-    padding: 0 !important;
-    overflow: hidden;
+  transition:
+    width 0.3s ease-in,
+    margin-right 0.3s ease-in,
+    min-width 0.3s ease-in,
+    padding 0.3s ease-in;
+  width: 0 !important;
+  min-width: 0 !important;
+  margin-right: 0 !important;
+  padding: 0 !important;
+  overflow: hidden;
 }

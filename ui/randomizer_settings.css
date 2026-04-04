@@ -3,34 +3,34 @@
 
 /* כותרת סקשיין */
 .cme_randomizer-section-title {
-    font-family: BaseFontMedium, FallbackFontMedium;
-    font-style: normal;
-    font-weight: 500;
-    font-size: 0.875em;
-    text-transform: uppercase;
-    color: rgb(191, 213, 255);
-    letter-spacing: 0.1em;
-    margin-bottom: 1em;
-    margin-top: 0.5em;
+  font-family: BaseFontMedium, FallbackFontMedium;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 0.875em;
+  text-transform: uppercase;
+  color: rgb(191, 213, 255);
+  letter-spacing: 0.1em;
+  margin-bottom: 1em;
+  margin-top: 0.5em;
 }
 
 /* קו מפריד בין סקשיינים */
 .cme_randomizer-separator {
-    background-color: rgba(255, 255, 255, 0.1);
-    width: 100%;
-    height: 0.063em;
-    margin-bottom: 1.875em;
-    margin-top: 0.625em;
+  background-color: rgba(255, 255, 255, 0.1);
+  width: 100%;
+  height: 0.063em;
+  margin-bottom: 1.875em;
+  margin-top: 0.625em;
 }
 
 /* מעטפת סקשיין (להסתרה/הצגה לפי מצב) */
 .cme_randomizer-section-hidden {
-    display: none !important;
+  display: none !important;
 }
 
 /* שורה של 2 switches */
 .cme_randomizer-switches-row {
-    display: flex;
-    align-items: center;
-    gap: 1em;
+  display: flex;
+  align-items: center;
+  gap: 1em;
 }
