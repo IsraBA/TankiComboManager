@@ -159,7 +159,10 @@
             <div class="cme_flexEndAlignEnd">
                 <span class="Font-bold">${LM.getUIText("surpriseMe")}</span>
             </div>
-            <div id="cme_randomizer-settings-gear" class="cme_randomizer-gear" title="${LM.getUIText("randomizerSettings")}"></div>
+            <div id="cme_randomizer-settings-gear" class="cme_randomizer-gear" title="${LM.getUIText("randomizerSettings")}">
+                <div class="cme_randomizer-gear-icon"></div>
+                <span class="Font-bold cme_randomizer-gear-text">${LM.getUIText("randomizerSettings")}</span>
+            </div>
         </div>
         <div class="cme_import-export-row">
             <div id="cme_import-btn" class="cme_import-export-btn">
