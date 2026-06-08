@@ -5,7 +5,7 @@
 
   **Browser extension for Tanki Online equipment management**
 
-  [![Version](https://img.shields.io/badge/version-2.0-blue.svg)](manifest.json)
+  [![Version](https://img.shields.io/badge/version-2.5-blue.svg)](manifest.json)
   [![Manifest](https://img.shields.io/badge/manifest-v3-green.svg)](manifest.json)
 
 </div>
@@ -57,6 +57,7 @@
 
 - Turret and hull augments; all 4 protection slots with resistance types
 - Drones and grenades; follows game language; optional "remove item" per slot for partial loads
+- "Include protections" toggle: when off, equipping a combo leaves your current protections untouched (protection icons on the cards dim to show they're skipped)
 
 ### Equipment Coverage
 
