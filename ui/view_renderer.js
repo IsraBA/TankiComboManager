@@ -137,6 +137,8 @@
                 
                 <!-- Auto-Open Combos Switch -->
                 <div id="cme_auto-open-switch-container" style="margin-top: 1em;"></div>
+                <!-- Equip Protections Switch -->
+                <div id="cme_equip-protections-switch-container" style="margin-top: 0em;"></div>
             </div>
         </div>
     </div>
@@ -352,6 +354,36 @@
         });
       }
 
+      // יצירת Switch להחלטה אם להתייחס להגנות בעת הצטיידות בקומבו
+      const equipProtectionsContainer = this.viewElement.querySelector(
+        "#cme_equip-protections-switch-container",
+      );
+      if (equipProtectionsContainer && window.TankiComboManager.Switch) {
+        const LM = window.TankiComboManager.LanguageManager;
+        chrome.storage.local.get(["equipProtectionsOnLoad"], (result) => {
+          const shouldEquipProtections =
+            result.equipProtectionsOnLoad !== false;
+          // עדכון מצב העמעום ההתחלתי של אייקוני ההגנות בכרטיסים
+          this._applyProtectionsDimState(shouldEquipProtections);
+          const equipProtectionsSwitch = window.TankiComboManager.Switch.create(
+            {
+              id: "cme_equip-protections-switch",
+              label: LM
+                ? LM.getUIText("equipProtectionsCheckbox")
+                : "Equip protections",
+              checked: shouldEquipProtections,
+              onChange: (isChecked) => {
+                chrome.storage.local.set({
+                  equipProtectionsOnLoad: isChecked,
+                });
+                this._applyProtectionsDimState(isChecked);
+              },
+            },
+          );
+          equipProtectionsContainer.appendChild(equipProtectionsSwitch);
+        });
+      }
+
       // הוספת גלילה אופקית עם גלגלת העכבר
       const combosContainer = this.viewElement.querySelector(
         "#combos-grid-container",
@@ -445,6 +477,15 @@
 
       // הוספת המאזין לדוקומנט
       document.addEventListener("keydown", this.enterKeyHandler);
+    },
+
+    // עמעום אייקוני ההגנות בכרטיסים כשההתייחסות להגנות כבויה
+    _applyProtectionsDimState(equipProtectionsEnabled) {
+      if (!this.viewElement) return;
+      this.viewElement.classList.toggle(
+        "cme_protections-disabled",
+        !equipProtectionsEnabled,
+      );
     },
 
     // טעינת הקומבואים מ-storage והצגתם

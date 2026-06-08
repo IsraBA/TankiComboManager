@@ -219,6 +219,11 @@
   user-select: none;
 }
 
+/* צמצום הרווח בין טוגל ה-Auto-open לטוגל ה-Include protections */
+#cme_auto-open-switch-container .cme_switch-row {
+  margin-bottom: 0.35em;
+}
+
 /* === Tank Part Upgrades (Button Section) === */
 @media screen and (min-width: 1280px), (min-height: 950px) {
   .cme_tankPartUpgrades {

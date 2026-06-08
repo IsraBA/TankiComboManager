@@ -74,11 +74,20 @@
         }
 
         // 7. הצטיידות בהגנות (כולל הסרת הגנות אם יש חריץ ריק)
+        // רק אם המשתמש הפעיל את ההתייחסות להגנות (ברירת מחדל: דלוק)
         if (comboData.protection) {
-          await window.TankiComboManager.ProtectionEquipper.equipProtection(
-            comboData.protection,
-            removedItems.protection || [],
-          );
+          const shouldEquipProtections = await new Promise((resolve) => {
+            chrome.storage.local.get(["equipProtectionsOnLoad"], (result) => {
+              resolve(result.equipProtectionsOnLoad !== false);
+            });
+          });
+
+          if (shouldEquipProtections) {
+            await window.TankiComboManager.ProtectionEquipper.equipProtection(
+              comboData.protection,
+              removedItems.protection || [],
+            );
+          }
         }
 
         // חזרה לכרטיסיית Protection

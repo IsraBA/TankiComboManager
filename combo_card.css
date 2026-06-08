@@ -177,6 +177,12 @@
   border-radius: 0.125em;
   -webkit-box-align: center;
   -webkit-box-pack: center;
+  transition: opacity 0.2s ease;
+}
+
+/* כשההתייחסות להגנות כבויה - אייקוני ההגנות חצי שקופים כדי לסמן שלא יצוידו */
+.cme_protections-disabled .cme_combo-protection-item {
+  opacity: 0.35;
 }
 
 /* ריבוע ריק - מציג border */
