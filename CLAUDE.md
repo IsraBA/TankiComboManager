@@ -177,13 +177,16 @@ When changing the project structure (adding, removing, or renaming
 files/folders), **update the structure tree and any other affected section
 here**.
 
-### 8. Never Ship Internal Docs
+### 8. Ship Only What Runs
 
 `CLAUDE.md`, `docs/`, `HTML-examples/`, and `build/` must **never** go into the
-store zip — they contain the reverse-engineering trail and frank risk
-discussions, and anything in the package is readable by reviewers and by anyone
-who unpacks the extension. See **`docs/PACKAGING.md`**, which is the single
-source of truth for what ships; `build/make-zip.ps1` implements it.
+store zip. The package should contain exactly the files the extension loads and
+nothing else: it keeps the upload small, and it keeps what a reviewer inspects
+identical to what actually executes. (The repository is public, so this is about
+a clean package, not about secrecy — `HTML-examples/` alone is several MB of
+development reference that no user ever needs.) See **`docs/PACKAGING.md`**, the
+single source of truth for what ships; `build/make-zip.ps1` implements it and
+refuses to build if any of it slips in.
 
 ## Manifest layout (4 content-script blocks)
 
@@ -605,9 +608,12 @@ selector: update `features/combos/lib/constants.js`.
 
 The extension is published and has 500+ users, so store hygiene matters:
 
-- It **injects code into tankionline.com and reshapes the game's chat rendering**.
-  That is the kind of "modifies a third-party site" behaviour CWS review and
-  Tanki's ToS can object to. Be deliberate about listing wording.
+- The extension changes how a third-party page behaves, which reviewers read
+  closely. Describe it plainly and accurately: the listing text and the
+  permission justifications in `docs/STORE.md` are written to match what the code
+  actually does, and they must be updated whenever the code's behaviour changes.
+  An accurate description is also the extension's best defence if anyone asks
+  what it does.
 - The translator **sends chat text to a third-party translation service**, so the
   dashboard's Privacy practices tab must declare *website content* and *personal
   communications*, and a hosted privacy-policy URL is **mandatory**. All the

@@ -15,12 +15,20 @@ is that the exclusions can't be forgotten.
 
 ## Why exclusions matter
 
-Everything inside the uploaded package is readable by Chrome Web Store reviewers
-and by anyone who unpacks the extension. Our internal docs contain the
-reverse-engineering trail of Tanki's minified bundle, notes on how we hook the
-game's render code, and a frank discussion of the risk that Google or Tanki
-objects to this extension. **None of that should be distributed.** The privacy
-policy is served from its hosted URL, not from inside the package.
+The package should be exactly the files the extension loads, and nothing else.
+
+- **Size.** `HTML-examples/` alone is several MB of captured game markup used as
+  a styling reference during development. Shipping it would multiply the upload
+  for zero user benefit.
+- **Clarity for review.** What a reviewer unpacks should be what actually runs.
+  Development notes, build scripts and store paperwork sitting alongside the code
+  only add noise to that.
+- **The privacy policy belongs at its URL,** not inside the package — the listing
+  points at the hosted copy, and one canonical version avoids the two drifting
+  apart.
+
+This is not about secrecy: the repository is public, and the development docs are
+meant to be read there.
 
 ## What ships
 
@@ -36,8 +44,8 @@ policy is served from its hosted URL, not from inside the package.
 
 | Path | Reason |
 |---|---|
-| `CLAUDE.md` | internal agent guide: reverse-engineering trail, hooking details, CWS-risk discussion |
-| `docs/**` | `PACKAGING.md` (this file), `STORE.md` (internal dashboard notes), `PRIVACY.md` (belongs at its hosted URL) |
+| `CLAUDE.md` | the development guide — read it on GitHub, it doesn't run |
+| `docs/**` | `PACKAGING.md` (this file), `STORE.md` (dashboard paperwork), `PRIVACY.md` (belongs at its URL) |
 | `build/**` | the packaging script itself |
 | `HTML-examples/**` | captured game HTML/CSS samples — dev reference only, and large |
 | `README.md` | public on GitHub already; not needed at runtime |
