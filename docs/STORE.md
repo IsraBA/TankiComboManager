@@ -29,49 +29,73 @@ for it:
 - Expect a burst of "it stopped working" reviews/emails right after rollout. The
   answer is the sentence above.
 
-## 2. Listing copy
+## 2. The "Store listing" tab
 
-**Name:** `Tanki Online — Combos & QoL`
+**Name** and **Summary** are taken from `manifest.json` (`name` / `description`)
+and update themselves when the new package is uploaded — nothing to type. The
+summary is 131 of the allowed 132 characters, so if you ever edit the manifest
+description, re-check that it still fits.
 
-**Short description (≤132 chars):**
-> Save your Tanki Online combos and switch with one click — plus real-time battle
-> chat translation, right on the game screen.
+**Category:** Games. **Language:** English.
 
-**Category:** Fun / Games
+### Detailed description
 
-**Detailed description:**
-> Quality-of-life tools for Tanki Online, in one extension.
->
-> **⚙️ Combo manager**
-> • Save your full setup — turret, hull, augments, drone, grenade, protections —
->   and equip it again with a single click.
-> • A "COMBOS" tab right inside the garage, plus a quick-access button and the C
->   shortcut in the lobby.
-> • Drag to reorder, rename, import/export, and a randomizer when you want the
->   game to pick for you.
-> • Works in your game's language, and only ever equips items you own.
->
-> **💬 Battle chat translation**
-> • Foreign chat messages appear instantly, then swap to your language a moment
->   later — in place on the game screen, no second window.
-> • Choose your language: English, Russian, Spanish, Portuguese, German, French,
->   Turkish, Polish and more.
-> • The detected source language is shown (e.g. "[RU] »") so you always know what
->   was translated.
-> • Universal gaming slang ("gg", "ez", "noob"…) is left as-is — no noise.
-> • One tap, or Alt+T, switches the whole chat back to the original text.
-> • Turn it off any time in the game's Settings screen; the combo manager keeps
->   working either way.
->
-> No account, no ads. See the privacy policy for exactly what data is used (short
-> version: your combos never leave your browser; only the text of a chat message
-> you want translated is sent to a translation service).
+⚠️ The description that was live described a combos-only extension and stated
+"Does not work in battles". That is **no longer true** — chat translation runs in
+battle. Replace the whole field with the text below (891 of 16,000 chars).
 
-**Screenshots to capture (1280×800 or 640×400):**
+Keep it short. Nobody reads a wall of marketing copy on a store page, and the
+screenshots carry the detail anyway.
+
+```
+COMBOS
+Save a full garage setup - turret, hull, both augments, drone, grenade, protections - and equip it again in one click. Name and reorder your combos, skip individual slots, import/export, or let the randomizer choose. Open it from the garage menu, or press C in the lobby.
+
+CHAT TRANSLATION
+Foreign battle chat, translated in place on the game screen. Pick your language in the game's Settings. Alt+T switches back to the original, and you can turn translation off entirely - combos keep working.
+
+Free, no ads, no account, no automation and no gameplay advantage. Your combos stay in your browser; the only thing that ever leaves it is the text of a message being translated.
+
+Updating from an older version? Chrome disables the extension until you approve the new permission - click the puzzle icon in your toolbar and accept. Once, and you're done.
+
+Bugs or ideas - Discord: isra760
+```
+
+Three things in there are not padding and should survive future edits: the
+permission paragraph (a service notice — without it the update reads as "the
+extension broke"), the one-line privacy statement (heads off "wait, you send my
+chat where?"), and "no gameplay advantage" (it matters in a game community).
+
+Two claims from the old description were deliberately dropped:
+
+- *"Works only in the Garage & Lobby / Does not work in battles"* — false now. The
+  replacement scopes the claim to the combo manager and describes exactly what
+  the translator does in battle.
+- *"Officially approved by Tanki"* — whatever approval was given covered a
+  garage-only tool. Only put it back after confirming with them that it still
+  covers an extension that reads and redraws battle chat.
+
+### Screenshots (up to 5, 1280×800 or 640×400)
+
+The listing has no translation screenshot yet, and that is the feature nobody has
+seen. Worth capturing:
+
 1. The COMBOS tab in the garage with several saved combo cards.
-2. A combo being equipped / the lobby quick-access button.
+2. A combo being equipped, or the lobby quick-access button.
 3. A foreign chat message translated, showing the `[RU] »` prefix.
 4. The in-game settings panel (translation toggle + language dropdown with flags).
+
+### Additional fields (currently empty — worth filling)
+
+| Field | Value |
+|---|---|
+| Homepage URL | `https://github.com/IsraBA/TankiCombosQoL` |
+| Support URL | `https://github.com/IsraBA/TankiCombosQoL/issues` |
+
+Both are free credibility: they show the extension is open source and give users
+somewhere to report bugs. The *official* URL field needs domain ownership proven
+in Search Console — skip it. The promo images (440×280, 1400×560) are optional
+and only affect featuring.
 
 ## 3. The "Privacy" tab, field by field
 
