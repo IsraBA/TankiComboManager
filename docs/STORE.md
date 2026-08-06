@@ -73,31 +73,40 @@ for it:
 3. A foreign chat message translated, showing the `[RU] »` prefix.
 4. The in-game settings panel (translation toggle + language dropdown with flags).
 
-## 3. Single-purpose statement
+## 3. The "Privacy" tab, field by field
 
-> The single purpose of this extension is to improve the player's quality of life
-> in Tanki Online. It does this in the game's own interface: it lets players save,
-> manage and instantly switch between full garage equipment setups ("combos"), and
-> it translates the in-game battle chat into a language the player chooses,
-> displayed in place on the game screen. Both functions serve the same purpose —
-> reducing friction for the player inside a single game — and neither operates on
-> any other website.
+The dashboard's Privacy tab has **one** justification box for host permissions —
+not one per host — so the text below covers all four hosts together. Each block
+is sized to fit its 1,000-character limit.
 
-## 4. Permission justifications
+### "Single purpose description"  (546 chars)
 
-| Field | Text to paste |
-|---|---|
-| `storage` | "Stores the user's own data locally: their saved equipment combos (names, order, contents) and their settings, including the chosen chat-translation language and on/off toggles. No personal or sensitive data is collected, and none of it is transmitted to us or to any third party." |
-| Host `*://*.tankionline.com/*` | "The extension runs on the Tanki Online game page, which is the only site it works on. It needs page access to read which items are currently equipped, to inject its own UI (the COMBOS tab, lobby button, and the settings rows), and to read the game's own already-loaded script in order to locate the chat UI — which is minified and changes on every game update. The script is only parsed locally; nothing from it is transmitted." |
-| Host `https://translate.googleapis.com/*` | "Sends the text of a battle-chat message to Google Translate to obtain its translation, which is then displayed in place on the game screen. Only the message text and the target language are sent." |
-| Host `https://lingva.lunar.icu/*`, `https://lingva.ml/*` | "Fallback translation service (Lingva, a Google Translate proxy), used when the primary service is unavailable. Sends only the message text and the target language." |
+```
+The single purpose of this extension is to improve the player's quality of life in Tanki Online, inside the game's own interface. It lets players save, manage and instantly switch between full garage equipment setups ("combos" of turrets, hulls, augments, drones, grenades and protections), and it translates the in-game battle chat into a language the player chooses, displayed in place on the game screen. Both functions serve the same purpose - reducing friction for the player inside a single game - and neither operates on any other website.
+```
 
-**Remote code:** answer **No**. The extension fetches the game's own script **as
-text and parses it** to find code locations; it never `eval`s or executes any
-fetched code, and loads no external scripts. The translation calls return data
-(JSON), not code.
+### "storage justification"  (455 chars)
 
-## 5. Data-use disclosure ("Privacy practices" tab)
+```
+The storage permission is used to save the user's own data: their saved garage combos (names, order, contents) and their preferences, including the chat translation on/off toggles and the chosen target language. Combos are stored locally in the browser; the few small preferences use Chrome's sync storage so they follow the user's own browser profile. No personal or sensitive data is collected, and none of this data is sent to us or to any third party.
+```
+
+### "Host permission justification"  (808 chars)
+
+```
+tankionline.com: the extension runs only on the Tanki Online game page. It needs page access to read which items are currently equipped, to inject its own UI into the garage, lobby and settings screens, and to read the game's own already-loaded script in order to locate the chat UI, which is minified and changes with every game update. That script is only read and parsed locally; nothing from it is transmitted.
+
+translate.googleapis.com, lingva.lunar.icu, lingva.ml: to translate a battle-chat message, the text of that message is sent to a translation service and the result is displayed in place on the game screen. Only the message text and the user's chosen target language are sent. Lingva is a fallback used when the primary service is unavailable. The extension does not access any other websites.
+```
+
+### "Are you using remote code?"
+
+Select **"No, I am not using remote code."** The extension fetches the game's own
+script **as text and parses it** to find code locations; it never `eval`s or
+executes fetched code, and loads no external scripts. The translation calls
+return data (JSON), not code. Leave the justification box empty.
+
+## 4. Data-use disclosure (same tab, "Data usage" section)
 
 This is the part that **changes** with this update. Previously the extension
 declared no data collection; that is no longer accurate, because chat text is now
@@ -137,7 +146,7 @@ published policy. (If a cleaner page is ever wanted, enable GitHub Pages — but
 note that publishing the whole `docs/` folder would also serve this file and
 `PACKAGING.md` as web pages.)
 
-## 6. Upload checklist
+## 5. Upload checklist
 
 See `PACKAGING.md` → "Before uploading". In short: bump the version, run
 `build/make-zip.ps1`, host the privacy policy, update the two dashboard tabs
