@@ -1,0 +1,41 @@
+/* features/translator/main/gamesettings.css  [MAIN world] */
+/* Our section injected into the game's Settings scroll menu (see gamesettings.js).
+   Styled to match the game's native settings blocks pixel-for-pixel: a full-bleed
+   divider (SettingsComponentStyle-borderLineOption), an uppercase headline
+   (SettingsComponentStyle-textHeadlineOptions), then the adopted switch + select. */
+
+.cme_gs-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
+  padding-bottom: 1.875em;   /* the scroll menu has no bottom padding of its own */
+}
+
+/* Thin divider line, replicating SettingsComponentStyle-borderLineOption exactly
+   (full-bleed: bleeds across the scroll menu's 1.875em horizontal padding). */
+.cme_gs-divider {
+  background-color: rgba(255, 255, 255, 0.1);
+  width: 49.125em;
+  height: 0.063em;
+  margin-bottom: 1.875em;
+  margin-left: -1.875em;
+}
+
+/* Section headline, matching SettingsComponentStyle-textHeadlineOptions. */
+.cme_gs-title {
+  font-family: BaseFontBold, FallbackFontBold;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 1.125em;
+  line-height: normal;
+  text-transform: uppercase;
+  color: rgb(255, 255, 255);
+  margin: 0 0 1.875em;
+}
+
+/* Constrain the language dropdown to the game's native dropdown width
+   (SettingsComponentStyle-dropDown = 30.625em) instead of stretching full width. */
+#cme-game-settings .cme_select-container {
+  width: 30.625em;
+}

@@ -1,0 +1,208 @@
+/* shared/components/drawer.css */
+/* סטיילים לקומפוננטת דרוור גנרית */
+
+/* === Overlay === */
+.cme_drawer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 100;
+  pointer-events: auto;
+  animation: cme_drawer_fade_in 200ms ease-out forwards;
+}
+
+/* === פאנל הדרוור === */
+.cme_drawer-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  background:
+    radial-gradient(
+      192.86% 100% at 0% 100%,
+      rgba(191, 213, 255, 0.25) 0%,
+      rgba(191, 213, 255, 0) 100%
+    ),
+    rgb(0, 25, 38);
+  cursor: default;
+  height: 100%;
+  max-width: 34em;
+  width: 34em;
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: 101;
+  animation: cme_drawer_slide_in 200ms ease-out forwards;
+}
+
+/* === כותרת === */
+.cme_drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 1.625em 2em;
+  position: relative;
+}
+
+.cme_drawer-title {
+  display: flex;
+}
+
+.cme_drawer-title span {
+  font-family: BaseFontMedium, FallbackFontMedium;
+  font-style: normal;
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 1.5em;
+  margin: 0;
+  padding-left: 0;
+  white-space: nowrap;
+  color: white;
+}
+
+.cme_drawer-hotkey {
+  background-color: rgb(255, 255, 255);
+  border-radius: 0.1875em;
+  box-sizing: border-box;
+  color: rgb(0, 25, 38);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: BaseFontMedium, FallbackFontMedium;
+  font-style: normal;
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 1em;
+  height: auto;
+  min-height: 1.5em;
+  min-width: 1.5em;
+  width: auto;
+  text-align: center;
+  padding-left: 0.3em;
+  padding-right: 0.3em;
+  margin-left: 0.75em;
+  user-select: none;
+}
+
+/* קבוצה ימנית — Z badge + X כפתור סגירה */
+.cme_drawer-header-right {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  right: 2em;
+  gap: 0.5em;
+}
+
+.cme_drawer-close {
+  width: 1.5em;
+  height: 1.5em;
+  cursor: pointer;
+  background-image: url("https://s.eu.tankionline.com/static/images/iconDelete.b879b0ab.svg");
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center center;
+}
+
+.cme_drawer-close:hover {
+  background-image: url("https://s.eu.tankionline.com/static/images/deleteHoverModal.3aceb055.svg");
+}
+
+/* === תמונה === */
+.cme_drawer-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 2em 2em;
+}
+
+.cme_drawer-image img {
+  width: 100%;
+  height: 16.875em;
+  width: 30em;
+  object-fit: contain;
+}
+
+/* === אזור תוכן === */
+.cme_drawer-content {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  flex: 1;
+  padding: 0 2em;
+  overflow-y: auto;
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+  scrollbar-width: thin;
+}
+
+.cme_drawer-content::-webkit-scrollbar {
+  display: block;
+  width: 0.5em;
+}
+
+.cme_drawer-content::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 5px;
+}
+
+/* === פוטר === */
+.cme_drawer-footer {
+  align-self: flex-end;
+  margin-bottom: 2em;
+  margin-right: 2em;
+  padding-top: 1em;
+}
+
+.cme_drawer-close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 10.375em;
+  height: 3em;
+  cursor: pointer;
+  border-radius: 0.75em;
+  background-color: rgb(118, 255, 51);
+  transition:
+    background 0.3s,
+    box-shadow 0.2s ease;
+  user-select: none;
+  text-align: center;
+}
+
+.cme_drawer-close-btn:hover {
+  background-color: rgb(118, 255, 51);
+  box-shadow: rgb(255, 255, 255) 0em 0em 0em 2px;
+}
+
+.cme_drawer-close-btn span {
+  font-family: BaseFontBold, FallbackFontBold;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 1em;
+  line-height: normal;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: rgb(0, 25, 38);
+}
+
+/* === אנימציות === */
+@keyframes cme_drawer_fade_in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes cme_drawer_slide_in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}

@@ -1,11 +1,11 @@
-# Tanki Online Pro Combo Manager
+# Tanki Online — Combos & QoL
 
 <div align="center">
-  <img src="icons/icon128.png" alt="Tanki Online Pro Combo Manager" width="128" height="128">
+  <img src="assets/icons/icon128.png" alt="Tanki Online — Combos & QoL" width="128" height="128">
 
-  **Browser extension for Tanki Online equipment management**
+  **Quality-of-life browser extension for Tanki Online**
 
-  [![Version](https://img.shields.io/badge/version-2.5-blue.svg)](manifest.json)
+  [![Version](https://img.shields.io/badge/version-3.0-blue.svg)](manifest.json)
   [![Manifest](https://img.shields.io/badge/manifest-v3-green.svg)](manifest.json)
 
 </div>
@@ -18,9 +18,9 @@
 - [Features](#-features)
 - [Installation](#-installation)
 - [Usage](#-usage)
-- [Project Architecture](#-project-architecture)
-- [Core Components](#-core-components)
-- [Technical Details](#-technical-details)
+- [Privacy & permissions](#-privacy--permissions)
+- [Architecture](#-architecture)
+- [Project structure](#-project-structure)
 - [Development](#-development)
 - [Contributing](#-contributing)
 
@@ -28,639 +28,302 @@
 
 ## 🎯 Overview
 
-**Tanki Online Pro Combo Manager** is a browser extension for saving and loading full equipment setups (combos) in Tanki Online. Switching gear in the garage means opening many tabs and menus; this extension saves your current setup and equips a saved combo in one click.
+A single extension with the tools that make Tanki Online less tedious, added
+directly into the game's own interface:
+
+- **Combo manager** — save a full garage setup and equip it again in one click,
+  instead of walking through every tab and menu.
+- **Battle chat translation** — read foreign chat in your own language, in place
+  on the game screen.
+
+Both are built to look and feel native: the UI mirrors the game's own colors,
+fonts, and hover states rather than announcing itself as a third-party addition.
 
 ---
 
 ## ✨ Features
 
-### Core Functionality
+### ⚙️ Combo manager
 
-#### 🎮 Combo Management
+- **Save your current setup** — scans and stores your whole configuration.
+- **Equip in one click** — the extension navigates the tabs and equips each piece
+  for you.
+- **Full equipment coverage:**
 
-- Save current setup: scans and saves your full equipment configuration
-- Load combos: one-click equip with automated tab navigation
-- Storage in Chrome local storage; no limit on number of combos
-- Detects equipped items, augments, and protection modules
+  | Category | Notes |
+  | --- | --- |
+  | **Turrets** | includes augment support |
+  | **Hulls** | includes augment support |
+  | **Drones** | handles name variations |
+  | **Grenades** | — |
+  | **Protection** | all 4 slots, with resistance-type detection |
+  | **Augments** | tracked separately per turret/hull |
 
-#### 🎨 UI
+- **Combo cards** with item preview images; drag and drop to reorder; rename
+  inline; delete with confirmation.
+- **Per-item skip** — mark a single slot as "removed" so a combo only changes part
+  of your setup.
+- **"Include protections" toggle** — when off, equipping a combo leaves your
+  current protections untouched (their icons dim on the cards to show they're
+  skipped).
+- **Randomizer** — pick a random saved combo, or roll a fully random setup from
+  the items you own.
+- **Import / export** — move your combos between browsers or back them up.
+- **Quick access** — a "COMBOS" tab in the garage menu, a button in the lobby, and
+  the `C` key shortcut.
+- **Follows the game's language** and only ever equips items you actually own.
 
-- Combo cards show all equipment; drag and drop to reorder
-- Item preview images on each card; UI refreshes when you save or load
+### 💬 Battle chat translation
 
-#### ⚡ Quick Access
-
-- "COMBOS" tab in the garage menu; quick-access button in lobby
-- Press `C` in lobby to open the combo manager (only on garage/lobby screens)
-
-#### 🔧 Other
-
-- Turret and hull augments; all 4 protection slots with resistance types
-- Drones and grenades; follows game language; optional "remove item" per slot for partial loads
-- "Include protections" toggle: when off, equipping a combo leaves your current protections untouched (protection icons on the cards dim to show they're skipped)
-
-### Equipment Coverage
-
-The extension manages all major equipment categories:
-
-| Category             | Description                          | Special Features                     |
-| -------------------- | ------------------------------------ | ------------------------------------ |
-| **Turrets**    | Main weapon (e.g., Hammer, Railgun)  | Includes augment support             |
-| **Hulls**      | Tank chassis (e.g., Hunter, Mammoth) | Includes augment support             |
-| **Drones**     | Support units                        | Special name cleaning for variations |
-| **Grenades**   | Tactical equipment                   | Included                             |
-| **Protection** | Defense modules (4 slots)            | Resistance type detection            |
-| **Augments**   | Equipment modifications              | Separate management per turret/hull  |
+- **Instant, then translated** — the original message is drawn immediately (so
+  chat never lags), with a small spinner, then swaps to the translation.
+- **Source language shown** — e.g. `[RU] » nice shot`, so you always know what was
+  translated.
+- **20 target languages**, picked from a native-styled dropdown injected into the
+  game's own Settings screen.
+- **Slang stays slang** — `gg`, `ez`, `noob`, `hahaha` and friends are shown
+  verbatim and never sent anywhere.
+- **Toggle any time** — a button next to the chat bar, or `Alt+T`, flips the whole
+  chat between original and translated. The setting persists.
+- **Fully optional** — turn translation off in the game's Settings screen and the
+  combo manager keeps working exactly as before.
 
 ---
 
 ## 🚀 Installation
 
-### Prerequisites
+### From the Chrome Web Store
 
-- Google Chrome, Microsoft Edge, or any Chromium-based browser
-- An active Tanki Online account
-- Access to `*.tankionline.com`
+Search for **Tanki Online — Combos & QoL**, or install from the store listing.
 
-### Installation Steps
+> **Updating from an older version?** This release adds the chat-translation
+> feature, which needs permission to reach the translation service. Chrome
+> handles new permissions by disabling the extension until you approve them — if
+> the extension seems to have stopped working after an update, click the
+> extensions (puzzle 🧩) icon in your toolbar and accept the new permission. It
+> only happens once.
 
-#### Method 1: Load Unpacked Extension (Development)
+### Load unpacked (development)
 
-1. **Download the Extension**
-
+1. Clone the repository:
    ```bash
-   git clone https://github.com/IsraBA/TankiComboManager.git
-   cd TankiComboManager
+   git clone https://github.com/IsraBA/TankiCombosQoL.git
    ```
-2. **Open Chrome Extensions Page**
+2. Open `chrome://extensions/` and enable **Developer mode**.
+3. Click **Load unpacked** and select the project folder.
+4. Open [Tanki Online](https://tankionline.com), log in, and enter the garage —
+   you should see a new **COMBOS** tab.
 
-   - Navigate to `chrome://extensions/`
-   - Or click: Menu → More Tools → Extensions
-3. **Enable Developer Mode**
-
-   - Toggle the "Developer mode" switch in the top right corner
-4. **Load the Extension**
-
-   - Click "Load unpacked"
-   - Select the `TankiComboManager` folder
-   - The extension icon should appear in your toolbar
-
-#### Method 2: Chrome Web Store (Coming Soon)
-
-The extension will be available on the Chrome Web Store for easy installation.
-
-### Verification
-
-1. Visit [Tanki Online](https://tankionline.com)
-2. Log in to your account
-3. Navigate to the garage
-4. You should see a new "COMBOS" tab in the garage menu
+Requires Chrome, Edge, or another Chromium-based browser.
 
 ---
 
 ## 📖 Usage
 
-### Getting Started
+### Saving your first combo
 
-#### 1. Saving Your First Combo
+1. Equip the setup you want in the garage.
+2. Open the **COMBOS** tab (or press `C` in the lobby).
+3. Click **Save Current Combo** — a card appears with your equipment.
+4. Click the combo's name to rename it (e.g. "Sniper Setup") and press Enter.
 
-1. **Equip Your Desired Setup**
+### Loading a combo
 
-   - In the Tanki Online garage, manually equip your desired turret, hull, drone, grenade, augments, and protection modules
-2. **Open Combo Manager**
+Open the **COMBOS** tab, find the combo, and click **Equip**. The extension
+navigates the equipment tabs, equips each item, applies augments and protection
+modules, and returns to the Protection tab when it's done.
 
-   - Click on the "COMBOS" tab in the garage menu
-   - Or press `C` key while in the lobby
-3. **Save Current Setup**
+### Managing combos
 
-   - Click the "Save Current Combo" button
-   - A new combo card will appear with your equipment
-4. **Rename Your Combo**
+- **Reorder** — drag a card to a new position.
+- **Delete** — click the × on the card and confirm.
+- **Skip one item** — click the × on an individual item image; it will be left
+  untouched when the combo is equipped.
 
-   - Click on the combo name (e.g., "Combo 1")
-   - Enter a descriptive name (e.g., "Sniper Setup")
-   - Press Enter to save
+### Using chat translation
 
-#### 2. Loading a Combo
+It is on by default. Enter a battle and foreign messages will translate
+themselves. To configure it, open the game's **Settings** screen and scroll to the
+**Chat Translator** section, where you can turn it off or change your language.
+In battle, the button next to the chat bar (or `Alt+T`) switches between the
+original text and the translation.
 
-1. **Navigate to COMBOS Tab**
+### Keyboard shortcuts
 
-   - Open the garage and click "COMBOS" tab
-2. **Select Your Combo**
+| Key | Action | Context |
+| --- | --- | --- |
+| `C` | Open the combo manager | Lobby / garage |
+| `Alt+T` | Toggle original ↔ translated chat | In battle |
 
-   - Find the combo you want to equip
-   - Click the "Equip" button on the combo card
-3. **Automated Process**
+### Tips
 
-   - The extension will automatically:
-     - Navigate through all equipment tabs
-     - Find and equip each item
-     - Apply augments and protection modules
-     - Return to the Protection tab when complete
-
-#### 3. Managing Combos
-
-**Reorder Combos**
-
-- Click and hold a combo card
-- Drag it to your desired position
-- Release to drop
-
-**Delete a Combo**
-
-- Click the delete (×) button on the combo card
-- Confirm deletion in the popup
-
-**Remove Items from Combo**
-
-- Click the (×) icon on individual item images within a combo card
-- The item will be marked as "removed" and skipped during equipment
-- Useful for partial combo changes
-
-### Keyboard Shortcuts
-
-| Key   | Action             | Context           |
-| ----- | ------------------ | ----------------- |
-| `C` | Open Combo Manager | Lobby screen only |
-
-### Tips & Best Practices
-
-1. **Organize by Game Mode**: Create combos for different game modes (TDM, CTF, CP)
-2. **Name Descriptively**: Use clear names like "Siege Tank" or "Speed Raider"
-3. **Check Ownership**: The extension will only equip items you own
-4. **Update Combos**: Re-save combos after upgrading equipment to keep them current
-5. **Drag to Prioritize**: Put your most-used combos at the top
+- Create combos per game mode (TDM, CTF, CP) and give them clear names.
+- Put your most-used combos at the top.
+- Re-save a combo after upgrading equipment so it stays current.
 
 ---
 
-## 🏗️ Project Architecture
+## 🔒 Privacy & permissions
 
-### Architecture Diagram
+Short version: **your combos never leave your browser. The only thing that is ever
+sent anywhere is the text of a chat message you asked to have translated.**
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                         main.js                              │
-│              (Orchestrator & Initialization)                 │
-└────────────────────────┬────────────────────────────────────┘
-                         │
-         ┌───────────────┴───────────────┐
-         │                               │
-         ▼                               ▼
-┌─────────────────┐            ┌──────────────────┐
-│   CORE LAYER    │            │    UI LAYER      │
-│                 │            │                  │
-│ • combo_saver   │◄──────────►│ • menu_injector  │
-│ • combo_loader  │            │ • view_renderer  │
-│ • scanners/     │            │ • combo_card     │
-│ • equippers/    │            │ • drag_handler   │
-│ • navigators    │            │ • lobby_button   │
-└────────┬────────┘            └────────┬─────────┘
-         │                              │
-         │      ┌──────────────┐        │
-         └─────►│  LIB LAYER   │◄───────┘
-                │              │
-                │ • constants  │
-                │ • utils      │
-                │ • language   │
-                └──────────────┘
-```
+| Permission | Why it's needed |
+| --- | --- |
+| `storage` | saves your combos and settings locally |
+| `*://*.tankionline.com/*` | the game page — read equipped items, inject the UI, locate the chat UI |
+| `translate.googleapis.com`, `lingva.lunar.icu`, `lingva.ml` | send message text to be translated |
 
-### Data Flow
+- Combos, names, order and settings are stored with the browser's extension
+  storage. They are never transmitted.
+- When translation is enabled, the **text of a chat message** is sent to Google
+  Translate (with Lingva as a fallback) to get the translation back. Only the text
+  and your target language are sent — no username, no sender identity, no other
+  metadata. Nothing is sent while translation is off, and slang-only messages are
+  never sent at all.
+- There is no server of our own, no account, no analytics, no tracking, and no
+  chat history stored anywhere.
 
-#### Saving a Combo
+Full details: [docs/PRIVACY.md](docs/PRIVACY.md).
 
-```
-User Click "Save" → ComboSaver.saveCurrentCombo()
-  ↓
-TabNavigator.navigateToTab('Turrets')
-  ↓
-BaseItemScanner.scanItem() → detects equipped turret
-  ↓
-AugmentScanner.scanAugment() → detects equipped augment
-  ↓
-[Repeat for: Hulls, Grenades, Drones, Protection]
-  ↓
-ComboSaver.saveToStorage() → chrome.storage.local
-  ↓
-ViewRenderer.renderCombos() → Update UI
-```
-
-#### Loading a Combo
-
-```
-User Click "Equip" → ComboLoader.equipCombo(combo)
-  ↓
-BaseItemEquipper.equipItem(turret) → navigate + find + click
-  ↓
-AugmentEquipper.equipAugment() → open augments + find + click
-  ↓
-[Repeat for: Hull, Grenade, Drone]
-  ↓
-ProtectionEquipper.equipProtection() → equip all 4 slots
-  ↓
-TabNavigator.navigateToTab('Protection') → return
-```
+This extension is an independent tool and is not affiliated with or endorsed by
+Tanki Online or its publisher.
 
 ---
 
-## 📂 Project Structure
+## 🏗️ Architecture
+
+Vanilla JavaScript, Manifest V3, no build step and no external libraries. Each
+feature is self-contained under `features/`; only UI components are shared.
 
 ```
-TankiComboManager/
-│
-├── manifest.json                 # Extension configuration (Manifest V3)
-├── main.js                       # Entry point & orchestration logic
-├── README.md                     # This file
-│
-├── icons/                        # Extension icons
-│   ├── icon16.png               # Toolbar icon (16x16)
-│   ├── icon48.png               # Extension page icon (48x48)
-│   └── icon128.png              # Web store icon (128x128)
-│
-├── lib/                          # Shared libraries & utilities
-│   ├── constants.js             # DOM selectors & game constants
-│   ├── utils.js                 # Helper functions (sleep, clean names, etc.)
-│   └── language_manager.js      # Multi-language support
-│
-├── core/                         # Core business logic
-│   ├── combo_saver.js           # Saves current equipment to storage
-│   ├── combo_loader.js          # Loads & equips saved combos
-│   ├── tab_navigator.js         # Navigates between garage tabs
-│   ├── navigation_helpers.js    # Shared navigation utilities
-│   ├── auto_navigator.js        # Auto-navigates to COMBOS tab
-│   │
-│   ├── scanners/                # Equipment detection modules
-│   │   ├── base_item_scanner.js    # Scans turrets, hulls, drones, grenades
-│   │   ├── augment_scanner.js      # Scans augments (modifications)
-│   │   ├── protection_scanner.js   # Scans protection modules
-│   │   └── paint_scanner.js        # [Deprecated] Paint detection
-│   │
-│   └── equippers/               # Equipment installation modules
-│       ├── base_item_equipper.js   # Equips turrets, hulls, drones, grenades
-│       ├── augment_equipper.js     # Equips augments
-│       └── protection_equipper.js  # Equips protection modules
-│
-├── ui/                           # User interface components
-│   ├── menu_injector.js         # Injects COMBOS tab into garage menu
-│   ├── view_renderer.js         # Renders main combo view & controls
-│   ├── combo_card_renderer.js   # Renders individual combo cards
-│   ├── combo_drag_handler.js    # Drag & drop reordering logic
-│   ├── lobby_button_injector.js # Injects quick-access button in lobby
-│   └── lobby_shortcut_handler.js# Handles 'C' key shortcut
-│
-└── styles/                       # CSS styling
-    ├── styles.css               # Main combo view styles
-    ├── combo_card.css           # Combo card styles
-    └── lobby_button.css         # Lobby button styles
+┌────────────────────── ISOLATED world ──────────────────────┐
+│  features/combos/        main.js → MutationObserver         │
+│    lib → core → ui       DOM scanning + equipping           │
+│                                                             │
+│  features/translator/isolated/    chrome.* access:          │
+│    bridge.js   settings sync + translate relay              │
+│    detect.js   parses the game bundle for the chat HUD      │
+└──────────────────────────┬──────────────────────────────────┘
+                           │ window.postMessage bridge
+┌──────────────────────────┴───── MAIN world ─────────────────┐
+│  features/translator/main/   shares the page's window        │
+│    chat.js      captures the chat HUD, rewrites messages     │
+│    translate.js request + cache + timeout                    │
+│    toggle.js / gamesettings.js   in-game UI                  │
+└──────────────────────────┬──────────────────────────────────┘
+                           │ chrome.runtime.sendMessage
+┌──────────────────────────┴──────────────────────────────────┐
+│  background.js (service worker)                              │
+│    the only context allowed the cross-origin fetch           │
+│    Google Translate → Lingva fallback                        │
+└──────────────────────────────────────────────────────────────┘
 ```
+
+Why three contexts: content scripts run in an isolated world by default, which is
+fine for DOM work, but capturing the game's chat HUD needs a hook on the page's own
+`Object.prototype` (MAIN world only), and in MV3 a content-script `fetch` is bound
+by the page's CORS policy — so the translation request has to happen in the
+service worker.
+
+`shared/components/` holds the native-styled `switch`, `select` and `drawer`
+components. Because JS worlds don't share a `window`, the component files are
+listed in both worlds' content-script blocks; each world gets its own copy on
+`window.TankiQoL`.
 
 ---
 
-## 🔩 Core Components
+## 📂 Project structure
 
-### 1. Core Layer
-
-#### `combo_saver.js`
-
-Coordinates scanning and saving. Navigates each equipment tab (Turrets → Hulls → Grenades → Drones → Protection), runs the right scanner per category, builds one combo object, then `saveToStorage()` writes it to Chrome local storage with a timestamp and default name.
-
-#### `combo_loader.js`
-
-Runs the equip flow for a saved combo: `equipCombo(combo)` drives the equippers; `findItemInList()` and `isItemPurchased()` find and validate items; `clickEquipButton()` does language-aware clicks. Skips combo entries marked "removed"; uses coordinate-based clicks so the game UI reacts reliably.
-
-#### Tab Navigation System
-
-**`tab_navigator.js`**
-
-- Handles navigation between main garage tabs (Turrets, Hulls, Grenades, Drones, Protection)
-- Simulates user clicks with proper event dispatching
-- Waits for tab content to load before proceeding
-
-**`navigation_helpers.js`**
-
-- Provides reusable navigation utilities
-- `waitForElement()`: Waits for DOM elements with MutationObserver
-- `navigateToCombosTab()`: Navigates to the COMBOS tab from any screen
-
-**`auto_navigator.js`**
-
-- Automatically redirects to COMBOS tab when entering garage
-- Uses interval-based checking with smart detection
-
-### 2. Scanner Modules
-
-#### `base_item_scanner.js`
-
-Scans turrets, hulls, grenades, drones: finds the "Equipped" indicator, reads the item name from the DOM, cleans it (Mk levels, special chars), returns a normalized name. `cleanDroneName()` strips drone variants (e.g. "Light"); LanguageManager handles multiple game languages.
-
-#### `augment_scanner.js`
-
-Turret and hull augments: opens the augment UI, waits for the grid, finds the equipped augment, reads its name, then goes back. Handles the "Standard Settings" default.
-
-#### `protection_scanner.js`
-
-All 4 protection slots: detects equipped modules via active/mounted state, reads names (e.g. "Spider-0") and resistance types (Firebird, Freeze, Twins, Railgun) from icons; returns an array of 4 entries (module or `null`).
-
-### 3. Equipper Modules
-
-#### `base_item_equipper.js`
-
-Equips turrets, hulls, grenades, drones: goes to the right tab, finds the item in the list, checks ownership, opens details, clicks Equip, waits for confirmation. Logs a warning and continues if the item isn’t owned.
-
-#### `augment_equipper.js`
-
-Opens the augment screen, finds the augment in the grid, checks ownership, clicks to equip, then returns. Handles "Standard Settings" and partial name matches.
-
-#### `protection_equipper.js`
-
-Equips all 4 protection slots: opens the protection screen, walks each slot—finds and clicks the right module for filled slots, or removes the current module for empty ones—and checks resistance types. Handles overlaps and "remove" by clicking the already-equipped module.
-
-### 4. UI Layer
-
-#### `menu_injector.js`
-
-Adds the "COMBOS" tab to the garage menu (no duplicates), matches game styling, handles tab activation and active state, and hides the combo view when exit is clicked.
-
-#### `view_renderer.js`
-
-Builds the main combo view: container, "Save Current Combo" button, list of combos, visibility tied to the active tab, and deletion confirmations.
-
-#### `combo_card_renderer.js`
-
-Renders each combo card: editable name, equipment images, augment badges, protection modules with resistance types, Equip/Delete and per-item remove (×) buttons, date badge. Resolves image URLs from equipment lists, caches them, falls back to defaults when missing.
-
-#### `combo_drag_handler.js`
-
-Drag-and-drop reorder: listeners on cards, drag start/over/drop, CSS for drop indicator, then updates `order` in storage and re-renders the list. Includes touch support.
-
-#### `lobby_button_injector.js`
-
-Shows a quick-access button in the lobby (when not in battle), with equipment previews from the lobby UI; click goes to garage and opens COMBOS. Removes itself when leaving lobby.
-
-#### `lobby_shortcut_handler.js`
-
-Listens for `C` on lobby/garage screens only, opens the COMBOS tab, and toggles based on context to avoid clashing with game shortcuts.
-
-### 5. Library Layer
-
-#### `constants.js`
-
-Holds all DOM selectors and game constants (menus, tabs, item previews, buttons, screen detection). One place to update when the game UI changes.
-
-#### `utils.js`
-
-Helpers: `sleep(ms)`, `cleanItemName()` for normalizing names, `waitForCondition()` for polling, `dispatchClickEvents()` for triggering the game’s click handlers.
-
-#### `language_manager.js`
-
-Reads the game language from the garage title and supplies button strings ("Equip", "Delete", etc.) and language codes for combo metadata. Supports English, Russian, and other Tanki locales.
-
----
-
-## 🔬 Technical Details
-
-### Technologies Used
-
-| Technology                     | Purpose                                    |
-| ------------------------------ | ------------------------------------------ |
-| **JavaScript (ES6+)**    | Core programming language                  |
-| **Chrome Extension API** | Storage, permissions, content scripts      |
-| **Manifest V3**          | Modern extension architecture              |
-| **DOM Manipulation**     | Dynamic UI injection and scanning          |
-| **MutationObserver**     | Detecting DOM changes for reactive updates |
-| **PointerEvents**        | Simulating user clicks and pointer events  |
-| **CSS3**                 | Styling and animations                     |
-
-### Key Design Patterns
-
-#### 1. IIFE (Immediately Invoked Function Expressions)
-
-```javascript
-(function () {
-    'use strict';
-    window.TankiComboManager = window.TankiComboManager || {};
-    window.TankiComboManager.ComponentName = { /* ... */ };
-})();
+```
+.
+├── manifest.json              # 4 content-script blocks (CSS / translator ×2 / combos)
+├── background.js              # service worker — translation fetch
+├── shared/components/         # switch, select, drawer (used by both features)
+├── features/
+│   ├── combos/
+│   │   ├── main.js            # orchestrator
+│   │   ├── lib/               # constants (DOM selectors), utils, language_manager
+│   │   ├── core/              # saver, loader, navigators, scanners/, equippers/, randomizer/
+│   │   └── ui/                # menu + lobby injectors, renderers, drag, modals, drawers
+│   └── translator/
+│       ├── isolated/          # bridge.js, detect.js
+│       ├── main/              # chat.js, translate.js, settings.js, skiplist.js, toggle.js, gamesettings.js
+│       └── assets/flags/      # language flags
+├── assets/icons/              # extension icons
+├── docs/                      # PRIVACY.md, STORE.md, PACKAGING.md
+├── build/make-zip.ps1         # builds the Chrome Web Store zip
+├── HTML-examples/             # captured game HTML/CSS, used as styling reference
+└── CLAUDE.md                  # full developer/agent guide — start here
 ```
 
-Isolates the namespace and avoids polluting the global scope.
+**Design rules** (the long version lives in [CLAUDE.md](CLAUDE.md)):
 
-#### 2. Async/Await Pattern
-
-```javascript
-async saveCurrentCombo() {
-    await TabNavigator.navigateToTab('Turrets');
-    const turret = BaseItemScanner.scanItem();
-    await TabNavigator.navigateToTab('Hulls');
-    // ...
-}
-```
-
-Used for sequential steps with controlled timing.
-
-#### 3. Observer Pattern
-
-```javascript
-const observer = new MutationObserver(() => {
-    runInitLogic();
-});
-observer.observe(document.body, { childList: true, subtree: true });
-```
-
-Runs logic when the DOM changes (tabs, UI).
-
-#### 4. Factory Pattern
-
-```javascript
-ComboCardRenderer.createComboCard(combo) {
-    // Returns fully configured combo card element
-}
-```
-
-Builds combo card elements in one place.
-
-### Critical Implementation Details
-
-#### Timing & Synchronization
-
-Operations are timed to match the game’s UI loading:
-
-```javascript
-// Wait for tab content to load after navigation
-await Utils.sleep(200);
-
-// Wait for augment screen to appear
-await NavigationHelpers.waitForElement(DOM.AUGMENT_CELL);
-
-// Debounced observer to prevent excessive re-runs
-let debounceTimeout;
-observer = new MutationObserver(() => {
-    clearTimeout(debounceTimeout);
-    debounceTimeout = setTimeout(runInitLogic, 100);
-});
-```
-
-#### Event Simulation
-
-The game’s React UI is driven by simulated pointer and click events:
-
-```javascript
-const pointerDown = new PointerEvent('pointerdown', {
-    bubbles: true,
-    cancelable: true,
-    pointerId: 1,
-    pointerType: 'mouse',
-    button: 0,
-    buttons: 1,
-    clientX: centerX,
-    clientY: centerY,
-    isPrimary: true
-});
-element.dispatchEvent(pointerDown);
-element.dispatchEvent(pointerUp);
-element.dispatchEvent(clickEvent);
-```
-
-#### Storage Schema
-
-```javascript
-{
-    savedCombos: [
-        {
-            id: 1234567890,              // Unique timestamp ID
-            name: "Combo 1",             // User-editable name
-            date: "1/9/2026",            // Creation date
-            order: 0,                    // Display order (0 = top)
-            language: "en",              // Language combo was saved in
-            removedItems: {              // Optional: items to skip
-                turret: false,
-                protection: [false, false, true, false]
-            },
-            data: {
-                turret: "HAMMER",
-                turretAugment: "TRICKSTER",
-                hull: "HUNTER",
-                hullAugment: "SPEED BOOST",
-                grenade: "MINE",
-                drone: "HYPERION",
-                protection: [
-                    { name: "SPIDER-0", resistances: ["FIREBIRD", "FREEZE"] },
-                    { name: "BARRIER-0", resistances: ["TWINS", "RAILGUN"] },
-                    null,  // Empty slot
-                    null   // Empty slot
-                ]
-            }
-        }
-    ]
-}
-```
-
-### Performance Optimizations
-
-1. **Lazy Loading**: Components only initialize when needed
-2. **Event Delegation**: Single listeners on containers instead of per-item
-3. **Debouncing**: Prevents excessive observer callbacks
-4. **Caching**: Equipment images cached after first lookup
-5. **Selective Observation**: Observer only active in relevant screens
-
-### Security Considerations
-
-- **Minimal Permissions**: Only requests `storage` permission
-- **Host Restrictions**: Limited to `*.tankionline.com` domains
-- **No External Requests**: All operations are local
-- **Data Privacy**: Combos stored locally, never transmitted
-- **No Code Injection**: Only DOM manipulation, no eval() or script injection
+- Scanners only read, equippers only write, navigators only move.
+- All game DOM selectors live in one file (`features/combos/lib/constants.js`).
+- Never use the game's generated CSS class names (`ksc-*`) — they change every
+  build. Extension classes are prefixed `cme_`.
+- Wait on the DOM with MutationObservers, not fixed timeouts.
+- The script order in `manifest.json` is a dependency chain — don't reorder it.
 
 ---
 
 ## 💻 Development
 
-### Development Setup
-
-1. **Clone the Repository**
-
-   ```bash
-   git clone https://github.com/IsraBA/TankiComboManager.git
-   cd TankiComboManager
-   ```
-2. **Install Development Tools** (Optional)
-
-   ```bash
-   # For code linting
-   npm install -g eslint
-
-   # For live reloading (manual)
-   # Visit chrome://extensions and click reload icon
-   ```
-3. **Enable Developer Mode**
-
-   - Open Chrome → Extensions → Enable "Developer mode"
-   - Click "Load unpacked" → Select project folder
-
-### Development Workflow
-
-1. **Make Changes**
-
-   - Edit any `.js` or `.css` files
-   - Follow existing code style and patterns
-2. **Test Changes**
-
-   - Go to `chrome://extensions`
-   - Click reload icon on "Tanki Online Pro Combo Manager"
-   - Refresh Tanki Online page
-   - Test functionality thoroughly
-3. **Debug**
-
-   - Open DevTools (F12) on Tanki Online page
-   - Check Console for `[ComboManager]` logs
-   - Use `debugger;` statements for breakpoints
-
-### Code Style
-
-Modules use the IIFE pattern and attach to `window.TankiComboManager`; constants (DOM, Utils) at the top, then the module object with its methods.
-
-### Testing Checklist
-
-Before submitting: extension loads, COMBOS tab appears, save/load work for all item types, drag-and-drop reorder works, delete works, lobby button and `C` shortcut work, no console errors.
-
-### Common Issues
-
-- **COMBOS tab missing**: Game UI may have changed; update selectors in `constants.js`.
-- **Items not equipping**: Check name cleaning in `utils.js` and ownership detection.
-- **Clicks not registering**: Tweak `sleep()` in equippers/navigators.
-- **Observer too heavy**: Increase debounce or narrow the observed subtree.
-
-### Debugging
-
-```javascript
-window.TankiComboManager.DEBUG = true;
-
-chrome.storage.local.get(['savedCombos'], (result) => {
-    console.log(result.savedCombos);
-});
-
-// Clear combos (testing)
-chrome.storage.local.remove('savedCombos');
+```bash
+git clone https://github.com/IsraBA/TankiCombosQoL.git
 ```
+
+Then load the folder unpacked (see [Installation](#-installation)). There is no
+build step — edit a file, hit the reload icon on the extension card in
+`chrome://extensions`, and refresh the game tab.
+
+**Debugging.** Open DevTools on the game page. Combos logs appear as
+`[ComboManager]` lines. The translator runs in the page world and exposes
+`__CT_STATE()`, `__CT_DEBUG` and `__CT_MSGS` in the page console. Full debugging
+and recovery notes — including what to do when a Tanki update breaks chat
+detection — are in [CLAUDE.md](CLAUDE.md).
+
+**Packaging for the store.** Run `build/make-zip.ps1`. It packs only what should
+ship and refuses to build if internal docs slip in; see
+[docs/PACKAGING.md](docs/PACKAGING.md).
+
+**Testing** is manual. Before submitting a change, walk the checklist in
+CLAUDE.md → "Testing": both features, and at least one non-English game locale if
+you touched UI or selectors.
+
+### Common issues
+
+| Symptom | Likely cause |
+| --- | --- |
+| COMBOS tab missing | game UI changed — update selectors in `features/combos/lib/constants.js` |
+| Items not equipping | name cleaning in `utils.js`, or ownership detection |
+| Clicks not registering | timing — adjust the waits in the equippers/navigators |
+| Chat not translating | bundle detection broke after a game update — see CLAUDE.md → "When a Tanki build breaks the translator" |
 
 ---
 
 ## 🤝 Contributing
 
-Fork, create a branch, make your changes, run through the testing checklist, then open a PR. Match existing code style and, if you change UI or selectors, test in at least one non-English Tanki locale.
+Fork, branch, make your change, run the manual test pass, then open a PR. Match
+the existing code style: IIFE modules on the `window.TankiQoL` namespace, Hebrew
+comments, no external dependencies.
 
 ---
 
-Thanks to Tanki Online and the Chrome Extensions platform.
+### Version history
 
----
+**v3.0** — Added battle chat translation (previously a separate extension) and
+renamed to "Combos & QoL". Restructured into `features/` + `shared/`.
 
-### Version History
+**v2.5** — "Include protections" toggle when equipping.
 
-**v2.0** — Full rewrite: modular layout, automatic tab navigation, protection (4 slots) and augment support, drag-and-drop reorder, lobby button and `C` shortcut, multi-language, optional per-item removal.
+**v2.0** — Full rewrite: modular layout, automatic tab navigation, protection (4
+slots) and augment support, drag-and-drop reorder, lobby button and `C` shortcut,
+multi-language, per-item removal.
 
 **v1.0** — Basic save/load, manual tab switching, limited equipment.
 
 ---
 
-[Issues](https://github.com/IsraBA/TankiComboManager/issues) · [Wiki](https://github.com/IsraBA/TankiComboManager/wiki)
+[Issues](https://github.com/IsraBA/TankiCombosQoL/issues)

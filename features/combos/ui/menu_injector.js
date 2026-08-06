@@ -1,0 +1,384 @@
+// features/combos/ui/menu_injector.js
+
+// הלוגיקה שמוסיפה את הכפתור ומטפלת בלחיצה עליו (ובלחיצה על כפתורים אחרים כדי לצאת)
+(function () {
+  "use strict";
+
+  const DOM = window.TankiQoL.DOM;
+  window.TankiQoL = window.TankiQoL || {};
+
+  window.TankiQoL.MenuInjector = {
+    injected: false,
+    exitButtonsListenerAdded: false,
+    comboTab: null,
+    comboTabUnderline: null,
+
+    inject() {
+      const menuContainer = document.querySelector(DOM.MENU_CONTAINER);
+      if (!menuContainer) return;
+
+      // בדיקה האם הכפתור כבר קיים פיזית (למקרה שהמשתנה injected משקר)
+      const existingBtn = Array.from(menuContainer.children).find(
+        (el) => el.dataset.cmeComboTab,
+      );
+
+      if (existingBtn) {
+        this.injected = true;
+        return;
+      }
+
+      // console.log("Tanki Combos: Injecting Menu Button...");
+
+      // קבלת שם הטאב בשפה הנוכחית
+      const LanguageManager = window.TankiQoL?.LanguageManager;
+      const comboTabText = LanguageManager
+        ? LanguageManager.getUIText("combosTab")
+        : "COMBOS";
+
+      const comboTab = document.createElement("div");
+      comboTab.className = DOM.TAB_ITEM_CLASS;
+      comboTab.innerText = comboTabText;
+      comboTab.dataset.cmeComboTab = "true";
+      comboTab.style.order = "99";
+      comboTab.style.cursor = "pointer";
+
+      // שמירת reference לטאב שלנו
+      this.comboTab = comboTab;
+
+      // הוספת DIV פנימי שיהיה הקו התחתון שלנו (כמו במשחק)
+      // ניתן לו ID ייחודי כדי שנוכל למצוא ולמחוק אותו בקלות
+      const myUnderline = document.createElement("div");
+      myUnderline.className = DOM.ACTIVE_UNDERLINE_CLASS;
+      myUnderline.style.display = "none"; // מוסתר בהתחלה
+      comboTab.appendChild(myUnderline);
+      this.comboTabUnderline = myUnderline;
+
+      comboTab.onclick = (e) => {
+        e.stopPropagation();
+        this.safeActivateComboTab(comboTab, menuContainer, myUnderline);
+      };
+
+      menuContainer.addEventListener("click", (e) => {
+        const clickedTab = e.target.closest(`.${DOM.TAB_ITEM_CLASS}`);
+        if (clickedTab && clickedTab !== comboTab) {
+          // אם אנחנו על כרטיסיית הקומבואים, נכבה אותה קודם
+          if (comboTab.classList.contains(DOM.ACTIVE_TAB_CLASS)) {
+            this.deactivateComboTab(comboTab, menuContainer, myUnderline);
+          }
+          // וידוא שה-class מוחזר לטאב שנלחץ עליו
+          const allTabs = menuContainer.querySelectorAll(
+            `.${DOM.TAB_ITEM_CLASS}`,
+          );
+          allTabs.forEach((t) => t.classList.remove(DOM.ACTIVE_TAB_CLASS));
+          clickedTab.classList.add(DOM.ACTIVE_TAB_CLASS);
+          // עדכון נראות לאחר לחיצה על טאב אחר (למקרה שעברנו למסך augments/skins)
+          setTimeout(() => this.updateTabVisibility(), 50);
+        }
+      });
+
+      menuContainer.appendChild(comboTab);
+      this.injected = true;
+
+      // עדכון נראות הטאב לפי המסך הנוכחי
+      this.updateTabVisibility();
+
+      // האזנה לכפתורים שיכולים לסגור את המוסך, לחזור ללובי, או לניווט (Q/E)
+      // כדי להסתיר את התצוגה מיד כשלוחצים עליהם (לפני שה-DOM משתנה)
+      this.addExitButtonsListener();
+
+      // אתחול TabNavigator עם reference לטאב שלנו
+      if (window.TankiQoL.TabNavigator) {
+        window.TankiQoL.TabNavigator.init(comboTab, myUnderline);
+      }
+    },
+
+    // האזנה לכפתורים שיכולים לסגור את המוסך, לחזור ללובי, או לניווט (Q/E)
+    // כדי להסיר את ההשפעה של הכרטיסיית קומבואים מיד לפני שה-DOM משתנה
+    addExitButtonsListener() {
+      if (this.exitButtonsListenerAdded) return;
+
+      const hideComboView = () => {
+        const ViewRenderer = window.TankiQoL?.ViewRenderer;
+        if (ViewRenderer && ViewRenderer.viewElement) {
+          const comboViewStyle = window.getComputedStyle(
+            ViewRenderer.viewElement,
+          );
+          if (comboViewStyle.display !== "none") {
+            ViewRenderer.hide();
+          }
+        }
+      };
+
+      // פונקציה ל-Q ו-E - גם מסתירה וגם מכבה את הטאב
+      const hideAndDeactivateComboTab = () => {
+        const menuContainer = document.querySelector(DOM.MENU_CONTAINER);
+        if (menuContainer && this.comboTab && this.comboTabUnderline) {
+          // אם הטאב שלנו פעיל, נכבה אותו
+          if (this.comboTab.classList.contains(DOM.ACTIVE_TAB_CLASS)) {
+            this.deactivateComboTab(
+              this.comboTab,
+              menuContainer,
+              this.comboTabUnderline,
+            );
+          } else {
+            // אם לא, רק נסתיר את התצוגה
+            hideComboView();
+          }
+        } else {
+          hideComboView();
+        }
+      };
+
+      // כפתור חזרה
+      const backButton = document.querySelector(DOM.BACK_BUTTON);
+      if (backButton) {
+        backButton.addEventListener("click", hideComboView);
+      }
+
+      // לחיצה על ESC או Z - אותה התנהגות כמו כפתור חזרה
+      const escapeKeyHandler = (e) => {
+        // רק אם לא לוחצים על input, textarea, או אלמנט contenteditable
+        if (
+          e.target.tagName === "INPUT" ||
+          e.target.tagName === "TEXTAREA" ||
+          e.target.isContentEditable
+        ) {
+          return;
+        }
+
+        const keyCode = e.code || e.keyCode;
+        if (
+          keyCode === "Escape" ||
+          keyCode === 27 ||
+          keyCode === "KeyZ" ||
+          keyCode === 90
+        ) {
+          hideComboView();
+        }
+      };
+
+      document.addEventListener("keydown", escapeKeyHandler);
+
+      // כפתור חזרה של הדפדפן - אותה התנהגות כמו כפתור חזרה של המשחק
+      window.addEventListener("popstate", hideComboView);
+
+      // כפתור סגירה של המוסך
+      const exitButton = document.querySelector(DOM.EXIT_GARAGE_BUTTON);
+      if (exitButton) {
+        exitButton.addEventListener("click", hideComboView);
+      }
+
+      if (backButton || exitButton) {
+        this.exitButtonsListenerAdded = true;
+      }
+    },
+
+    // פונקציה בטוחה לפתיחת כרטיסיית הקומבואים - עוברת דרך Paints קודם
+    // paintsDelay - זמן המתנה אחרי לחיצה על Paints (ברירת מחדל: 1ms)
+    async safeActivateComboTab(myTab, container, myUnderline, paintsDelay = 1) {
+      const Utils = window.TankiQoL?.Utils;
+
+      // קודם כל נכנסים לכרטיסיית Paints
+      const allTabs = container.querySelectorAll(`.${DOM.TAB_ITEM_CLASS}`);
+      let paintsTab = null;
+
+      // קבלת שם טאב Paints בשפה הנוכחית
+      const LanguageManager = window.TankiQoL?.LanguageManager;
+      const paintsTabName = LanguageManager
+        ? LanguageManager.getTabName("Paints").toLowerCase()
+        : "paints";
+
+      for (let tab of allTabs) {
+        const tabText = tab.textContent ? tab.textContent.trim() : "";
+        const tabTextLower = tabText.toLowerCase();
+        // חיפוש טאב Paints לפי השפה הנוכחית
+        if (tabTextLower === paintsTabName) {
+          paintsTab = tab;
+          break;
+        }
+      }
+
+      // אם מצאנו את טאב Paints, נלחץ עליו קודם
+      if (paintsTab) {
+        paintsTab.click();
+        // המתנה לפי הפרמטר (1ms בדרך כלל, 150ms אחרי equipCombo)
+        if (Utils && Utils.sleep) {
+          await Utils.sleep(paintsDelay);
+        }
+      }
+
+      // אחר כך נפעיל את טאב הקומבואים
+      this.activateComboTab(myTab, container, myUnderline);
+
+      // וידוא נוסף שהסתרת אלמנטי Paints (רק אם יש המתנה ארוכה, כלומר אחרי equipCombo)
+      if (paintsDelay > 1 && Utils && Utils.sleep) {
+        await Utils.sleep(50);
+        // הסתרה מפורשת של אלמנטי Paints
+        const paintsElements = document.querySelectorAll(`
+                    .PaintsCollectionComponentStyle-containerPaints,
+                    .PaintsCollectionComponentStyle-blockPaints
+                `);
+        paintsElements.forEach((el) => {
+          if (el) {
+            el.style.display = "none";
+          }
+        });
+      }
+    },
+
+    activateComboTab(myTab, container, myUnderline) {
+      // הסתרת הקו הירוק מכל שאר הטאבים
+      const allTabs = container.querySelectorAll(`.${DOM.TAB_ITEM_CLASS}`);
+      allTabs.forEach((tab) => {
+        tab.classList.remove(DOM.ACTIVE_TAB_CLASS);
+        const underline = tab.querySelector(`.${DOM.ACTIVE_UNDERLINE_CLASS}`);
+        // אנחנו מסתירים רק אם זה לא הקו שלנו
+        if (underline && underline !== myUnderline) {
+          underline.style.display = "none";
+        }
+        // הוספת cursor: pointer לכל הטאבים האחרים
+        if (tab !== myTab) {
+          tab.style.cursor = "pointer";
+        }
+      });
+
+      // הפעלת הטאב שלנו
+      myTab.classList.add(DOM.ACTIVE_TAB_CLASS);
+      myUnderline.style.display = "block"; // הצגת הקו שלנו
+      // מניעת לחיצה על COMBOS כשהוא פעיל
+      myTab.style.pointerEvents = "none";
+
+      if (window.TankiQoL.ViewRenderer) {
+        window.TankiQoL.ViewRenderer.show();
+      }
+    },
+
+    deactivateComboTab(myTab, container, myUnderline) {
+      // כיבוי הטאב שלנו
+      myTab.classList.remove(DOM.ACTIVE_TAB_CLASS);
+      myUnderline.style.display = "none";
+      // החזרת pointer events ל-COMBOS
+      myTab.style.pointerEvents = "";
+
+      // החזרת הקווים הירוקים לטאבים המקוריים
+      // (הערה: המשחק ינהל בעצמו מי צריך להיות דלוק, אנחנו רק מבטלים את ה-none ששמנו)
+      const allTabs = container.querySelectorAll(`.${DOM.TAB_ITEM_CLASS}`);
+      allTabs.forEach((tab) => {
+        const underline = tab.querySelector(`.${DOM.ACTIVE_UNDERLINE_CLASS}`);
+        if (underline && underline !== myUnderline) {
+          underline.style.display = ""; // נותן למשחק להחליט אם להציג או לא
+        }
+        // החזרת cursor רגיל לכל הטאבים (המשחק ינהל את זה)
+        if (tab !== myTab) {
+          tab.style.cursor = "";
+        }
+      });
+
+      if (window.TankiQoL.ViewRenderer) {
+        window.TankiQoL.ViewRenderer.hide();
+      }
+    },
+
+    // בדיקה אם אנחנו במסך של augments/skins/Shot color (שם הטאב לא צריך להיראות)
+    isOnAugmentsOrSkinsScreen() {
+      // מסך האוגמנטים/סקינים מאופיין בנוכחות של אלמנט עם הקלאס Common-flexSpaceBetweenAlignStartColumn
+      return !!document.querySelector(DOM.AUGMENTS_SKINS_INDICATOR);
+    },
+
+    // בדיקה אם אנחנו במסך המשימות (שם הטאב לא צריך להיראות)
+    isOnMissionsScreen() {
+      // מסך המשימות מאופיין בנוכחות של אלמנט עם הקלאס QuestsComponentStyle-content
+      return !!document.querySelector(DOM.MISSIONS_INDICATOR);
+    },
+
+    // בדיקה אם אנחנו במסך הקלאן (שם הטאב לא צריך להיראות)
+    isOnClanScreen() {
+      // מסך הקלאן מאופיין בנוכחות של אלמנט עם הקלאס ClanCommonStyle-content
+      return !!document.querySelector(DOM.CLAN_INDICATOR);
+    },
+
+    // בדיקה אם אנחנו במסך החברים (שם הטאב לא צריך להיראות)
+    isOnFriendsScreen() {
+      // מסך החברים מאופיין בנוכחות של אלמנט עם הקלאס FriendListComponentStyle-containerFriends
+      return !!document.querySelector(DOM.FRIENDS_INDICATOR);
+    },
+
+    // בדיקה אם אנחנו במסך יצירת באטל (שם הטאב לא צריך להיראות)
+    isOnBattleCreationScreen() {
+      // מסך יצירת באטל מאופיין בנוכחות של אלמנט עם הקלאס BattleCreateComponentStyle-mainContainer
+      return !!document.querySelector(DOM.BATTLE_CREATION_INDICATOR);
+    },
+
+    // עדכון נראות הטאב לפי המסך הנוכחי
+    updateTabVisibility() {
+      if (!this.comboTab) return;
+
+      // הטאב צריך להיות מוסתר במסך augments/skins, במסך המשימות, במסך הקלאן, במסך החברים, או במסך יצירת באטל
+      const shouldHide =
+        this.isOnAugmentsOrSkinsScreen() ||
+        this.isOnMissionsScreen() ||
+        this.isOnClanScreen() ||
+        this.isOnFriendsScreen() ||
+        this.isOnBattleCreationScreen();
+
+      if (shouldHide) {
+        // הסתרת הטאב
+        this.comboTab.style.display = "none";
+        // אם הטאב פעיל, נכבה אותו
+        if (this.comboTab.classList.contains(DOM.ACTIVE_TAB_CLASS)) {
+          const menuContainer = document.querySelector(DOM.MENU_CONTAINER);
+          if (menuContainer && this.comboTabUnderline) {
+            this.deactivateComboTab(
+              this.comboTab,
+              menuContainer,
+              this.comboTabUnderline,
+            );
+          }
+        }
+        // הסתרת התצוגה גם אם הטאב לא פעיל (למקרה שהתצוגה נשארה פתוחה)
+        const ViewRenderer = window.TankiQoL?.ViewRenderer;
+        if (ViewRenderer && ViewRenderer.viewElement) {
+          const comboViewStyle = window.getComputedStyle(
+            ViewRenderer.viewElement,
+          );
+          if (comboViewStyle.display !== "none") {
+            ViewRenderer.hide();
+          }
+        }
+      } else {
+        // הצגת הטאב
+        this.comboTab.style.display = "";
+      }
+    },
+
+    // פונקציה לבדיקה אם הכפתור נמחק (קורה במעבר בין מסכים)
+    checkAlive() {
+      const menuContainer = document.querySelector(DOM.MENU_CONTAINER);
+      if (menuContainer) {
+        const existingBtn = Array.from(menuContainer.children).find(
+          (el) => el.dataset.cmeComboTab,
+        );
+        if (!existingBtn) {
+          this.injected = false; // הכפתור נמחק, צריך להזריק שוב
+          this.exitButtonsListenerAdded = false; // צריך להוסיף מחדש את ה-listener
+          this.comboTab = null;
+          this.comboTabUnderline = null;
+          if (window.TankiQoL.TabNavigator) {
+            window.TankiQoL.TabNavigator.reset();
+          }
+        } else {
+          // הכפתור קיים, נבדוק אם צריך להסתיר אותו
+          this.updateTabVisibility();
+        }
+      } else {
+        this.injected = false; // התפריט נעלם, אז בטח גם הכפתור
+        this.exitButtonsListenerAdded = false;
+        this.comboTab = null;
+        this.comboTabUnderline = null;
+        if (window.TankiQoL.TabNavigator) {
+          window.TankiQoL.TabNavigator.reset();
+        }
+      }
+    },
+  };
+})();

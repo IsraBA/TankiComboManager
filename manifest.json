@@ -1,71 +1,129 @@
 {
   "manifest_version": 3,
-  "name": "Tanki Online - Combo Manager",
-  "version": "2.5",
-  "description": "Save your favorite Tanki Online combos and switch between them with a single click",
+  "name": "Tanki Online — Combos & QoL",
+  "version": "3.0",
+  "description": "Quality-of-life tools for Tanki Online: save and switch full equipment combos in one click, and translate battle chat in real time.",
   "permissions": [
     "storage"
   ],
   "host_permissions": [
-    "*://*.tankionline.com/*"
+    "*://*.tankionline.com/*",
+    "https://translate.googleapis.com/*",
+    "https://lingva.lunar.icu/*",
+    "https://lingva.ml/*"
   ],
+  "background": {
+    "service_worker": "background.js"
+  },
   "content_scripts": [
     {
       "matches": [
         "*://*.tankionline.com/*"
       ],
       "css": [
-        "styles.css",
-        "combo_card.css",
-        "ui/lobby_button.css",
-        "ui/delete_combo_modal.css",
-        "ui/components/drawer/drawer.css",
-        "ui/components/switch/switch.css",
-        "ui/components/select/select.css",
-        "ui/randomizer_settings.css",
-        "ui/import_export.css"
+        "shared/components/drawer.css",
+        "shared/components/switch.css",
+        "shared/components/select.css",
+        "features/combos/styles.css",
+        "features/combos/combo_card.css",
+        "features/combos/ui/lobby_button.css",
+        "features/combos/ui/delete_combo_modal.css",
+        "features/combos/ui/randomizer_settings.css",
+        "features/combos/ui/import_export.css",
+        "features/translator/main/gamesettings.css"
+      ],
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "*://*.tankionline.com/*"
       ],
       "js": [
-        "lib/constants.js",
-        "lib/utils.js",
-        "lib/language_manager.js",
-        "core/combo_cleaner.js",
-        "core/tab_navigator.js",
-        "core/scanners/base_item_scanner.js",
-        "core/scanners/augment_scanner.js",
-        "core/scanners/protection_scanner.js",
-        "core/scanners/paint_scanner.js",
-        "core/combo_saver.js",
-        "core/equippers/base_item_equipper.js",
-        "core/equippers/augment_equipper.js",
-        "core/equippers/protection_equipper.js",
-        "core/combo_loader.js",
-        "core/navigation_helpers.js",
-        "core/auto_navigator.js",
-        "core/randomizer/item_list_scanner.js",
-        "core/randomizer/random_from_saved.js",
-        "core/randomizer/random_full.js",
-        "core/randomizer/randomizer.js",
-        "ui/menu_injector.js",
-        "ui/lobby_button_injector.js",
-        "ui/lobby_shortcut_handler.js",
-        "ui/combo_drag_handler.js",
-        "ui/delete_combo_modal.js",
-        "ui/components/drawer/drawer.js",
-        "ui/components/switch/switch.js",
-        "ui/components/select/select.js",
-        "ui/randomizer_settings.js",
-        "ui/import_export.js",
-        "ui/combo_card_renderer.js",
-        "ui/view_renderer.js",
-        "main.js"
+        "features/translator/isolated/bridge.js",
+        "features/translator/isolated/detect.js"
+      ],
+      "run_at": "document_start",
+      "world": "ISOLATED"
+    },
+    {
+      "matches": [
+        "*://*.tankionline.com/*"
+      ],
+      "js": [
+        "shared/components/switch.js",
+        "shared/components/select.js",
+        "features/translator/main/settings.js",
+        "features/translator/main/skiplist.js",
+        "features/translator/main/translate.js",
+        "features/translator/main/chat.js",
+        "features/translator/main/gamesettings.js",
+        "features/translator/main/toggle.js"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
+      "matches": [
+        "*://*.tankionline.com/*"
+      ],
+      "js": [
+        "shared/components/drawer.js",
+        "shared/components/switch.js",
+        "shared/components/select.js",
+        "features/combos/lib/constants.js",
+        "features/combos/lib/utils.js",
+        "features/combos/lib/language_manager.js",
+        "features/combos/core/combo_cleaner.js",
+        "features/combos/core/tab_navigator.js",
+        "features/combos/core/scanners/base_item_scanner.js",
+        "features/combos/core/scanners/augment_scanner.js",
+        "features/combos/core/scanners/protection_scanner.js",
+        "features/combos/core/scanners/paint_scanner.js",
+        "features/combos/core/combo_saver.js",
+        "features/combos/core/equippers/base_item_equipper.js",
+        "features/combos/core/equippers/augment_equipper.js",
+        "features/combos/core/equippers/protection_equipper.js",
+        "features/combos/core/combo_loader.js",
+        "features/combos/core/navigation_helpers.js",
+        "features/combos/core/auto_navigator.js",
+        "features/combos/core/randomizer/item_list_scanner.js",
+        "features/combos/core/randomizer/random_from_saved.js",
+        "features/combos/core/randomizer/random_full.js",
+        "features/combos/core/randomizer/randomizer.js",
+        "features/combos/ui/menu_injector.js",
+        "features/combos/ui/lobby_button_injector.js",
+        "features/combos/ui/lobby_shortcut_handler.js",
+        "features/combos/ui/combo_drag_handler.js",
+        "features/combos/ui/delete_combo_modal.js",
+        "features/combos/ui/randomizer_settings.js",
+        "features/combos/ui/import_export.js",
+        "features/combos/ui/combo_card_renderer.js",
+        "features/combos/ui/view_renderer.js",
+        "features/combos/main.js"
       ],
       "run_at": "document_idle"
     }
   ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "features/translator/assets/flags/*.svg"
+      ],
+      "matches": [
+        "*://*.tankionline.com/*"
+      ]
+    }
+  ],
+  "action": {
+    "default_icon": {
+      "16": "assets/icons/icon16.png",
+      "48": "assets/icons/icon48.png",
+      "128": "assets/icons/icon128.png"
+    }
+  },
   "icons": {
-    "16": "icons/icon.png",
-    "48": "icons/icon.png",
-    "128": "icons/icon.png"
+    "16": "assets/icons/icon16.png",
+    "48": "assets/icons/icon48.png",
+    "128": "assets/icons/icon128.png"
   }
 }
