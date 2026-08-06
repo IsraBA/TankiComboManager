@@ -1,6 +1,6 @@
 # Privacy Policy — Tanki Online: Combos & QoL
 
-**Last updated: 6 August 2026**
+**Last updated: 7 August 2026**
 
 Tanki Online: Combos & QoL ("the extension") is a browser extension that adds
 quality-of-life tools to the game at tankionline.com: saving and switching

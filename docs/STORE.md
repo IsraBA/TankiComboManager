@@ -125,8 +125,17 @@ Then affirm the three required certifications — all three hold truthfully:
 - *Complying with the Developer Program Policies.*
 
 **Privacy policy URL:** required now (it was previously allowed to be empty).
-Host `docs/PRIVACY.md` publicly — GitHub Pages or a Gist both work — and paste
-the URL. A URL is mandatory for any item that handles user data.
+The repository is public and GitHub renders Markdown, so the policy is already
+served — paste this, no hosting setup needed:
+
+```
+https://github.com/IsraBA/TankiCombosQoL/blob/main/docs/PRIVACY.md
+```
+
+It stays in sync automatically: editing `docs/PRIVACY.md` and pushing updates the
+published policy. (If a cleaner page is ever wanted, enable GitHub Pages — but
+note that publishing the whole `docs/` folder would also serve this file and
+`PACKAGING.md` as web pages.)
 
 ## 6. Upload checklist
 

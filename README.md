@@ -94,7 +94,7 @@ fonts, and hover states rather than announcing itself as a third-party addition.
 
 ### From the Chrome Web Store
 
-Search for **Tanki Online — Combos & QoL**, or install from the store listing.
+**[➜ Install from the Chrome Web Store](https://chromewebstore.google.com/detail/tanki-online-combo-manage/aodkeckgccekmgmeddikfjgfnomalacm)**
 
 > **Updating from an older version?** This release adds the chat-translation
 > feature, which needs permission to reach the translation service. Chrome

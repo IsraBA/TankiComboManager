@@ -31,7 +31,8 @@ JS worlds, different storage areas. They share only the UI components in
 ├── README.md                     # public-facing project readme
 ├── docs/
 │   ├── PACKAGING.md              # WHAT GOES IN THE STORE ZIP — read before zipping
-│   ├── PRIVACY.md                # the public privacy policy (must be hosted at a URL)
+│   ├── PRIVACY.md                # the public privacy policy — served from GitHub (public repo);
+│   │                             #   its URL is the one in the CWS listing, so edits here go live
 │   └── STORE.md                  # paste-ready texts for the CWS dashboard
 ├── build/
 │   └── make-zip.ps1              # builds the store zip (implements PACKAGING.md)
