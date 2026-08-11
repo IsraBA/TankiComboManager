@@ -5,7 +5,7 @@
 
   **Quality-of-life browser extension for Tanki Online**
 
-  [![Version](https://img.shields.io/badge/version-3.0-blue.svg)](manifest.json)
+  [![Version](https://img.shields.io/badge/version-3.1-blue.svg)](manifest.json)
   [![Manifest](https://img.shields.io/badge/manifest-v3-green.svg)](manifest.json)
 
 </div>
@@ -83,6 +83,10 @@ fonts, and hover states rather than announcing itself as a third-party addition.
   game's own Settings screen.
 - **Slang stays slang** — `gg`, `ez`, `noob`, `hahaha` and friends are shown
   verbatim and never sent anywhere.
+- **Hebrew and Arabic read the right way round** — the game draws chat left to
+  right whatever the language, so right-to-left messages arrive reversed on
+  screen. The extension reorders them before they're drawn. This is a display
+  fix done entirely in your browser; nothing is sent anywhere for it.
 - **Toggle any time** — a button next to the chat bar, or `Alt+T`, flips the whole
   chat between original and translated. The setting persists.
 - **Fully optional** — turn translation off in the game's Settings screen and the
@@ -312,6 +316,9 @@ comments, no external dependencies.
 ---
 
 ### Version history
+
+**v3.1** — Right-to-left chat fix: Hebrew and Arabic messages are no longer shown
+reversed on the game's canvas.
 
 **v3.0** — Added battle chat translation (previously a separate extension) and
 renamed to "Combos & QoL". Restructured into `features/` + `shared/`.

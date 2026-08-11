@@ -19,8 +19,15 @@
 // while the visible-line count is 0 although we still hold records) and adopt
 // the replayed args instead of re-recording -> no duplicated lines.
 //
+// RTL FIX: the game's glyph renderer has no bidi handling, so Hebrew/Arabic
+// text is drawn reversed. Every display path runs through __CT.bidi.toVisual
+// (logical -> visual order), which also covers translations INTO an RTL
+// target language. Applies to all messages while the translator is enabled,
+// including "show original" mode and slang-skipped ones.
+//
 // Consumes __CT.settings (enabled / showOriginal / targetLang), __CT.translate
-// (network via the SW), and __CT.skip (no-translate slang). All the minified
+// (network via the SW), __CT.skip (no-translate slang), and __CT.bidi (RTL
+// logical->visual conversion). All the minified
 // HUD names are DISCOVERED per build by features/translator/isolated/detect.js and delivered as a
 // `hudConstants` message; the seed below only bootstraps the latest-known build
 // and the trap so nothing is inert during the discovery fetch.
@@ -71,6 +78,11 @@
   function get(o, k) { try { return o[k]; } catch (_) { return undefined; } }
   function hasLetter(text) { return !!text && /\p{L}/u.test(text); }
 
+  // תיקון RTL: המשחק מצייר גליפים בסדר המחרוזת בלי bidi, אז עברית/ערבית
+  // מוצגות הפוך. ממירים לסדר ויזואלי (bidi.js) בכל נקודת תצוגה; טקסט
+  // בלי תווי RTL חוזר כמות שהוא. fallback זהותי אם המודול חסר.
+  function toVisual(text) { return NS.bidi ? NS.bidi.toVisual(text) : text; }
+
   // Message text = the (longest) top-level own STRING on the render arg.
   function findTextKey(arg) {
     let bestK = null, bestLen = -1;
@@ -84,9 +96,9 @@
   // ---- display text for a message ------------------------------------
   let loaderFrame = 0;
   function displayText(m) {
-    if (!m.willTranslate) return m.text;
+    if (!m.willTranslate) return toVisual(m.text);
     const showOrig = m.userShowOriginal != null ? m.userShowOriginal : S.showOriginal;
-    if (showOrig || !S.enabled) return m.text;   // original mode: clean
+    if (showOrig || !S.enabled) return toVisual(m.text);   // original mode: clean
     if (m.state === 'done') {
       const tr = m.translation;
       const same = !tr || !tr.trim() ||
@@ -95,10 +107,11 @@
       // (e.g. target=EN and the message was English) — nothing to translate.
       const srcIsTarget = m.lang && S.targetLang &&
         m.lang.toLowerCase() === S.targetLang.toLowerCase();
-      if (same || srcIsTarget) return m.text;
-      return (m.lang ? '[' + m.lang.toUpperCase() + '] ' : '[文] ') + TR_ARROW + tr;
+      if (same || srcIsTarget) return toVisual(m.text);
+      // תרגום לשפת RTL: רק גוף התרגום מומר; התגית ([HE] ») נשארת משמאל
+      return (m.lang ? '[' + m.lang.toUpperCase() + '] ' : '[文] ') + TR_ARROW + toVisual(tr);
     }
-    return (m.text || '') + ' ' + LOADER_FRAMES[loaderFrame % LOADER_FRAMES.length]; // pending
+    return toVisual(m.text || '') + ' ' + LOADER_FRAMES[loaderFrame % LOADER_FRAMES.length]; // pending
   }
 
   // ---- translation dispatch ------------------------------------------
@@ -215,8 +228,11 @@
                 entry.arg = arg;
                 entry.textKey = textKey;
                 W.__CT_DEBUG.replayAdopts++;
-                if (S.enabled && entry.willTranslate && textKey) {
-                  try { arg[textKey] = displayText(entry); } catch (e) {}
+                // מציבים טקסט תצוגה כשהוא שונה מהמקור — תרגום/ספינר, וגם
+                // תיקון RTL להודעות שאינן מתורגמות
+                if (S.enabled && textKey) {
+                  const d = displayText(entry);
+                  if (d !== entry.text) { try { arg[textKey] = d; } catch (e) {} }
                 }
                 if (entry.state === 'pending') ensureLoaderAnim();
                 return orig.apply(this, arguments);
@@ -237,8 +253,11 @@
             if (W.__CT_MSGS.length > 200) W.__CT_MSGS.shift();
             W.__CT_DEBUG.intercepts++;
 
-            if (S.enabled && textKey && m.willTranslate) {
-              try { arg[textKey] = displayText(m); } catch (e) {}
+            // מציבים טקסט תצוגה כשהוא שונה מהמקור — ספינר להודעה שתתורגם,
+            // וגם תיקון RTL שחל על כל הודעה (כולל סלנג ומצב "הצג מקור")
+            if (S.enabled && textKey) {
+              const d = displayText(m);
+              if (d !== original) { try { arg[textKey] = d; } catch (e) {} }
             }
             if (m.willTranslate) { ensureLoaderAnim(); fireTranslate(m); }
           } catch (e) { W.__CT_DEBUG.lastError = String(e); }

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Tanki Online — Combos & QoL",
-  "version": "3.0",
+  "version": "3.1",
   "description": "Quality-of-life tools for Tanki Online: save and switch full equipment combos in one click, and translate battle chat in real time.",
   "permissions": [
     "storage"
@@ -55,6 +55,7 @@
         "features/translator/main/settings.js",
         "features/translator/main/skiplist.js",
         "features/translator/main/translate.js",
+        "features/translator/main/bidi.js",
         "features/translator/main/chat.js",
         "features/translator/main/gamesettings.js",
         "features/translator/main/toggle.js"

@@ -79,6 +79,7 @@ JS worlds, different storage areas. They share only the UI components in
 │       │   ├── settings.js       # __CT.settings (subscribe/get/set)
 │       │   ├── skiplist.js       # __CT.skip — no-translate universal slang
 │       │   ├── translate.js      # __CT.translate — request over the bridge, cache, timeout
+│       │   ├── bidi.js           # __CT.bidi — RTL logical→visual order (the game canvas has no bidi)
 │       │   ├── chat.js           # THE CORE: capture, intercept, rebuild, display
 │       │   ├── gamesettings.js/.css  # injects controls into the game's Settings screen
 │       │   └── toggle.js         # in-battle toggle button (inlined icon) + Alt+T
@@ -341,6 +342,7 @@ What it does:
 | Swap to translation | `[<SRC>] » <translation>` in the target language |
 | No prefix when source == target | nothing to translate |
 | Universal slang verbatim | `gg`, `ez`, `noob`, `hahaha`, … never hit the API (`skiplist.js`) |
+| RTL displayed correctly | the game's canvas renderer has **no bidi**, so Hebrew/Arabic arrives on screen reversed ("הרוק המ םולש"); every displayed text — originals, translations into RTL target languages, slang, "show original" mode — is converted logical→visual by `bidi.js` before drawing. Purely local, no API call. Gated on the translator's `enabled` toggle (it shares the render-intercept pipeline). |
 | Toggle original↔translation | in-game button (next to the chat alert button) + Alt+T, persisted |
 | Target language | native-styled dropdown injected into the game's Settings screen (default English) |
 
@@ -411,6 +413,9 @@ __CT.translate.cache               // the Map (debug)
 
 __CT.skip.shouldSkip(text)         // true if every word is universal slang
 __CT.skip.words                    // the live Set (add words at runtime)
+
+__CT.bidi.toVisual(text)           // logical→visual RTL conversion; identity (===) for non-RTL text
+__CT.bidi.hasRtl(text)             // does the text contain RTL characters?
 
 __CT.rebuild()                     // force a clear+replay rebuild (also __CT_REBUILD)
 
@@ -544,6 +549,14 @@ ImageMagick installed; Chrome + Python-Pillow are):
   local user's name/uid, which this extension doesn't capture.
 - **Canvas glyphs**: `»` and `[文]` render from the game font atlas; confirm they
   aren't missing-boxes on a new build.
+- **Multi-line RTL messages read bottom-up.** `bidi.js` converts to visual order
+  *before* the game wraps lines at its own width, so when a Hebrew/Arabic message
+  wraps, the top line holds the END of the sentence. Each line itself reads
+  correctly, and most chat messages are single-line. A true fix would mean
+  replicating the engine's glyph-width wrapping — deliberately not done.
+- **Arabic renders as isolated letterforms.** The RTL fix corrects the order, but
+  the game's font atlas draws one glyph per codepoint with no contextual shaping
+  (no ligatures/joining). Readable, not pretty. Hebrew is unaffected.
 
 ## Debugging
 

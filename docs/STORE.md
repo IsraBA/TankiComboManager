@@ -53,6 +53,7 @@ Save a full garage setup - turret, hull, both augments, drone, grenade, protecti
 
 CHAT TRANSLATION
 Foreign battle chat, translated in place on the game screen. Pick your language in the game's Settings. Alt+T switches back to the original, and you can turn translation off entirely - combos keep working.
+Hebrew and Arabic chat also reads the right way round again - the game itself draws it reversed, and the extension fixes that on screen without sending anything anywhere.
 
 Free, no ads, no account, no automation and no gameplay advantage. Your combos stay in your browser; the only thing that ever leaves it is the text of a message being translated.
 
@@ -65,6 +66,10 @@ Three things in there are not padding and should survive future edits: the
 permission paragraph (a service notice — without it the update reads as "the
 extension broke"), the one-line privacy statement (heads off "wait, you send my
 chat where?"), and "no gameplay advantage" (it matters in a game community).
+
+> The permission paragraph applies to users coming from **pre-3.0** only. 3.1
+> added no permissions, so a 3.0 → 3.1 update does not disable anything. Drop
+> that paragraph once the pre-3.0 population has aged out.
 
 Two claims from the old description were deliberately dropped:
 
