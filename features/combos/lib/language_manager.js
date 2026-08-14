@@ -114,6 +114,8 @@
         saveCombo: "СОХРАНИТЬ КОМБО",
         equipCombo: "УСТАНОВИТЬ",
         deleteCombo: "Удалить комбо",
+        editCombo: "Редактировать комбо",
+        doneEditing: "Готово",
         noSavedCombos: "Нет сохраненных комбо",
         clickToSave: 'Нажмите "СОХРАНИТЬ КОМБО" чтобы сохранить первое комбо!',
         deleteConfirm: "Вы уверены, что хотите удалить это комбо?",
@@ -187,6 +189,8 @@
         saveCombo: "GUARDAR COMBO",
         equipCombo: "EQUIPAR",
         deleteCombo: "Eliminar combo",
+        editCombo: "Editar combo",
+        doneEditing: "Listo",
         noSavedCombos: "No hay combos guardados aún",
         clickToSave:
           'Haz clic en "GUARDAR COMBO" para guardar tu primer combo!',
@@ -261,6 +265,8 @@
         saveCombo: "ZAPISZ COMBO",
         equipCombo: "WYPOSAŻ",
         deleteCombo: "Usuń combo",
+        editCombo: "Edytuj combo",
+        doneEditing: "Gotowe",
         noSavedCombos: "Brak zapisanych combo",
         clickToSave: 'Kliknij "ZAPISZ COMBO" aby zapisać pierwsze combo!',
         deleteConfirm: "Czy na pewno chcesz usunąć to combo?",
@@ -334,6 +340,8 @@
         saveCombo: "SALVAR COMBO",
         equipCombo: "EQUIPAR",
         deleteCombo: "Excluir combo",
+        editCombo: "Editar combo",
+        doneEditing: "Concluído",
         noSavedCombos: "Nenhum combo salvo ainda",
         clickToSave: 'Clique em "SALVAR COMBO" para salvar seu primeiro combo!',
         deleteConfirm: "Tem certeza de que deseja excluir este combo?",
@@ -407,6 +415,8 @@
         saveCombo: "COMBO SPEICHERN",
         equipCombo: "AUSSTATTEN",
         deleteCombo: "Combo löschen",
+        editCombo: "Combo bearbeiten",
+        doneEditing: "Fertig",
         noSavedCombos: "Noch keine Combos gespeichert",
         clickToSave:
           'Klicken Sie auf "COMBO SPEICHERN" um Ihr erstes Combo zu speichern!',
@@ -482,6 +492,8 @@
         saveCombo: "SAUVEGARDER COMBO",
         equipCombo: "ÉQUIPER",
         deleteCombo: "Supprimer combo",
+        editCombo: "Modifier combo",
+        doneEditing: "Terminé",
         noSavedCombos: "Aucun combo sauvegardé",
         clickToSave:
           'Cliquez sur "SAUVEGARDER COMBO" pour sauvegarder votre premier combo!',
@@ -556,6 +568,8 @@
         saveCombo: "コンボを保存",
         equipCombo: "装備",
         deleteCombo: "コンボを削除",
+        editCombo: "コンボを編集",
+        doneEditing: "完了",
         noSavedCombos: "保存されたコンボはまだありません",
         clickToSave:
           "「コンボを保存」をクリックして最初のコンボを保存してください！",
@@ -630,6 +644,8 @@
         saveCombo: "KOMBO KAYDET",
         equipCombo: "KUŞAN",
         deleteCombo: "Komboyu sil",
+        editCombo: "Komboyu düzenle",
+        doneEditing: "Bitti",
         noSavedCombos: "Henüz kaydedilmiş kombo yok",
         clickToSave:
           'İlk kombonuzu kaydetmek için "KOMBO KAYDET"e tıklayın!',
@@ -704,6 +720,8 @@
         saveCombo: "ULOŽIT COMBO",
         equipCombo: "VYBAVIT",
         deleteCombo: "Smazat combo",
+        editCombo: "Upravit combo",
+        doneEditing: "Hotovo",
         noSavedCombos: "Zatím žádné uložené combo",
         clickToSave:
           'Klikněte na "ULOŽIT COMBO" pro uložení prvního combo!',
@@ -778,6 +796,8 @@
         saveCombo: "कॉम्बो सहेजें",
         equipCombo: "लैस करें",
         deleteCombo: "कॉम्बो हटाएं",
+        editCombo: "कॉम्बो संपादित करें",
+        doneEditing: "हो गया",
         noSavedCombos: "अभी तक कोई सहेजा गया कॉम्बो नहीं",
         clickToSave:
           'अपना पहला कॉम्बो सहेजने के लिए "कॉम्बो सहेजें" पर क्लिक करें!',
@@ -956,8 +976,7 @@
     // קבלת טקסט UI לפי מפתח
     getUIText(key) {
       const lang = this.getCurrentLanguage();
-      // נפילה לאנגלית לפני החזרת המפתח עצמו — כך מפתח חדש שטרם תורגם מוצג
-      // כטקסט קריא ולא כשם המשתנה ("editCombo") על המסך של המשתמש
+      // נפילה לאנגלית לפני המפתח עצמו, שלא ידלוף שם משתנה למסך
       return lang.ui?.[key] || LANGUAGES.en.ui?.[key] || key;
     },
 

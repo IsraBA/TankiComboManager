@@ -275,9 +275,7 @@
       const saveBtn = this.viewElement.querySelector("#cme_save-combo-btn");
       if (saveBtn) {
         saveBtn.onclick = async () => {
-          // שמירה מיידית ממצב המשחק (instant_saver) — החליפה את סריקת
-          // ה-DOM הישנה (ComboSaver.saveCurrentCombo, שנשארה בקוד אך לא
-          // מחווטת). אין ניווט טאבים: נשארים על מסך הקומבואים.
+          // שמירה מיידית ממצב המשחק. ComboSaver הישן נשאר בקוד אך לא מחווט.
           if (window.TankiQoL.InstantSaver) {
             const result =
               await window.TankiQoL.InstantSaver.saveCurrentCombo();
@@ -805,9 +803,7 @@
           // פריטים רגילים
           combo.removedItems[itemType] = true;
 
-          // הסרת התותח מסירה את כל מה שבגזרה שלו: האוגמנט, אפקט הירייה
-          // והסקין (הסקין אינו פריט נפרד להסרה — הוא רק מחליף את התמונה,
-          // ולכן הוא נעלם ממילא ברגע שהתותח מוסר)
+          // הסרת התותח מורידה איתה את כל הגזרה שלו
           if (itemType === "turret") {
             combo.removedItems.turretAugment = true;
             combo.removedItems.turretShotFx = true;

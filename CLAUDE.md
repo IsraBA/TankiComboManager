@@ -409,10 +409,9 @@ The card has **two modes**, and almost every interaction rule follows from that:
 `LanguageManager.getUIText()`, `getEquipButtonText()`, and `getTabName()` for any
 user-facing or game-matching strings. Never hardcode language-specific text.
 
-`getUIText` falls back **English → the key itself**, so a key added to `en` only
-still shows readable text everywhere instead of leaking the variable name.
-Currently untranslated outside English: `editCombo`, `doneEditing` (the edit
-button's tooltip).
+`getUIText` falls back **English → the key itself**, so a half-added key shows
+readable text instead of leaking a variable name. It is a safety net, not a
+licence to skip translations: add every new key to all 11 languages.
 
 ### Async patterns and error handling
 

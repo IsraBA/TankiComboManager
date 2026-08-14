@@ -62,10 +62,7 @@
       // dragend - סיום הגרירה
       card.addEventListener("dragend", (e) => this.handleDragEnd(e, card));
 
-      // הגרירה אפשרית מכל שטח הכרטיס — חוץ מהשורה העליונה (שם הקומבו,
-      // כפתור העריכה וכפתור המחיקה), שהיא אזור פעולות ולא אזור גרירה.
-      // (בעבר היה הפוך: הגרירה נחסמה דווקא על הריבועים והמלבנים, כלומר על
-      // רוב שטח הכרטיס, ואפשר היה לגרור רק מהשוליים.)
+      // גוררים מכל הכרטיס חוץ מהשורה העליונה, שהיא אזור פעולות
       const preventDragElements = card.querySelectorAll(`
                 .cme_combo-title,
                 .cme_combo-edit-btn,
@@ -109,7 +106,7 @@
     },
 
     handleDragStart(e, card, comboId) {
-      // השורה העליונה אינה אזור גרירה (ראה makeCardDraggable)
+      // השורה העליונה אינה אזור גרירה
       const target = e.target;
       if (
         target.closest(".cme_combo-title") ||

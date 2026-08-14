@@ -198,8 +198,7 @@
   object-fit: contain;
 }
 
-/* ריבוע הצבע — יושב בשורה 4 במקום שבו היה כפתור ה-EQUIP.
-   בלי padding: תמונת הצבע ממלאת את הריבוע. */
+/* ריבוע הצבע — בשורה 4, במקום שבו היה כפתור ה-EQUIP */
 .cme_combo-paint-square {
   flex: 1;
   position: relative;
@@ -214,9 +213,7 @@
   -webkit-box-pack: center;
 }
 
-/* הכיתוב "NO PAINT" משתמש בתווית הלבנה של שאר החריצים (cme_combo-item-name),
-   שהיא כברירת מחדל ממוקמת מוחלט בפינה השמאלית העליונה. כאן מבטלים את המיקום
-   המוחלט כדי שה-flex של הריבוע ימרכז אותה. */
+/* "NO PAINT" — ביטול המיקום המוחלט של התווית כדי שה-flex ימרכז אותה */
 .cme_combo-paint-square .cme_combo-item-name {
   position: static;
   top: auto;
@@ -236,7 +233,7 @@
   height: 100%;
 }
 
-/* שורת התגים בפינה השמאלית התחתונה של מלבן — אוגמנט ואפקט ירייה זה לצד זה */
+/* שורת התגים בפינה השמאלית התחתונה של מלבן */
 .cme_combo-badges {
   position: absolute;
   bottom: 0.45em;
@@ -365,17 +362,14 @@
   -webkit-box-pack: center;
 }
 
-/* מופיע ב-hover — ובמצב עריכה נשאר גלוי תמיד, כדי שאפשר יהיה לצאת ממנו */
+/* מופיע ב-hover, ובמצב עריכה נשאר גלוי כדי שאפשר יהיה לצאת ממנו */
 .cme_combo-card:hover .cme_combo-edit-btn,
 .cme_combo-card.cme_editing .cme_combo-edit-btn {
   opacity: 1;
 }
 
-/* אותו מצב צבע כמו אייקון ה-X של המשחק: לבן ב-25% שקיפות, ולבן מלא ב-hover.
-   (במשחק אלה שני קבצי SVG נפרדים — iconDelete.svg עטוף ב-g opacity="0.25"
-   ו-deleteHoverModal.svg בלי; אצלנו אותו SVG וה-opacity ב-CSS.)
-   השקיפות יושבת על ה-SVG ולא על הכפתור, כי לכפתור עצמו כבר יש opacity
-   משלו לצורך ההופעה ב-hover על הכרטיס, ושתיהן היו מוכפלות זו בזו. */
+/* אפור->לבן ב-hover, כמו ה-X של המשחק. השקיפות על ה-SVG ולא על הכפתור,
+   כי לכפתור יש opacity משלו להופעה ושתיהן היו מוכפלות. */
 .cme_combo-edit-btn .cme_combo-edit-icon {
   width: 100%;
   height: 100%;
@@ -396,9 +390,7 @@
   display: none;
 }
 
-/* בלי scale: ה-V מצויר ישירות בעובי של ה-X (3√2 יחידות) וברוחב מלא של
-   הקנבס. הגדלה ב-CSS מנפחת גם את העובי, ולכן היא לא הכלי הנכון כאן —
-   היא מה שגרם לו להיראות שמן ליד ה-X. */
+/* בלי scale — הוא מנפח גם את העובי. הגודל מגיע מהציור עצמו. */
 .cme_combo-card.cme_editing .cme_combo-edit-icon-check {
   display: block;
 }
@@ -409,9 +401,8 @@
 }
 
 /* === Item Removal Styles === */
-/* הסרת פריטים פעילה **רק במצב עריכה** (קלאס cme_editing על הכרטיס).
-   מחוץ למצב עריכה הפריטים הם חלק משטח הלחיצה של הכרטיס, שמצייד את הקומבו,
-   ולכן אין להם לא סמן-יד, לא הדגשה אדומה ולא איקס. */
+/* הכל כאן פעיל רק במצב עריכה. מחוצה לו הפריטים הם חלק משטח הלחיצה
+   של הכרטיס, שמצייד את הקומבו. */
 .cme_combo-item-removable {
   position: relative;
   width: 100%;
@@ -527,8 +518,7 @@
   -webkit-box-pack: center;
 }
 
-/* הערה: כפתור ה-EQUIP הוסר. ההצטיידות נעשית בלחיצה על הכרטיס עצמו,
-   ובמקומו בשורה 4 יושב ריבוע הצבע (.cme_combo-paint-square). */
+/* כפתור ה-EQUIP הוסר — מציידים בלחיצה על הכרטיס, ובמקומו יושב ריבוע הצבע */
 
 /* === Drag and Drop Styles === */
 
@@ -567,9 +557,7 @@
   }
 }
 
-/* הכרטיס כולו לחיץ (לחיצה = הצטיידות), ולכן הסמן הוא pointer ולא grab —
-   גם כשהוא ניתן לגרירה. הסמן משתנה ל-grabbing רק בזמן גרירה בפועל
-   (ראה .cme_combo-card.cme_dragging למעלה). */
+/* pointer ולא grab — הכרטיס לחיץ. grabbing רק בזמן גרירה (cme_dragging) */
 .cme_combo-card[draggable="true"] {
   cursor: pointer;
 }
