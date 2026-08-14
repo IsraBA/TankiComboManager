@@ -112,7 +112,6 @@
 
       // שורה שניה: turret + תג האוגמנט. הסקין רק מחליף את התמונה — הוא לא
       // פריט נפרד להסרה, והסרת התותח מורידה איתו הכל.
-      // (אפקט הירייה נשמר ומוחל, אבל בכוונה לא מוצג ולכן אי אפשר לבטלו.)
       const isTurretRemoved = removedItems.turret;
       const activeTurret = data.turret && !isTurretRemoved ? data.turret : null;
       const turretImage = activeTurret

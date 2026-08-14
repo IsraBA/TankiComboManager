@@ -22,8 +22,8 @@
 
       // פריטים דקורטיביים — עדיין משנים משהו בהצטיידות, אז לא מוחקים.
       // סקינים לא נספרים: בלי התותח/גוף שלהם הם לא מציידים כלום.
+      // אפקט ירייה אינו חריץ בקומבו כלל, ולכן לא נספר גם הוא.
       const hasActivePaint = data.paint && !removedItems.paint;
-      const hasActiveShotFx = data.turretShotFx && !removedItems.turretShotFx;
 
       // בדיקת הגנות - protection היא מערך
       const protections =
@@ -48,8 +48,7 @@
         !hasActiveGrenade &&
         !hasActiveDrone &&
         !hasActiveProtection &&
-        !hasActivePaint &&
-        !hasActiveShotFx
+        !hasActivePaint
       );
     },
 

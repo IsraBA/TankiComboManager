@@ -806,7 +806,6 @@
           // הסרת התותח מורידה איתה את כל הגזרה שלו
           if (itemType === "turret") {
             combo.removedItems.turretAugment = true;
-            combo.removedItems.turretShotFx = true;
           }
 
           // אותו דבר לגוף

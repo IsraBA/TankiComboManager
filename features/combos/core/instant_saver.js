@@ -11,8 +11,9 @@
 //   * name + image — snapshot לתצוגה בכרטיסים, וגם מה שמאפשר לאקוויפר
 //     ה-DOM הישן (ה-fallback) להחיל גם קומבואים חדשים.
 //   * mk / lvl — לתצוגה עתידית; לא בשימוש כרגע.
-//   * חריצים חדשים: paint, turretSkin, turretShotFx, hullSkin — נשמרים
-//     מהיום, ה-UI של הכרטיסים יעודכן להציגם בשלב נפרד.
+//   * חריצים חדשים: paint, turretSkin, hullSkin.
+// אפקט הירייה (SKINS_SHOT) **אינו** חלק מהקומבו — החלטה מוצרית: הוא לא
+// מספיק מעניין כדי להיות חריץ. הוא לא נשמר, לא מוצג ולא מוחל.
 // רשומות ישנות (name+image בלבד, ללא id) נשארות תקפות — כל הצרכנים
 // סובלניים למפתחות חסרים.
 
@@ -68,7 +69,6 @@
       turret: pickItem(c.turret),
       turretAugment: pickPlain(c.turretAugment),
       turretSkin: pickPlain(c.turretSkin),
-      turretShotFx: pickPlain(c.turretShotFx),
       hull: pickItem(c.hull),
       hullAugment: pickPlain(c.hullAugment),
       hullSkin: pickPlain(c.hullSkin),
