@@ -275,12 +275,23 @@
       const saveBtn = this.viewElement.querySelector("#cme_save-combo-btn");
       if (saveBtn) {
         saveBtn.onclick = async () => {
-          if (window.TankiQoL.ComboSaver) {
-            await window.TankiQoL.ComboSaver.saveCurrentCombo();
-            // רענון התצוגה אחרי השמירה
-            this.loadAndRenderCombos();
+          // שמירה מיידית ממצב המשחק (instant_saver) — החליפה את סריקת
+          // ה-DOM הישנה (ComboSaver.saveCurrentCombo, שנשארה בקוד אך לא
+          // מחווטת). אין ניווט טאבים: נשארים על מסך הקומבואים.
+          if (window.TankiQoL.InstantSaver) {
+            const result =
+              await window.TankiQoL.InstantSaver.saveCurrentCombo();
+            if (result && result.ok) {
+              // רענון התצוגה אחרי השמירה
+              this.loadAndRenderCombos();
+            } else {
+              console.warn(
+                "[ComboManager] instant save failed:",
+                result && result.error,
+              );
+            }
           } else {
-            console.error("ComboSaver not loaded!");
+            console.error("InstantSaver not loaded!");
           }
         };
       }

@@ -289,7 +289,7 @@
       return false;
     },
 
-    // השוואה בין שתי הגנות (לפי תמונה)
+    // השוואה בין שתי הגנות (שם קודם, תמונה כגיבוי)
     areProtectionsEqual(protection1, protection2) {
       // אם שתיהן null - זהות
       if (!protection1 && !protection2) {
@@ -301,7 +301,20 @@
         return false;
       }
 
-      // השוואה לפי תמונה (הכי מדויק)
+      // השוואה לפי שם קודם. השם אמין בשני דורות הנתונים, בעוד שהתמונות לא
+      // ניתנות להשוואה ביניהם: קומבו שנשמר ממצב המשחק (instant_saver) מחזיק
+      // תמונת CDN שנגמרת תמיד ב-"image.svg", ואילו הסריקה מה-DOM מחזיקה
+      // אייקון עם שם ייחודי ("Railgun.e2aea740.svg") — השוואת תמונה ביניהם
+      // תמיד תיכשל (וגרוע מזה: כל תמונות ה-CDN "שוות" זו לזו). זה בדיוק
+      // הבאג שגרם לקומבואים חדשים לא להחיל הגנות.
+      if (protection1.name && protection2.name) {
+        return (
+          protection1.name.toUpperCase().trim() ===
+          protection2.name.toUpperCase().trim()
+        );
+      }
+
+      // אין שם באחד הצדדים - השוואה לפי תמונה (הדרך הישנה)
       const ProtectionScanner = window.TankiQoL.ProtectionScanner;
       if (ProtectionScanner && protection1.image && protection2.image) {
         const fileName1 = ProtectionScanner.extractIconFileName(
@@ -313,14 +326,6 @@
         if (fileName1 && fileName2) {
           return fileName1 === fileName2;
         }
-      }
-
-      // אם אין תמונות, נשווה לפי שם
-      if (protection1.name && protection2.name) {
-        return (
-          protection1.name.toUpperCase().trim() ===
-          protection2.name.toUpperCase().trim()
-        );
       }
 
       return false;

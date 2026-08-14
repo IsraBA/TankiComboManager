@@ -458,9 +458,11 @@
     combo.protection.sort((a, b) => (a.mountIndex || 0) - (b.mountIndex || 0));
     combo.turretAugment = combo.turret ? combo.turret.augment : null;
     combo.hullAugment = combo.hull ? combo.hull.augment : null;
-    // סקינים ואפקט ירייה — דקורטיביים, נקראים מהתותח/גוף המורכבים
+    // סקינים ואפקט ירייה — דקורטיביים, נקראים מהתותח/גוף המורכבים.
+    // (ברמת הפריט השדה נקרא shotSkin — כשם הקונספט במשחק, SKINS_SHOT;
+    //  ברמת הקומבו השם המוצרי הוא turretShotFx.)
     combo.turretSkin = combo.turret ? combo.turret.skin : null;
-    combo.turretShotSkin = combo.turret ? combo.turret.shotSkin : null;
+    combo.turretShotFx = combo.turret ? combo.turret.shotSkin : null;
     combo.hullSkin = combo.hull ? combo.hull.skin : null;
 
     const t1 = (W.performance && W.performance.now) ? W.performance.now() : Date.now();
@@ -506,7 +508,7 @@
       'color:#7ee787;font-weight:bold');
     push('turret', c.turret);
     push('turret skin', c.turretSkin);
-    push('turret shot fx', c.turretShotSkin);
+    push('turret shot fx', c.turretShotFx);
     push('hull', c.hull);
     push('hull skin', c.hullSkin);
     push('grenade', c.grenade);

@@ -56,8 +56,9 @@ JS worlds, different storage areas. They share only the UI components in
 │   │   │   ├── utils.js          # shared utility functions
 │   │   │   └── language_manager.js  # auto-detects game language from UI text
 │   │   ├── core/
-│   │   │   ├── combo_saver.js    # scans current equipment and saves to storage
-│   │   │   ├── combo_loader.js   # reads saved combo and equips items
+│   │   │   ├── instant_saver.js  # THE save path: reads the loadout from game state, saves instantly
+│   │   │   ├── combo_saver.js    # LEGACY save path (DOM tab-walk) — kept, wired to nothing
+│   │   │   ├── combo_loader.js   # reads saved combo and equips items (DOM path — still THE equip path)
 │   │   │   ├── combo_cleaner.js  # cleans up stale/invalid combo data
 │   │   │   ├── tab_navigator.js  # navigates between garage tabs (incl. COMBOS)
 │   │   │   ├── navigation_helpers.js  # smart DOM waiting (MutationObserver-based)
@@ -282,7 +283,9 @@ Combos data is larger and device-specific, so it uses `local`. Translator
 preferences are tiny and worth syncing across the user's devices, so they use
 `sync`. The keys are in different areas *and* differently named — no collision.
 
-`savedCombos` entry shape:
+`savedCombos` entry shape — **two generations coexist**, every consumer must
+tolerate missing keys (they all do today):
+
 ```javascript
 {
     id: Number,              // timestamp-based unique ID
@@ -290,18 +293,46 @@ preferences are tiny and worth syncing across the user's devices, so they use
     date: String,            // locale date string
     order: Number,           // display order (0 = top)
     language: String,        // language code at save time
-    data: {
-        turret:        { name, image },
-        turretAugment: { name, image },
-        hull:          { name, image },
-        hullAugment:   { name, image },
-        grenade:       { name, image },
-        drone:         { name, image },
-        protection:    [{ name, image }, ...]  // 4 slots
-    },
+    data: { ... },           // see below
     removedItems: {}         // optional: items to skip during equip
 }
 ```
+
+Gen-2 `data` (what `instant_saver.js` writes since the state-read save):
+
+```javascript
+data: {
+    turret:         { id, name, image, mk?, lvl? },
+    turretAugment:  { id, name, image },
+    turretSkin:     { id, name, image },   // decorative — not rendered/equipped yet
+    turretShotFx:   { id, name, image },   // decorative — not rendered/equipped yet
+    hull:           { id, name, image, mk?, lvl? },
+    hullAugment:    { id, name, image },
+    hullSkin:       { id, name, image },   // decorative — not rendered/equipped yet
+    grenade:        { id, name, image, mk?, lvl? },
+    drone:          { id, name, image, lvl? },
+    paint:          { id, name, image },   // decorative — not rendered/equipped yet
+    protection:     [{ id, name, image, lvl? } | null, ×4]  // POSITIONAL by mountIndex
+}
+```
+
+- **`id` is the canonical key**: the game's item id — language-independent,
+  rename-proof, exact down to the Mk (each Mk is its own id). The future
+  instant-equip path keys on it.
+- **`name` + `image` are a display snapshot**: what the combo cards render, and
+  what keeps the legacy DOM equipper able to equip gen-2 combos (its matching is
+  name-based and case-insensitive).
+- **Protection equality is name-first** (`areProtectionsEqual`): gen-2 images
+  are CDN previews that all end in `image.svg`, while the DOM scan stores
+  uniquely-named icon files — the two are never comparable by image. Comparing
+  images first is exactly the bug that made gen-2 combos skip their protections.
+  `extractIconFileName` also prefixes generic `image.svg` names with the unique
+  CDN path segment so image comparison stays discriminating where it's still
+  used.
+- Gen-1 `data` (DOM-scanned): same slots minus the decorative ones and ids —
+  `{ name, image }` per item, protections compacted (no positional nulls).
+  Gen-1 entries stay valid forever; a future migration can resolve `name → id`
+  against the live garage index.
 
 ### CSS class prefix
 
@@ -351,11 +382,23 @@ by its displayed name, click it, click Equip, wait. That is why equipping a comb
 is slow and visibly "walks" the UI. The replacement — ROADMAP feature 2, "Instant
 Combo Equipment" — reads and writes the game's own model instead.
 
-**Status: the read half exists and is read-only (a POC).** Nothing calls a game
-function or touches outbound traffic yet. Clicking "Save Current Combo" prints the
-loadout as read from game state to the console, *then* runs the normal DOM save
-unchanged — so the two can be compared. Writing (instant equip) comes only after
-the read is confirmed correct in-game.
+**Status: the read half is done and drives the save.** Clicking "Save Current
+Combo" now saves instantly from game state (`core/instant_saver.js` →
+`GarageBridge.readCombo()` → storage), with no tab navigation — the user never
+leaves the combos view. The DOM-scan save (`combo_saver.js`) is kept in the tree
+but wired to nothing. Nothing calls a game function or touches outbound traffic
+yet — writing (instant equip) is the next phase.
+
+Decisions already made for the write half:
+
+- **The DOM equipper stays as an automatic fallback.** Instant equip →
+  verify by re-reading the state (the reader is the verifier) → on failure
+  (e.g. a bundle broke discovery) fall back to `combo_loader.js`'s DOM path,
+  which gen-2 combos still support via their name/image snapshot. Known
+  degradation: the DOM path can't equip the decorative slots (paint, skins,
+  shot fx).
+- The save side deliberately has NO such fallback (user's call): if the state
+  isn't captured, the save button warns in console and saves nothing.
 
 How it works:
 

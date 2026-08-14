@@ -102,6 +102,7 @@
         "features/combos/core/scanners/protection_scanner.js",
         "features/combos/core/scanners/paint_scanner.js",
         "features/combos/core/combo_saver.js",
+        "features/combos/core/instant_saver.js",
         "features/combos/core/equippers/base_item_equipper.js",
         "features/combos/core/equippers/augment_equipper.js",
         "features/combos/core/equippers/protection_equipper.js",

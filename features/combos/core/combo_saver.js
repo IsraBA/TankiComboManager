@@ -1,5 +1,9 @@
 // features/combos/core/combo_saver.js
 
+// ⚠️ מסלול ישן — לא מחווט. הוחלף ב-instant_saver.js (שמירה מיידית ממצב
+// המשחק). נשמר בכוונה כקוד ייחוס / חילוץ־חירום: הוא עובד על ה-DOM בלבד
+// ולכן שורד גם שבירה של הגילוי בעולם MAIN. אין לקרוא לו משום מקום.
+
 // זה הקובץ שעושה את הקסם. הוא עובר כל כרטיסייה, מחכה, בודק מה מצויד, נכנס לאוגמנטים, שומר, וחוזר.
 // core/combo_saver.js
 (function () {
@@ -11,14 +15,6 @@
   window.TankiQoL.ComboSaver = {
     // פונקציה ראשית שנקראת בלחיצת כפתור
     async saveCurrentCombo() {
-      // POC (קריאה בלבד): מדפיס לקונסול את הקומבו כפי שהוא נקרא ישירות ממצב
-      // המשחק, לפני שהסריקה האיטית דרך ה-DOM מתחילה — כדי שאפשר יהיה להשוות
-      // בין השניים. לא משפיע על השמירה עצמה בשום צורה.
-      // ראה features/combos/main/garage_state.js.
-      if (window.TankiQoL.GarageBridge) {
-        window.TankiQoL.GarageBridge.readCombo().catch(() => {});
-      }
-
       // אובייקט שיחזיק את התוצאות
       const currentCombo = {
         turret: null,
