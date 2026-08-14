@@ -39,6 +39,8 @@
         saveCombo: "SAVE COMBO",
         equipCombo: "EQUIP",
         deleteCombo: "Delete combo",
+        editCombo: "Edit combo",
+        doneEditing: "Done editing",
         noSavedCombos: "No saved combos yet",
         clickToSave: 'Click "SAVE COMBO" to save your first combo!',
         deleteConfirm: "Are you sure you want to delete this combo?",
@@ -954,7 +956,9 @@
     // קבלת טקסט UI לפי מפתח
     getUIText(key) {
       const lang = this.getCurrentLanguage();
-      return lang.ui?.[key] || key;
+      // נפילה לאנגלית לפני החזרת המפתח עצמו — כך מפתח חדש שטרם תורגם מוצג
+      // כטקסט קריא ולא כשם המשתנה ("editCombo") על המסך של המשתמש
+      return lang.ui?.[key] || LANGUAGES.en.ui?.[key] || key;
     },
 
     // בדיקה אם שפה נתמכת

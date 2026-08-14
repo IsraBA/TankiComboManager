@@ -362,11 +362,57 @@ Use `NavigationHelpers.waitForDOMChange()` (MutationObserver + debounce) instead
 of `setTimeout` with fixed delays, so the extension survives varying load times.
 Only use short `sleep()` calls (≤50 ms) where game animations need time.
 
+### Combo card: interaction model
+
+The card has **two modes**, and almost every interaction rule follows from that:
+
+| | normal mode | edit mode (`.cme_editing`) |
+|---|---|---|
+| click anywhere on the card | equips the combo | nothing (clicks are for removal) |
+| click an item | equips (the click bubbles up) | removes that item |
+| item hover | nothing | red tint + × icon |
+| pencil button | enters edit mode | (shows a ✓) leaves edit mode |
+
+- **The top row is not part of the card's click surface** — the name, the pencil
+  and the delete button live there, and it is also the one area you cannot drag
+  from. Everything below it both equips on click and drags to reorder.
+- **Click vs drag** is decided by mouse travel between `mousedown` and `click`
+  (5 px), not by drag events — browsers disagree about whether a `click` fires
+  after a drag, so the geometric test is the reliable one.
+- There is **no EQUIP button**; the paint square took its place in row 4 and is
+  always visible (the button only appeared on hover).
+- **Skins are display-only**: `turretSkin` / `hullSkin` replace the turret/hull
+  *image* on the card. They are not separately removable — removing the turret
+  takes its whole area with it (skin, augment, and shot fx), which is why
+  `removeItemFromCombo` cascades `turret → turretAugment + turretShotFx`.
+- **The shot effect is saved and equipped but deliberately not shown** on the
+  card, so it can't be cancelled on its own. It still rides along with the
+  turret (the cascade above). Re-exposing it is a one-line change in
+  `createRowsHTML` — the badge row already supports more than one badge.
+- **Edit state lives in `ComboCardRenderer._editingCombos`** (a Set of combo
+  ids), not on the card element: removing an item writes to storage and
+  re-renders the whole list, which throws the element away. Keeping the flag
+  outside is what stops edit mode from closing after every single removal.
+- The pencil/check icons are **inline SVGs copied in style from the game's own
+  `iconDelete.svg`**: 24×24, sharp filled white shapes (no strokes), shown at
+  25% opacity and 100% on hover — the game ships that as two files, we use one
+  SVG plus a CSS opacity swap. The opacity sits on the `<svg>`, not the button,
+  because the button already animates its own opacity for the card-hover reveal
+  and the two would multiply.
+- `ComboCleaner.isComboEmpty` counts paint and shot fx as real content (a combo
+  that only changes your paint is legitimate) but **not** skins, since a combo
+  with only skins left would equip nothing.
+
 ### Language support
 
 `LanguageManager` auto-detects the game language from UI text (11 languages). Use
 `LanguageManager.getUIText()`, `getEquipButtonText()`, and `getTabName()` for any
 user-facing or game-matching strings. Never hardcode language-specific text.
+
+`getUIText` falls back **English → the key itself**, so a key added to `en` only
+still shows readable text everywhere instead of leaking the variable name.
+Currently untranslated outside English: `editCombo`, `doneEditing` (the edit
+button's tooltip).
 
 ### Async patterns and error handling
 

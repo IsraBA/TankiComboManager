@@ -20,6 +20,13 @@
       const hasActiveGrenade = data.grenade && !removedItems.grenade;
       const hasActiveDrone = data.drone && !removedItems.drone;
 
+      // פריטים דקורטיביים — גם קומבו שנשאר בו רק צבע או רק אפקט ירייה הוא
+      // קומבו לגיטימי (הוא עדיין משנה משהו בהצטיידות), ולכן לא נמחק אוטומטית.
+      // סקינים לא נספרים: הם אינם ניתנים להסרה בנפרד ותלויים בתותח/גוף, כך
+      // שקומבו שנשארו בו רק סקינים לא יצייד כלום.
+      const hasActivePaint = data.paint && !removedItems.paint;
+      const hasActiveShotFx = data.turretShotFx && !removedItems.turretShotFx;
+
       // בדיקת הגנות - protection היא מערך
       const protections =
         data.protection && Array.isArray(data.protection)
@@ -42,7 +49,9 @@
         !hasActiveHull &&
         !hasActiveGrenade &&
         !hasActiveDrone &&
-        !hasActiveProtection
+        !hasActiveProtection &&
+        !hasActivePaint &&
+        !hasActiveShotFx
       );
     },
 

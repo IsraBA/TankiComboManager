@@ -7,12 +7,22 @@
   window.TankiQoL = window.TankiQoL || {};
 
   window.TankiQoL.ComboCardRenderer = {
+    // אילו קומבואים נמצאים כרגע במצב עריכה, לפי id.
+    // חייב לחיות מחוץ לאלמנט הכרטיס: הסרת פריט כותבת ל-storage ואז מרנדרת
+    // מחדש את כל הרשימה, כך שהכרטיס עצמו (והקלאס שעליו) נזרק. בלי זה מצב
+    // העריכה היה נסגר אחרי כל הסרה בודדת.
+    _editingCombos: new Set(),
+
     // יצירת כרטיס קומבו בודד
     createComboCard(combo, index, viewRenderer) {
       const LM = window.TankiQoL.LanguageManager;
       const card = document.createElement("div");
       card.className = "cme_combo-card";
       card.setAttribute("data-combo-id", combo.id);
+
+      // שחזור מצב העריכה אחרי רינדור מחדש
+      const isEditing = this._editingCombos.has(combo.id);
+      if (isEditing) card.classList.add("cme_editing");
 
       // יצירת 4 השורות (עם בדיקת פריטים מוסרים)
       const rowsHTML = this.createRowsHTML(
@@ -23,6 +33,32 @@
       // כפתור מחיקה
       const deleteBtnHTML = `
                 <div class="cme_delete-btn" title="${LM.getUIText("deleteCombo")}"></div>
+            `;
+
+      // כפתור עריכה — מכניס/מוציא את הכרטיס ממצב עריכה (שבו מופיעים ה-X-ים
+      // להסרת פריטים). שני האייקונים מוזרקים יחד וה-CSS מציג את הנכון לפי
+      // המצב: עיפרון כברירת מחדל, V במצב עריכה.
+      //
+      // הסגנון מחקה את אייקון ה-X של המשחק (iconDelete.svg): קנבס 24×24,
+      // צורה **מלאה** בלבן (לא stroke), חדה וזוויתית לגמרי. גם מצבי הצבע
+      // מגיעים משם — לבן ב-25% שקיפות שהופך ללבן מלא ב-hover (במשחק אלה שני
+      // קבצים, אצלנו אותו SVG עם opacity ב-CSS). ראה combo_card.css.
+      //
+      // שני האייקונים מכוילים ל-X: **עובי רצועה זהה (3√2 ≈ 4.24 יחידות)
+      // ותפוסה של כל הקנבס 24×24**. שים לב ש-V בשתי זרועות ב-45° לא יכול
+      // להגיע לגובה 24 בתוך רוחב 24 (הזרוע הארוכה לבדה תדרוש 24 רוחב), ולכן
+      // הזרוע הארוכה שלו תלולה יותר (~55°) — זו הדרך היחידה לקבל גם גובה מלא
+      // וגם עובי זהה. אל תנסו להשיג את זה עם transform: scale — הוא מנפח גם
+      // את העובי, וזה מה שגרם ל-V להיראות שמן ליד ה-X.
+      const editBtnHTML = `
+                <div class="cme_combo-edit-btn" title="${LM.getUIText(isEditing ? "doneEditing" : "editCombo")}">
+                    <svg class="cme_combo-edit-icon cme_combo-edit-icon-pencil" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M3.5 16.5L7.5 20.5L0 24L3.5 16.5ZM3.5 16.5L16.5 3.5L20.5 7.5L7.5 20.5L3.5 16.5ZM18 2L20 0L24 4L22 6L18 2Z" fill="white"/>
+                    </svg>
+                    <svg class="cme_combo-edit-icon cme_combo-edit-icon-check" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M3 11.96L8.46 17.41L20.51 0L24 2.41L9.05 24L0 14.96Z" fill="white"/>
+                    </svg>
+                </div>
             `;
 
       // כותרת הקומבו (ללא רקע כהה)
@@ -38,6 +74,7 @@
                     <div class="cme_combo-rows">
                         ${rowsHTML}
                     </div>
+                    ${editBtnHTML}
                     ${deleteBtnHTML}
                 </div>
             `;
@@ -87,83 +124,80 @@
                 </div>
             `;
 
-      // שורה שניה: מלבן עם turret, ובפינה השמאלית התחתונה - turretAugment
-      const turretImage =
-        data.turret && data.turret.image && !removedItems.turret
-          ? data.turret.image
-          : null;
-      // אם turret הוסר, גם האוגמנט צריך להיות מוסר
+      // שורה שניה: מלבן עם turret, ובפינה השמאלית התחתונה תגי האוגמנט
+      // ואפקט הירייה.
+      // הסקין (אם יש) מחליף את תמונת התותח. הוא **אינו** פריט נפרד להסרה:
+      // הסרת התותח מסירה את כל מה שבגזרה שלו — סקין, אוגמנט ואפקט ירייה.
+      const isTurretRemoved = removedItems.turret;
+      const activeTurret = data.turret && !isTurretRemoved ? data.turret : null;
+      const turretImage = activeTurret
+        ? (data.turretSkin && data.turretSkin.image) || activeTurret.image || null
+        : null;
       const turretAugmentImage =
-        !removedItems.turret &&
+        !isTurretRemoved &&
         data.turretAugment &&
         data.turretAugment.image &&
         !removedItems.turretAugment
           ? data.turretAugment.image
           : null;
-      const hasTurretButNoImage =
-        data.turret && !removedItems.turret && !turretImage;
-      const isTurretRemoved = removedItems.turret;
+      const hasTurretButNoImage = activeTurret && !turretImage;
 
       const row2HTML = `
                 <div class="cme_combo-row cme_combo-row-2">
                     <div class="cme_combo-rectangle">
-                        ${isTurretRemoved ? `<span class="cme_combo-item-name">NO TURRET</span>` : data.turret && data.turret.name && !removedItems.turret ? `<span class="cme_combo-item-name">${data.turret.name}</span>` : ""}
+                        ${isTurretRemoved ? `<span class="cme_combo-item-name">NO TURRET</span>` : data.turret && data.turret.name ? `<span class="cme_combo-item-name">${data.turret.name}</span>` : ""}
                         ${turretImage ? this.createRemovableItemHTML("turret", turretImage, data.turret.name || "Turret", "cme_combo-turret-image") : hasTurretButNoImage ? '<span class="cme_combo-no-item">NO TURRET</span>' : ""}
-                        ${
+                        ${this.createBadgesHTML([
                           turretAugmentImage
-                            ? `
-                            <div class="cme_combo-augment-badge">
-                                ${this.createRemovableItemHTML("turretAugment", turretAugmentImage, data.turretAugment.name || "Turret Augment", "")}
-                            </div>
-                        `
-                            : ""
-                        }
+                            ? this.createBadgeHTML("turretAugment", turretAugmentImage, data.turretAugment.name || "Turret Augment")
+                            : "",
+                        ])}
+                        <!-- אפקט הירייה (turretShotFx) נשמר ומוצמד לקומבו, אבל
+                             מוסתר בכוונה מהכרטיס: הוא מוחל תמיד ואי אפשר לבטלו.
+                             הוא עדיין נגרר עם התותח — הסרת התותח מסירה גם אותו. -->
                     </div>
                 </div>
             `;
 
-      // שורה שלישית: מלבן עם hull, ובפינה השמאלית התחתונה - hullAugment
-      const hullImage =
-        data.hull && data.hull.image && !removedItems.hull
-          ? data.hull.image
-          : null;
-      // אם hull הוסר, גם האוגמנט צריך להיות מוסר
+      // שורה שלישית: מלבן עם hull (או הסקין שלו) + תג האוגמנט
+      const isHullRemoved = removedItems.hull;
+      const activeHull = data.hull && !isHullRemoved ? data.hull : null;
+      const hullImage = activeHull
+        ? (data.hullSkin && data.hullSkin.image) || activeHull.image || null
+        : null;
       const hullAugmentImage =
-        !removedItems.hull &&
+        !isHullRemoved &&
         data.hullAugment &&
         data.hullAugment.image &&
         !removedItems.hullAugment
           ? data.hullAugment.image
           : null;
-      const hasHullButNoImage = data.hull && !removedItems.hull && !hullImage;
-      const isHullRemoved = removedItems.hull;
+      const hasHullButNoImage = activeHull && !hullImage;
 
       const row3HTML = `
                 <div class="cme_combo-row cme_combo-row-3">
                     <div class="cme_combo-rectangle">
-                        ${isHullRemoved ? `<span class="cme_combo-item-name">NO HULL</span>` : data.hull && data.hull.name && !removedItems.hull ? `<span class="cme_combo-item-name">${data.hull.name}</span>` : ""}
+                        ${isHullRemoved ? `<span class="cme_combo-item-name">NO HULL</span>` : data.hull && data.hull.name ? `<span class="cme_combo-item-name">${data.hull.name}</span>` : ""}
                         ${hullImage ? this.createRemovableItemHTML("hull", hullImage, data.hull.name || "Hull", "cme_combo-hull-image") : hasHullButNoImage ? '<span class="cme_combo-no-item">NO HULL</span>' : ""}
-                        ${
+                        ${this.createBadgesHTML([
                           hullAugmentImage
-                            ? `
-                            <div class="cme_combo-augment-badge">
-                                ${this.createRemovableItemHTML("hullAugment", hullAugmentImage, data.hullAugment.name || "Hull Augment", "")}
-                            </div>
-                        `
-                            : ""
-                        }
+                            ? this.createBadgeHTML("hullAugment", hullAugmentImage, data.hullAugment.name || "Hull Augment")
+                            : "",
+                        ])}
                     </div>
                 </div>
             `;
 
-      // שורה רביעית: מלבן עם 4 ההגנות (ללא ריבוע צבע)
+      // שורה רביעית: ריבוע הצבע + מלבן 4 ההגנות
       const protections =
         data.protection && Array.isArray(data.protection)
           ? data.protection
           : [];
-      // בוטל - פונקציונליות הצבע הוסרה
-      // const paintImage = data.paint && data.paint.image ? data.paint.image : null;
-      // const paintName = data.paint && data.paint.name ? data.paint.name : null;
+      const isPaintRemoved = removedItems.paint;
+      const paintImage =
+        data.paint && data.paint.image && !isPaintRemoved
+          ? data.paint.image
+          : null;
 
       // יצירת 4 פריטי הגנה
       const removedProtections = removedItems.protection || [];
@@ -195,35 +229,45 @@
         protectionsHTML = protectionItems.join("");
       }
 
-      // כפתור EQUIP NOW
-      const LM = window.TankiQoL.LanguageManager;
-      const equipButtonHTML = `
-                <div class="cme_combo-equip-btn">
-                    <div class="cme_combo-equip-btn-inner">
-                        <div class="cme_combo-equip-icon"></div>
-                        <span class="cme_combo-equip-text">${LM.getUIText("equipCombo")}</span>
-                    </div>
+      // ריבוע הצבע — יושב במקום שבו היה כפתור ה-EQUIP (שהוסר: הצטיידות
+      // נעשית עכשיו בלחיצה על הכרטיס עצמו), ומוצג תמיד ולא רק ב-hover.
+      // כשאין צבע (קומבו ישן) או שהוא הוסר — כיתוב "NO PAINT" בסגנון של
+      // NO HULL / NO DRONE, כלומר התווית הלבנה (cme_combo-item-name) ולא
+      // הטקסט האפור של NO PROTECTIONS. ה-CSS מבטל לה את המיקום המוחלט
+      // בתוך ריבוע הצבע כדי שתשב במרכז.
+      const paintSquareHTML = `
+                <div class="cme_combo-paint-square">
+                    ${paintImage ? this.createRemovableItemHTML("paint", paintImage, data.paint.name || "Paint", "") : '<span class="cme_combo-item-name">NO PAINT</span>'}
                 </div>
             `;
 
       const row4HTML = `
                 <div class="cme_combo-row cme_combo-row-4">
-                    ${equipButtonHTML}
+                    ${paintSquareHTML}
                     <div class="cme_combo-protections">
                         ${protectionsHTML}
                     </div>
                 </div>
             `;
-      // <div class="cme_combo-row cme_combo-row-4">
-      //     <div class="cme_combo-protections">
-      //         ${protectionsHTML}
-      //     </div>
-      //     <div class="cme_combo-paint-square">
-      //         ${paintImage ? `<img src="${paintImage}" alt="${paintName || 'Paint'}" onerror="this.style.display='none';">` : ''}
-      //     </div>
-      // </div>
 
       return row1HTML + row2HTML + row3HTML + row4HTML;
+    },
+
+    // עטיפת שורת התגים בפינה השמאלית התחתונה של מלבן (אוגמנט, אפקט ירייה).
+    // מקבלת מערך של HTML-ים ומסננת ריקים; אם לא נשאר כלום — לא מרנדרת כלום.
+    createBadgesHTML(badges) {
+      const items = badges.filter(Boolean);
+      if (!items.length) return "";
+      return `<div class="cme_combo-badges">${items.join("")}</div>`;
+    },
+
+    // תג בודד (אוגמנט / אפקט ירייה) — ניתן להסרה כמו כל פריט אחר
+    createBadgeHTML(itemType, imageSrc, altText) {
+      return `
+                <div class="cme_combo-augment-badge">
+                    ${this.createRemovableItemHTML(itemType, imageSrc, altText, "")}
+                </div>
+            `;
     },
 
     // יצירת HTML לפריט שניתן להסיר
@@ -279,12 +323,29 @@
 
     // חיבור אירועים לכרטיס קומבו
     bindComboCardEvents(card, combo, viewRenderer) {
+      const LM = window.TankiQoL.LanguageManager;
+
       // כפתור מחיקה
       const deleteBtn = card.querySelector(".cme_delete-btn");
       if (deleteBtn) {
         deleteBtn.onclick = (e) => {
           e.stopPropagation();
+          this._editingCombos.delete(combo.id);
           viewRenderer.deleteCombo(combo.id, combo.name);
+        };
+      }
+
+      // כפתור עריכה — מתג בין מצב רגיל (לחיצה = הצטיידות) למצב עריכה
+      // (לחיצה על פריט = הסרתו). ה-CSS נשען על הקלאס cme_editing, והמצב
+      // נשמר ב-_editingCombos כדי לשרוד את הרינדור מחדש שאחרי כל הסרה.
+      const editBtn = card.querySelector(".cme_combo-edit-btn");
+      if (editBtn) {
+        editBtn.onclick = (e) => {
+          e.stopPropagation();
+          const editing = card.classList.toggle("cme_editing");
+          if (editing) this._editingCombos.add(combo.id);
+          else this._editingCombos.delete(combo.id);
+          editBtn.title = LM.getUIText(editing ? "doneEditing" : "editCombo");
         };
       }
 
@@ -404,10 +465,12 @@
         };
       }
 
-      // טיפול בלחיצה על פריטים להסרה
+      // טיפול בלחיצה על פריטים להסרה — פעיל רק במצב עריכה.
+      // מחוץ למצב עריכה לא עוצרים את האירוע, כדי שיבעבע לכרטיס ויצייד.
       const removableItems = card.querySelectorAll(".cme_combo-item-removable");
       removableItems.forEach((item) => {
         item.onclick = (e) => {
+          if (!card.classList.contains("cme_editing")) return;
           e.stopPropagation();
           const itemType = item.getAttribute("data-item-type");
           if (itemType) {
@@ -416,28 +479,38 @@
         };
       });
 
-      // לחיצה על הכרטיס עצמו - כרגע לא עושה כלום (הוסר בגלל drag and drop)
+      // לחיצה על הכרטיס = הצטיידות בקומבו.
+      // שלושה סייגים:
+      //   1. לא במצב עריכה (שם הלחיצות מיועדות להסרת פריטים).
+      //   2. לא בשורה העליונה (שם, מחיקה, עריכה) — היא לא חלק משטח הלחיצה.
+      //   3. לא כשהמשתמש בעצם *גרר* את הכרטיס לסידור מחדש. מזהים לפי תזוזת
+      //      העכבר בין ה-mousedown ל-click: תזוזה מעבר לסף = גרירה, לא לחיצה.
+      //      (לא נשענים על אירועי ה-drag עצמם, כי דפדפנים לא עקביים לגבי
+      //      השאלה אם click נורה אחרי גרירה.)
+      const DRAG_THRESHOLD_PX = 5;
+      let downX = 0;
+      let downY = 0;
+      card.addEventListener("mousedown", (e) => {
+        downX = e.clientX;
+        downY = e.clientY;
+      });
+
       card.onclick = (e) => {
-        // אם לחצו על כפתור equip, שם, מחיקה או פריט להסרה, לא נעשה כלום
+        if (card.classList.contains("cme_editing")) return;
         if (
-          e.target.closest(".cme_combo-equip-btn") ||
+          e.target.closest(".cme_combo-title") ||
           e.target.closest(".cme_delete-btn") ||
-          e.target.closest(".cme_combo-title h1") ||
-          e.target.closest(".cme_combo-item-removable")
+          e.target.closest(".cme_combo-edit-btn")
         ) {
           return;
         }
-      };
+        const moved =
+          Math.abs(e.clientX - downX) > DRAG_THRESHOLD_PX ||
+          Math.abs(e.clientY - downY) > DRAG_THRESHOLD_PX;
+        if (moved) return;
 
-      // לחיצה על כפתור EQUIP
-      const equipBtn = card.querySelector(".cme_combo-equip-btn");
-      if (equipBtn) {
-        equipBtn.onclick = (e) => {
-          e.stopPropagation();
-          e.preventDefault();
-          viewRenderer.equipCombo(combo);
-        };
-      }
+        viewRenderer.equipCombo(combo);
+      };
     },
   };
 })();

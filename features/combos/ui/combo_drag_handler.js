@@ -62,14 +62,14 @@
       // dragend - סיום הגרירה
       card.addEventListener("dragend", (e) => this.handleDragEnd(e, card));
 
-      // למניעת drag על אלמנטים פנימיים שלא רצויים
+      // הגרירה אפשרית מכל שטח הכרטיס — חוץ מהשורה העליונה (שם הקומבו,
+      // כפתור העריכה וכפתור המחיקה), שהיא אזור פעולות ולא אזור גרירה.
+      // (בעבר היה הפוך: הגרירה נחסמה דווקא על הריבועים והמלבנים, כלומר על
+      // רוב שטח הכרטיס, ואפשר היה לגרור רק מהשוליים.)
       const preventDragElements = card.querySelectorAll(`
-                .cme_combo-square,
-                .cme_combo-rectangle,
-                .cme_combo-equip-btn,
-                .cme_delete-btn,
-                .cme_combo-title h1,
-                .cme_combo-item-removable
+                .cme_combo-title,
+                .cme_combo-edit-btn,
+                .cme_delete-btn
             `);
 
       // משתנה לעקוב אם יש mousedown פעיל
@@ -77,19 +77,9 @@
 
       preventDragElements.forEach((el) => {
         el.addEventListener("mousedown", (e) => {
-          // מאפשרים רק על כותרת (למרות שהיא ברשימה, נבדוק ספציפית)
-          if (el.matches(".cme_combo-title h1")) {
-            // אם בעריכה, לא נאפשר drag
-            if (document.activeElement === el) {
-              card.setAttribute("draggable", "false");
-              mouseDownActive = true;
-            }
-          } else {
-            // שאר האלמנטים - מונעים drag
-            e.stopPropagation();
-            card.setAttribute("draggable", "false");
-            mouseDownActive = true;
-          }
+          e.stopPropagation();
+          card.setAttribute("draggable", "false");
+          mouseDownActive = true;
         });
 
         el.addEventListener("mouseup", () => {
@@ -119,14 +109,12 @@
     },
 
     handleDragStart(e, card, comboId) {
-      // בדיקה שזה לא על אלמנט שלא רצוי
+      // השורה העליונה אינה אזור גרירה (ראה makeCardDraggable)
       const target = e.target;
       if (
-        target.closest(".cme_combo-square") ||
-        target.closest(".cme_combo-rectangle") ||
-        target.closest(".cme_combo-equip-btn") ||
-        target.closest(".cme_delete-btn") ||
-        target.closest(".cme_combo-item-removable")
+        target.closest(".cme_combo-title") ||
+        target.closest(".cme_combo-edit-btn") ||
+        target.closest(".cme_delete-btn")
       ) {
         e.preventDefault();
         return;

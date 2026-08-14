@@ -198,42 +198,67 @@
   object-fit: contain;
 }
 
-/* ריבוע עם תמונת הצבע - בוטל */
-/* .cme_combo-paint-square {
-    flex: 0 0 auto;
-    width: 3em;
-    position: relative;
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 0.25em;
-    border: 0.0625em solid rgba(255, 255, 255, 0.1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    padding: 0.275em;
-    -webkit-box-align: center;
-    -webkit-box-pack: center;
+/* ריבוע הצבע — יושב בשורה 4 במקום שבו היה כפתור ה-EQUIP.
+   בלי padding: תמונת הצבע ממלאת את הריבוע. */
+.cme_combo-paint-square {
+  flex: 1;
+  position: relative;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 0.25em;
+  border: 0.0625em solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  -webkit-box-align: center;
+  -webkit-box-pack: center;
+}
+
+/* הכיתוב "NO PAINT" משתמש בתווית הלבנה של שאר החריצים (cme_combo-item-name),
+   שהיא כברירת מחדל ממוקמת מוחלט בפינה השמאלית העליונה. כאן מבטלים את המיקום
+   המוחלט כדי שה-flex של הריבוע ימרכז אותה. */
+.cme_combo-paint-square .cme_combo-item-name {
+  position: static;
+  top: auto;
+  left: auto;
 }
 
 .cme_combo-paint-square img {
-    width: auto;
-    height: auto;
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-} */
+  width: auto;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
 
-/* תג augment בפינה השמאלית התחתונה */
-.cme_combo-augment-badge {
+.cme_combo-paint-square .cme_combo-item-removable {
+  width: 100%;
+  height: 100%;
+}
+
+/* שורת התגים בפינה השמאלית התחתונה של מלבן — אוגמנט ואפקט ירייה זה לצד זה */
+.cme_combo-badges {
   position: absolute;
   bottom: 0.45em;
   left: 0.45em;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.3em;
+  z-index: 5;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  -webkit-box-align: center;
+}
+
+/* תג augment / אפקט ירייה */
+.cme_combo-augment-badge {
+  position: relative;
   width: 2.1em;
   height: 2.1em;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 5;
   -webkit-box-align: center;
   -webkit-box-pack: center;
 }
@@ -322,8 +347,71 @@
   background-position: center center;
 }
 
+/* כפתור עריכה — משמאל לכפתור המחיקה, באותה שורה עליונה */
+.cme_combo-edit-btn {
+  position: absolute;
+  top: 0.5em;
+  right: 2em;
+  width: 1em;
+  height: 1em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 20;
+  -webkit-box-align: center;
+  -webkit-box-pack: center;
+}
+
+/* מופיע ב-hover — ובמצב עריכה נשאר גלוי תמיד, כדי שאפשר יהיה לצאת ממנו */
+.cme_combo-card:hover .cme_combo-edit-btn,
+.cme_combo-card.cme_editing .cme_combo-edit-btn {
+  opacity: 1;
+}
+
+/* אותו מצב צבע כמו אייקון ה-X של המשחק: לבן ב-25% שקיפות, ולבן מלא ב-hover.
+   (במשחק אלה שני קבצי SVG נפרדים — iconDelete.svg עטוף ב-g opacity="0.25"
+   ו-deleteHoverModal.svg בלי; אצלנו אותו SVG וה-opacity ב-CSS.)
+   השקיפות יושבת על ה-SVG ולא על הכפתור, כי לכפתור עצמו כבר יש opacity
+   משלו לצורך ההופעה ב-hover על הכרטיס, ושתיהן היו מוכפלות זו בזו. */
+.cme_combo-edit-btn .cme_combo-edit-icon {
+  width: 100%;
+  height: 100%;
+  opacity: 0.25;
+  transition: opacity 0.2s ease;
+}
+
+.cme_combo-edit-btn:hover .cme_combo-edit-icon {
+  opacity: 1;
+}
+
+/* החלפת האייקון לפי המצב: עיפרון כברירת מחדל, V במצב עריכה */
+.cme_combo-edit-icon-check {
+  display: none;
+}
+
+.cme_combo-card.cme_editing .cme_combo-edit-icon-pencil {
+  display: none;
+}
+
+/* בלי scale: ה-V מצויר ישירות בעובי של ה-X (3√2 יחידות) וברוחב מלא של
+   הקנבס. הגדלה ב-CSS מנפחת גם את העובי, ולכן היא לא הכלי הנכון כאן —
+   היא מה שגרם לו להיראות שמן ליד ה-X. */
+.cme_combo-card.cme_editing .cme_combo-edit-icon-check {
+  display: block;
+}
+
+/* מצב עריכה — מסגרת ירוקה, כדי שיהיה ברור שהכרטיס במצב אחר */
+.cme_combo-card.cme_editing .cme_combo-preview-container {
+  box-shadow: rgb(118, 255, 51) 0em 0em 0em 0.125em;
+}
+
 /* === Item Removal Styles === */
-/* עטיפה לתמונות שניתן להסיר */
+/* הסרת פריטים פעילה **רק במצב עריכה** (קלאס cme_editing על הכרטיס).
+   מחוץ למצב עריכה הפריטים הם חלק משטח הלחיצה של הכרטיס, שמצייד את הקומבו,
+   ולכן אין להם לא סמן-יד, לא הדגשה אדומה ולא איקס. */
 .cme_combo-item-removable {
   position: relative;
   width: 100%;
@@ -331,11 +419,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: inherit;
+}
+
+.cme_combo-card.cme_editing .cme_combo-item-removable {
   cursor: pointer;
 }
 
-/* פילטר אדום בעת hover */
-.cme_combo-item-removable:hover img {
+/* פילטר אדום בעת hover — רק במצב עריכה */
+.cme_combo-card.cme_editing .cme_combo-item-removable:hover img {
   filter: brightness(0.5) sepia(1) hue-rotate(0deg) saturate(2);
   transition: filter 0.2s ease;
 }
@@ -356,20 +448,24 @@
 }
 
 /* גודל האיקס - חצי מהקונטיינר (שגודלו כגודל התמונה) בעת hover */
-.cme_combo-item-removable:hover .cme_combo-item-remove-icon {
+.cme_combo-card.cme_editing .cme_combo-item-removable:hover .cme_combo-item-remove-icon {
   opacity: 1;
   width: 50%;
   height: 50%;
 }
 
 /* גודל איקס גדול - תותח וגוף (70%) */
-.cme_combo-item-removable:hover .cme_combo-item-remove-icon-large {
+.cme_combo-card.cme_editing
+  .cme_combo-item-removable:hover
+  .cme_combo-item-remove-icon-large {
   width: 70%;
   height: 70%;
 }
 
 /* גודל איקס קטן - רימון ודרון (30%) */
-.cme_combo-item-removable:hover .cme_combo-item-remove-icon-small {
+.cme_combo-card.cme_editing
+  .cme_combo-item-removable:hover
+  .cme_combo-item-remove-icon-small {
   width: 30%;
   height: 30%;
 }
@@ -431,63 +527,8 @@
   -webkit-box-pack: center;
 }
 
-/* כפתור EQUIP - מוסתר כברירת מחדל, מופיע בhover על הכרטיס */
-.cme_combo-equip-btn {
-  flex: 1;
-  position: relative;
-  background-color: rgb(118, 255, 51);
-  border-radius: 0.25em;
-  box-sizing: border-box;
-  cursor: pointer;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 0.25em 0.35em 0.25em 0.25em;
-  height: 85%;
-  margin: auto 0;
-  transition: box-shadow 0.2s ease;
-  -webkit-box-align: center;
-  -webkit-box-pack: center;
-}
-
-.cme_combo-card:hover .cme_combo-equip-btn {
-  display: flex;
-}
-
-.cme_combo-equip-btn:hover {
-  box-shadow: rgb(255, 255, 255) 0em 0em 0em 0.125em;
-}
-
-.cme_combo-equip-btn-inner {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  -webkit-box-align: center;
-  -webkit-box-pack: center;
-}
-
-.cme_combo-equip-icon {
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: center center;
-  background-image: url(/play/static/images/ic_mountBlack.101d5e3f.svg);
-  width: 1.25em;
-  height: 1.25em;
-  flex-shrink: 0;
-}
-
-.cme_combo-equip-text {
-  font-family: BaseFontMedium, FallbackFontMedium;
-  font-style: normal;
-  font-weight: 700;
-  text-transform: uppercase;
-  font-size: 0.625em;
-  color: rgb(0, 25, 38);
-  line-height: 1.25em;
-  white-space: nowrap;
-}
+/* הערה: כפתור ה-EQUIP הוסר. ההצטיידות נעשית בלחיצה על הכרטיס עצמו,
+   ובמקומו בשורה 4 יושב ריבוע הצבע (.cme_combo-paint-square). */
 
 /* === Drag and Drop Styles === */
 
@@ -526,21 +567,16 @@
   }
 }
 
-/* cursor בזמן גרירה */
+/* הכרטיס כולו לחיץ (לחיצה = הצטיידות), ולכן הסמן הוא pointer ולא grab —
+   גם כשהוא ניתן לגרירה. הסמן משתנה ל-grabbing רק בזמן גרירה בפועל
+   (ראה .cme_combo-card.cme_dragging למעלה). */
 .cme_combo-card[draggable="true"] {
-  cursor: grab;
+  cursor: pointer;
 }
 
-.cme_combo-card[draggable="true"]:active {
-  cursor: grabbing;
-}
-
-/* למנוע cursor grab על אלמנטים ספציפיים */
-.cme_combo-card[draggable="true"] .cme_combo-square,
-.cme_combo-card[draggable="true"] .cme_combo-rectangle,
-.cme_combo-card[draggable="true"] .cme_combo-equip-btn,
+/* למנוע cursor grab על אזור הפעולות שבשורה העליונה (שאינו אזור גרירה) */
 .cme_combo-card[draggable="true"] .cme_delete-btn,
-.cme_combo-card[draggable="true"] .cme_combo-item-removable {
+.cme_combo-card[draggable="true"] .cme_combo-edit-btn {
   cursor: pointer;
 }
 
@@ -573,13 +609,9 @@
   box-shadow: none;
 }
 
-/* הסתרת כפתור equip */
-.cme_combo-card-temporary .cme_combo-equip-btn {
-  display: none !important;
-}
-
-/* הסתרת כפתור מחיקה */
-.cme_combo-card-temporary .cme_delete-btn {
+/* הסתרת כפתורי הפעולות (הכרטיס הזמני הוא לצפייה בלבד) */
+.cme_combo-card-temporary .cme_delete-btn,
+.cme_combo-card-temporary .cme_combo-edit-btn {
   display: none !important;
 }
 

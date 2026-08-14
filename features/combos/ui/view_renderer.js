@@ -805,12 +805,15 @@
           // פריטים רגילים
           combo.removedItems[itemType] = true;
 
-          // אם מסירים turret, גם האוגמנט שלו צריך להיות מוסר
+          // הסרת התותח מסירה את כל מה שבגזרה שלו: האוגמנט, אפקט הירייה
+          // והסקין (הסקין אינו פריט נפרד להסרה — הוא רק מחליף את התמונה,
+          // ולכן הוא נעלם ממילא ברגע שהתותח מוסר)
           if (itemType === "turret") {
             combo.removedItems.turretAugment = true;
+            combo.removedItems.turretShotFx = true;
           }
 
-          // אם מסירים hull, גם האוגמנט שלו צריך להיות מוסר
+          // אותו דבר לגוף
           if (itemType === "hull") {
             combo.removedItems.hullAugment = true;
           }
