@@ -15,14 +15,20 @@
 // |-------|------------------|----------------------------|-------------------------------|
 // | i2m   | garageConstants  | מפת שמות שהתגלתה           | מ-detect.js (ראה שם)          |
 // | i2m   | readCombo        | {id}                       | בקשה לקרוא את הקומבו הנוכחי   |
+// | i2m   | readIndex        | {id}                       | בקשה לאינדקס הפריטים שבבעלות  |
 // | m2i   | ready            | —                          | MAIN מודיע שה-listeners שלו עלו |
 // | m2i   | comboResult      | {id, ok, combo, ...}       | תשובה לבקשת קריאה             |
+// | m2i   | indexResult      | {id, ok, items, devices}   | תשובה לבקשת אינדקס            |
+//
+// כל בקשה נושאת מזהה רץ, והתשובה מותאמת אליו — כך אפשר להריץ כמה בקשות
+// במקביל בלי שיתבלבלו, ולכל אחת יש תקרת זמן משלה.
 
 (function () {
   'use strict';
   window.TankiQoL = window.TankiQoL || {};
 
   const TIMEOUT_MS = 4000;   // תקרה קשיחה, כדי ש-Promise לא ייתקע לעולם
+  const REPLIES = { comboResult: true, indexResult: true };
 
   let nextId = 1;
   const pending = new Map();   // id -> {resolve, timer}
@@ -31,7 +37,7 @@
     if (e.source !== window) return;
     const m = e.data;
     if (!m || !m.__cmb || m.dir !== 'm2i') return;
-    if (m.action !== 'comboResult') return;
+    if (!REPLIES[m.action]) return;
 
     const p = m.payload || {};
     const entry = pending.get(p.id);
@@ -41,20 +47,26 @@
     entry.resolve(p);
   });
 
+  function request(action) {
+    return new Promise((resolve) => {
+      const id = nextId++;
+      const timer = setTimeout(() => {
+        pending.delete(id);
+        resolve({ ok: false, error: 'timeout — MAIN world did not answer' });
+      }, TIMEOUT_MS);
+
+      pending.set(id, { resolve, timer });
+      window.postMessage({ __cmb: true, dir: 'i2m', action, payload: { id } }, '*');
+    });
+  }
+
   window.TankiQoL.GarageBridge = {
     // קורא את הקומבו המצויד כרגע ישירות ממצב המשחק (בלי DOM, בלי ניווט טאבים).
     // מחזיר Promise עם {ok, combo, mounted, stats} או {ok:false, error}.
-    readCombo() {
-      return new Promise((resolve) => {
-        const id = nextId++;
-        const timer = setTimeout(() => {
-          pending.delete(id);
-          resolve({ ok: false, error: 'timeout — MAIN world did not answer' });
-        }, TIMEOUT_MS);
+    readCombo() { return request('readCombo'); },
 
-        pending.set(id, { resolve, timer });
-        window.postMessage({ __cmb: true, dir: 'i2m', action: 'readCombo', payload: { id } }, '*');
-      });
-    },
+    // אינדקס שטוח של כל מה שהמשתמש מחזיק: {ok, items[], devices[]}.
+    // משמש את המיגרציה של קומבואים ישנים (שם -> מזהה).
+    readIndex() { return request('readIndex'); },
   };
 })();

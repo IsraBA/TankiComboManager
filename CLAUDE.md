@@ -60,6 +60,7 @@ JS worlds, different storage areas. They share only the UI components in
 │   │   │   ├── combo_saver.js    # LEGACY save path (DOM tab-walk) — kept, wired to nothing
 │   │   │   ├── combo_loader.js   # reads saved combo and equips items (DOM path — still THE equip path)
 │   │   │   ├── combo_cleaner.js  # cleans up stale/invalid combo data
+│   │   │   ├── combo_migrator.js # backfills ids on old combos, in the background
 │   │   │   ├── tab_navigator.js  # navigates between garage tabs (incl. COMBOS)
 │   │   │   ├── navigation_helpers.js  # smart DOM waiting (MutationObserver-based)
 │   │   │   ├── auto_navigator.js # auto-navigates to combos tab when relevant
@@ -243,7 +244,7 @@ without conflict.
 
 | Namespace | World(s) | Holds |
 |---|---|---|
-| `window.TankiQoL` | ISOLATED (combos) + MAIN (translator) | The **shared components** (`TankiQoL.Switch`, `.Select`, `.Drawer`), and in ISOLATED also every combos module (`TankiQoL.DOM`, `.MenuInjector`, `.ViewRenderer`, `.ComboSaver`, …) |
+| `window.TankiQoL` | ISOLATED (combos) + MAIN (translator) | The **shared components** (`TankiQoL.Switch`, `.Select`, `.Drawer`), and in ISOLATED also every combos module (`TankiQoL.DOM`, `.MenuInjector`, `.ViewRenderer`, `.ComboSaver`, `.GarageBridge`, …) |
 | `window.__CT` | MAIN | Translator internals: `__CT.settings`, `.translate`, `.skip`, `.rebuild()` |
 | `window.__CMB` | MAIN | Combos game hook: `__CMB.read()`, `.log()`, `.names()`, `.state()`, `.debug` |
 | `__CT_*` / `__CMB_*` globals | MAIN | Console debug helpers (see "Debugging") |
@@ -302,22 +303,33 @@ Gen-2 `data` (what `instant_saver.js` writes since the state-read save):
 
 ```javascript
 data: {
-    turret:         { id, name, image, mk?, lvl? },
-    turretAugment:  { id, name, image },
+    turret:         { id, baseItemId, name, image, mk?, lvl? },
+    turretAugment:  { id, baseItemId, name, image },
     turretSkin:     { id, name, image },   // decorative — not rendered/equipped yet
-    hull:           { id, name, image, mk?, lvl? },
-    hullAugment:    { id, name, image },
+    hull:           { id, baseItemId, name, image, mk?, lvl? },
+    hullAugment:    { id, baseItemId, name, image },
     hullSkin:       { id, name, image },   // decorative — not rendered/equipped yet
-    grenade:        { id, name, image, mk?, lvl? },
-    drone:          { id, name, image, lvl? },
-    paint:          { id, name, image },   // decorative — not rendered/equipped yet
-    protection:     [{ id, name, image, lvl? } | null, ×4]  // POSITIONAL by mountIndex
+    grenade:        { id, baseItemId, name, image, mk?, lvl? },
+    drone:          { id, baseItemId, name, image, lvl? },
+    paint:          { id, baseItemId, name, image },   // decorative — not rendered/equipped yet
+    protection:     [{ id, baseItemId, name, image, lvl? } | null, ×4]  // POSITIONAL by mountIndex
 }
 ```
 
-- **`id` is the canonical key**: the game's item id — language-independent,
-  rename-proof, exact down to the Mk (each Mk is its own id). The future
-  instant-equip path keys on it.
+- **`baseItemId` is the key equipping works from.** Each Mk is a separate item
+  with its own `id`, and the user owns *all* of them — so a combo saved at Mk5
+  must not equip Mk5 after they upgrade to Mk6. Equipping resolves
+  `baseItemId → the highest owned Mk at that moment`, which is exactly what the
+  game itself does: it offers no Mk choice, it always equips your top grade.
+- **`id`** is the exact item that was mounted when the combo was saved — a
+  convenient snapshot for logs, deliberately *not* used to equip, precisely
+  because it would pin an outdated Mk.
+- **The exception is augments**, where it is the other way round: an augment's
+  `baseItemId` points at the turret/hull it belongs to, so it is not unique (one
+  turret has many possible augments). There, `id` is the key.
+- The game itself always takes a concrete item object, so a specific `id` is
+  always what finally goes out — it is just resolved from live state at equip
+  time rather than read from storage.
 - **`name` + `image` are a display snapshot**: what the combo cards render, and
   what keeps the legacy DOM equipper able to equip gen-2 combos (its matching is
   name-based and case-insensitive).
@@ -330,13 +342,39 @@ data: {
   used.
 - Gen-1 `data` (DOM-scanned): same slots minus the decorative ones and ids —
   `{ name, image }` per item, protections compacted (no positional nulls).
-  Gen-1 entries stay valid forever; a future migration can resolve `name → id`
-  against the live garage index.
+  Gen-1 entries stay valid forever, and `core/combo_migrator.js` backfills their
+  ids in the background (see below).
 - **The turret's shot effect is deliberately not a slot.** It is readable (the
   state reader still exposes `shotSkin` per item) but a product decision keeps it
   out of combos entirely — not saved, not rendered, not equipped. Combos saved
   before that decision may still carry a `turretShotFx` key; it is simply
   ignored, which is why nothing migrates it away.
+
+### Backfilling ids on old combos (`core/combo_migrator.js`)
+
+Runs on every combo-list load, **after** rendering and without blocking it — the
+migration changes nothing that is displayed. It asks the MAIN world for a flat
+index of everything the user owns (`GarageBridge.readIndex()`) and resolves
+`name → id` for any slot that lacks one.
+
+Deliberately **not** a one-shot flag in storage: import/export means a gen-1
+combo can arrive at any time, and a flag would already be set. An idempotent scan
+covers that for free and costs nothing — it is an in-memory check that returns
+immediately once everything has ids, touching neither the bridge nor storage.
+
+Three rules keep it from doing damage:
+
+- **Nothing is deleted.** `id`/`baseItemId` are added *beside* the existing
+  `name`/`image`. An unresolved slot is left exactly as it was and keeps working
+  through the DOM path.
+- **Only owned items are matched** — which is also what resolves the Mk
+  ambiguity, since the user owns exactly one Mk of any item, so a Mk-stripped
+  name has a single answer.
+- **Ambiguity is refused.** Two candidates in the same category → no guess.
+
+Known limitation: names were saved in whatever language the user played in. If
+the game language changed since, matching fails and there is nothing to translate
+from — that combo stays on the DOM path, exactly as it is today.
 
 ### CSS class prefix
 

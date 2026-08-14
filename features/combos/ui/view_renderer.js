@@ -518,9 +518,24 @@
       if (ComboCleaner && ComboCleaner.removeEmptyCombos) {
         ComboCleaner.removeEmptyCombos(() => {
           this._loadAndRenderCombosAfterCleanup(container);
+          this._backfillIdsInBackground();
         });
       } else {
         this._loadAndRenderCombosAfterCleanup(container);
+        this._backfillIdsInBackground();
+      }
+    },
+
+    // השלמת מזהים לקומבואים ישנים — **אחרי** הרינדור ובלי לחסום אותו.
+    // המיגרציה לא משנה כלום ממה שמוצג (שם ותמונה נשארים), אז אין סיבה
+    // להמתין לה; והיא מסתיימת הרבה לפני שמישהו לוחץ להצטיידות.
+    _backfillIdsInBackground() {
+      const ComboMigrator = window.TankiQoL.ComboMigrator;
+      if (!ComboMigrator || !ComboMigrator.backfillIds) return;
+      try {
+        ComboMigrator.backfillIds();
+      } catch (e) {
+        // מיגרציה היא best-effort: קומבו שלא הושלם פשוט נשאר על מסלול ה-DOM
       }
     },
 

@@ -96,6 +96,7 @@
         "features/combos/lib/utils.js",
         "features/combos/lib/language_manager.js",
         "features/combos/core/combo_cleaner.js",
+        "features/combos/core/combo_migrator.js",
         "features/combos/core/tab_navigator.js",
         "features/combos/core/scanners/base_item_scanner.js",
         "features/combos/core/scanners/augment_scanner.js",

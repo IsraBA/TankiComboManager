@@ -184,7 +184,10 @@
     KIT: 'kit',
   };
 
-  const MAX_DEPTH = 14;
+  // גבולות הסריקה. העומק הועלה מ-14 אחרי שהתברר שהוא חתך ענפים באוסף
+  // הפריטים בשקט: אוספי קוטלין הם עצים, וענף עמוק אחד שנקטע נראה בדיוק כמו
+  // "המשתמש לא מחזיק את הפריט". החיתוך נספר עכשיו ב-debug.depthCut.
+  const MAX_DEPTH = 24;
   const MAX_NODES = 400000;
 
   NS.debug = {
@@ -558,10 +561,14 @@
     const stack = [[root, 0]];
     let nodes = 0;
     let truncated = false;
+    let depthCut = 0;
 
     while (stack.length) {
       const [obj, depth] = stack.pop();
-      if (obj == null || typeof obj !== 'object' || depth > MAX_DEPTH) continue;
+      if (obj == null || typeof obj !== 'object') continue;
+      // חיתוך עומק היה שקט לגמרי, ולכן מונים אותו: ענף שנקטע פירושו פריטים
+      // חסרים באוסף, וזה נראה בדיוק כמו "המשתמש לא מחזיק את זה".
+      if (depth > MAX_DEPTH) { depthCut++; continue; }
       if (seen.has(obj)) continue;
       seen.add(obj);
       if (++nodes > MAX_NODES) { truncated = true; break; }
@@ -581,10 +588,21 @@
         if (isDev) { devices.push(obj); continue; }
       }
 
+      // Map/Set: אוספים כאלה לא חושפים את תוכנם ב-Object.keys, ולכן בלי
+      // הענפים האלה ענף שלם של הגרף פשוט לא נסרק — וזה נראה בדיוק כמו
+      // "המשתמש לא מחזיק את הפריט".
       try {
         if (Array.isArray(obj)) {
           for (let i = 0; i < obj.length; i++) {
             const v = obj[i];
+            if (v && typeof v === 'object') stack.push([v, depth + 1]);
+          }
+        } else if (obj instanceof Map) {
+          for (const v of obj.values()) {
+            if (v && typeof v === 'object') stack.push([v, depth + 1]);
+          }
+        } else if (obj instanceof Set) {
+          for (const v of obj) {
             if (v && typeof v === 'object') stack.push([v, depth + 1]);
           }
         } else {
@@ -596,6 +614,7 @@
       } catch (e) { /* אובייקט לא נגיש -> מדלגים עליו */ }
     }
 
+    NS.debug.depthCut = depthCut;
     NS.debug.lastNodes = nodes;
     NS.debug.truncated = truncated;
     return { items, devices, byId };
@@ -739,6 +758,54 @@
         discovered: NS.debug.discovered,
       },
     };
+  }
+
+  // ---- אינדקס המוסך ------------------------------------------------------
+  //
+  // רשימה שטוחה של כל הפריטים שבמצב המוסך, לצד ISOLATED. נועדה למיגרציה של
+  // קומבואים ישנים: הם נשמרו עם שם בלבד, וכאן נמצא מה שמתרגם שם -> מזהה.
+  //
+  // **כולל פריטים שאינם בבעלות** ומסמן זאת בדגל: המוסך מציג גם את מה שלא
+  // קנית (למכירה), אז המידע קיים ממילא. המזהה הוא עובדה על המשחק ולא על
+  // המשתמש, ולכן אין סיבה לא להשלים אותו — קומבו שיובא מחשבון אחר נפתר
+  // במלואו, ואם הפריט ייקנה בעתיד הוא פשוט יעבוד. הצרכן מחליט מה לעשות
+  // עם הדגל.
+  function readIndex() {
+    if (!latestState) {
+      return { ok: false, error: 'garage state not captured yet' };
+    }
+    try {
+      const IF = D.itemFields;
+      const DF = D.deviceFields;
+      const found = collect(latestState);
+
+      const items = [];
+      for (const it of found.items) {
+        items.push({
+          id: idToString(it[IF.id]),
+          baseItemId: baseItemIdOf(it),
+          name: it[IF.name],
+          category: enumName(it[IF.category]),
+          mk: mkLevel(it),
+          owned: it[IF.owned] === true,
+        });
+      }
+
+      const devices = [];
+      if (DF) {
+        for (const d of found.devices) {
+          devices.push({
+            id: idToString(d[DF.id]),
+            baseItemId: idToString(d[DF.baseItemId]),
+            name: d[DF.name],
+          });
+        }
+      }
+      return { ok: true, items, devices };
+    } catch (e) {
+      NS.debug.lastError = String(e);
+      return { ok: false, error: String(e) };
+    }
   }
 
   // הדפסה קריאה לקונסול — זה מה שה-POC נמדד עליו.
@@ -1493,11 +1560,23 @@
         __cmb: true, dir: 'm2i', action: 'comboResult',
         payload: Object.assign({ id }, res),
       }, '*');
+      return;
+    }
+
+    if (m.action === 'readIndex') {
+      const id = (m.payload || {}).id;
+      let res;
+      try { res = readIndex(); } catch (err) { res = { ok: false, error: String(err) }; }
+      window.postMessage({
+        __cmb: true, dir: 'm2i', action: 'indexResult',
+        payload: Object.assign({ id }, res),
+      }, '*');
     }
   });
 
   // ---- API לקונסול ------------------------------------------------------
   NS.read = readCombo;
+  NS.index = readIndex;
   NS.log = function () { logCombo(readCombo()); };
   NS.names = function () { return D; };
   NS.state = function () { return latestState; };
