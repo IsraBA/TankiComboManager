@@ -50,6 +50,27 @@
         "*://*.tankionline.com/*"
       ],
       "js": [
+        "features/combos/isolated/detect.js",
+        "features/combos/isolated/bridge.js"
+      ],
+      "run_at": "document_start",
+      "world": "ISOLATED"
+    },
+    {
+      "matches": [
+        "*://*.tankionline.com/*"
+      ],
+      "js": [
+        "features/combos/main/garage_state.js"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
+      "matches": [
+        "*://*.tankionline.com/*"
+      ],
+      "js": [
         "shared/components/switch.js",
         "shared/components/select.js",
         "features/translator/main/settings.js",

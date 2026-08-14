@@ -46,6 +46,11 @@ JS worlds, different storage areas. They share only the UI components in
 │   │   ├── main.js               # entry point — MutationObserver orchestrator
 │   │   ├── styles.css            # main combo-view styles
 │   │   ├── combo_card.css        # combo card styles
+│   │   ├── isolated/             # [ISOLATED world] the link to the MAIN-world game hook
+│   │   │   ├── detect.js         # parses the game bundle -> discovers garage-state names
+│   │   │   └── bridge.js         # TankiQoL.GarageBridge.readCombo() — relay to MAIN
+│   │   ├── main/                 # [MAIN world] shares the page window
+│   │   │   └── garage_state.js   # captures the game's garage state; reads the mounted loadout
 │   │   ├── lib/
 │   │   │   ├── constants.js      # centralized DOM selectors and config values
 │   │   │   ├── utils.js          # shared utility functions
@@ -189,7 +194,7 @@ development reference that no user ever needs.) See **`docs/PACKAGING.md`**, the
 single source of truth for what ships; `build/make-zip.ps1` implements it and
 refuses to build if any of it slips in.
 
-## Manifest layout (4 content-script blocks)
+## Manifest layout (6 content-script blocks)
 
 JSON has no comments, so the reasoning lives here. Do not merge these blocks —
 each exists for a specific reason.
@@ -198,12 +203,19 @@ each exists for a specific reason.
 |---|---|---|---|---|
 | 0 | **all CSS** | `document_start` | n/a | CSS is not world-scoped, so one block serves both features. Early injection avoids any flash of unstyled injected UI. Array order = cascade order. |
 | 1 | translator `isolated/` | `document_start` | ISOLATED | The only place with `chrome.*`. Must start early so bundle discovery finishes before the user enters a battle. |
-| 2 | translator `main/` | `document_start` | MAIN | Needs the page's own `window` to install the `Object.prototype` trap that captures the chat HUD. Must be `document_start` — the HUD is built later, but the trap has to be armed first. |
-| 3 | combos | `document_idle` | ISOLATED (default) | Pure DOM work that only makes sense once the page exists. Its internal order is the sacred dependency chain (Rule 6). |
+| 2 | combos `isolated/` | `document_start` | ISOLATED | Same reason, for the garage-state hook: discovery must finish before the user opens the garage. Also defines `TankiQoL.GarageBridge`, which block 5 uses. |
+| 3 | combos `main/` | `document_start` | MAIN | Needs the page's own `window` for the `Object.prototype` trap that captures the garage state. Must be `document_start` — the state is built later, but the trap has to be armed first. |
+| 4 | translator `main/` | `document_start` | MAIN | Same reason, for the chat HUD. |
+| 5 | combos (DOM side) | `document_idle` | ISOLATED (default) | Pure DOM work that only makes sense once the page exists. Its internal order is the sacred dependency chain (Rule 6). |
 
-`shared/components/switch.js` and `select.js` appear in **both** block 2 and
-block 3. That is not a mistake: JS worlds do not share a `window`, so each world
+`shared/components/switch.js` and `select.js` appear in **both** block 4 and
+block 5. That is not a mistake: JS worlds do not share a `window`, so each world
 needs its own copy of the component code (see "Namespaces" below).
+
+Blocks 2 and 5 are both combos and both ISOLATED, but they are not the same
+thing and must not be merged: block 2 is the bridge to the game's internals and
+has to be armed at `document_start`, while block 5 is the DOM feature and can't
+run until the page exists.
 
 ## Architecture
 
@@ -232,7 +244,8 @@ without conflict.
 |---|---|---|
 | `window.TankiQoL` | ISOLATED (combos) + MAIN (translator) | The **shared components** (`TankiQoL.Switch`, `.Select`, `.Drawer`), and in ISOLATED also every combos module (`TankiQoL.DOM`, `.MenuInjector`, `.ViewRenderer`, `.ComboSaver`, …) |
 | `window.__CT` | MAIN | Translator internals: `__CT.settings`, `.translate`, `.skip`, `.rebuild()` |
-| `__CT_*` globals | MAIN | Translator console debug helpers (see "Debugging") |
+| `window.__CMB` | MAIN | Combos game hook: `__CMB.read()`, `.log()`, `.names()`, `.state()`, `.debug` |
+| `__CT_*` / `__CMB_*` globals | MAIN | Console debug helpers (see "Debugging") |
 
 Every module follows this pattern:
 ```javascript
@@ -330,6 +343,124 @@ Core operations (save, load, equip) use **async/await**. Chrome storage calls us
 the callback API (not promisified) — keep this consistent. Errors use **graceful
 degradation**: log a warning and continue. If an item can't be found or equipped,
 skip it and move on. Never block the user or show alerts for non-critical errors.
+
+### Reading the loadout from the game's own state (in progress)
+
+Everything above equips by **simulating the user**: navigate a tab, find the item
+by its displayed name, click it, click Equip, wait. That is why equipping a combo
+is slow and visibly "walks" the UI. The replacement — ROADMAP feature 2, "Instant
+Combo Equipment" — reads and writes the game's own model instead.
+
+**Status: the read half exists and is read-only (a POC).** Nothing calls a game
+function or touches outbound traffic yet. Clicking "Save Current Combo" prints the
+loadout as read from game state to the console, *then* runs the normal DOM save
+unchanged — so the two can be compared. Writing (instant equip) comes only after
+the read is confirmed correct in-game.
+
+How it works:
+
+- The garage is a **Redux-style store**: one `Garage` state object holding
+  `mountedItems`, `items`, `devices` and ~26 more fields. Every item in it is a
+  `GarageItem` carrying `id`, `name`, `category`, `preview`, `owned`,
+  **`mounted`** and **`mountIndex`**. So the current combo is simply every item
+  with `mounted === true`, grouped by `category` — the same selection the game's
+  own code performs. `mountIndex` is what separates the 4 protection slots.
+- Four things are **not** plain fields on the item, and each was a separate
+  find. Getting them wrong is easy, so they're spelled out here:
+
+  | What | Where it lives | Trap to avoid |
+  |---|---|---|
+  | **Mk level** | `modification.modificationIndex`, **0-based** — the garage displays 1-based, so add 1 (verified live) | the same object also has `modificationCount` = *how many Mk levels that item has at all*. It looks like a level but is constant per item type — reading it reports e.g. "Mk7" for everything. |
+  | **Micro-upgrade (`LVL-X`)** | `upgradeableParams.currentLevel`, max from a method on the same object (20 for drones, 45 for protections) | — |
+  | **Augments** | the game calls them **Devices**: `GarageDevice` objects with `installed` + `baseItemId` | there is no "augment" string in the bundle. Match a device to its item by `baseItemId` (which for an upgraded item lives on `modification`, not on the item). And: **the game remembers one installed augment per turret/hull, mounted or not** — so most `installed:true` devices belong to unmounted items. That's normal, not a join failure. |
+  | **Skins + shot effect** | `mountedSkin` / `mountedShotSkin` on the turret/hull are **skin-item IDs**; the skin items themselves are regular `GarageItem`s (categories `SKIN` / `SKINS_SHOT`) resolved via an id index built during the scan. Skin image = `skinPreview` with `preview` as fallback (same choice the game's UI code makes). | the IDs compare as Kotlin Longs — stringify both sides before comparing. |
+
+- **Item images**: `preview` / `skinPreview` are not strings. Each is a resource
+  object with a method that builds the CDN URL, so the URL has to be *called*,
+  not read.
+- `main/garage_state.js` (MAIN world) captures that state with the usual
+  `Object.defineProperty(Object.prototype, <field>, {set})` trap, validated
+  structurally (the object must carry every known state field). The state is
+  recreated on every garage action (immutable store), so the trap stays installed
+  and always holds the freshest instance. The trapped field is the **last** one
+  the constructor writes, so at trap time the object is fully populated (the
+  Scorpion lesson).
+- Items are gathered by a **structural scan** of the state graph, collecting every
+  object that carries all the `GarageItem` fields. Kotlin collections compile to
+  internal classes whose iterator method names rotate per build; matching on the
+  item's own shape sidesteps that entirely.
+
+Confirmed live: turret, hull, drone, grenade, all four protections and the paint
+read correctly (names, ids, slot order, Mk, LVL, images, and the mounted item's
+augment). Grenade's category is **`BAZOOKA`**. The read also covers things the
+DOM version never did — paint, turret/hull **skins** and the turret's **shot
+effect** — so those can become combo slots cheaply when the write half lands.
+
+### Cross-build self-location (`isolated/detect.js`)
+
+Same approach as the translator's detector, but with a better anchor. Kotlin emits
+a `toString` for every data class that spells out **the field names as literal
+strings** next to their minified names:
+
+```
+ld(MB).toString=function(){return"Garage(itemsOnDepot="+bd(this.tpz_1)+", mountedItems="+bd(this.vpz_1)+ …
+```
+
+So detection reads a direct `semantic name → minified name` map instead of
+inferring it from code shape. Anchors:
+
+- **state class** = the only `toString` starting `"Garage("` that contains
+  `mountedItems=`.
+- **item class** = the only `toString` starting `"GarageItem("`.
+- **trap field** = the **last** field of the state's `toString`. The constructor
+  assigns fields in exactly the `toString` order; detection verifies this rather
+  than assuming it, and returns `null` if it ever stops holding.
+- **`ModificationCC`** (Mk) — a protocol class, so its `toString` uses a
+  different shape (`"name = "+this.x`) and needs its own tiny parser.
+- **`UpgradableItemParams`** (micro-upgrade) → `currentLevel`. The **max** level
+  is behind a method, found via the "am I maxed?" method whose whole body is
+  `currentLevel === maxLevel()` — an unambiguous anchor.
+- **`GarageDevice`** (augments) → `installed` / `baseItemId` / `previewImage`.
+- **image URL method** — found two independent ways that are cross-checked: from
+  real call sites (`<preview>.<method>()`) and from the accessor that reflection
+  names `"url"`. They agree on every build tested; disagreement sets
+  `urlMethodAmbiguous`.
+
+Everything after the core four is **optional**: if one of these anchors breaks,
+detection still succeeds and only that column goes blank, rather than the whole
+feature going inert.
+
+Cached in `chrome.storage.local` keyed by **schema version + bundle URL**
+(`garageConstants:v<N>:<url>`). The version exists because of a real bug: adding
+new fields to `discover()`'s output while an old-schema result was already cached
+meant the cache loaded as-is and **overrode the seed** (which did have the new
+fields) — every new column silently read null. **Bump `CACHE_VERSION` in
+`detect.js` whenever `discover()`'s output shape changes.** Stale-prefix keys are
+cleaned up on startup. `garage_state.js` seeds the latest-known build so it works
+during the discovery fetch; discovery overrides it.
+**Verified extraction on all 8 bundles in `../../research/`:**
+
+| build | state class | item class | trap field | mountedItems | mounted | mountIndex |
+|---|---|---|---|---|---|---|
+| 1327298e (seed) | `MB` | `sB` | `vq0_1` | `vpz_1` | `tr3_1` | `ur3_1` |
+| 009aa16b | `NB` | `eB` | `oq0_1` | `opz_1` | `lr3_1` | `mr3_1` |
+| c0feea5a | `CB` | `JL` | `gpz_1` | `gpy_1` | `dr2_1` | `er2_1` |
+| bcae4cb9 | `wB` | `ML` | `lpw_1` | `lpv_1` | `iqz_1` | `jqz_1` |
+| c4428a58 | `lB` | `PL` | `lps_1` | `lpr_1` | `iqv_1` | `jqv_1` |
+| a81c6ab2 | `cB` | `AL` | `lpr_1` | `lpq_1` | `iqu_1` | `jqu_1` |
+| e76a162c | `cB` | `AL` | `upr_1` | `upq_1` | `rqu_1` | `squ_1` |
+| 41560f11 | `fB` | `RD` | `qq7_1` | `qq6_1` | `nra_1` | `ora_1` |
+
+The Mk / micro-upgrade / augment / image-URL anchors were verified on the same 8
+bundles. The state class has had exactly 29 fields in every build checked, which
+is a good sign the shape is stable. The deep research trail is in
+`../../research/CLAUDE.md` under "Garage state".
+
+> Re-verify after any change to `discover()`. The scratchpad harness extracts the
+> **shipped** `discover()` out of `detect.js` and runs it against every bundle in
+> `../../research/`, then diffs the result for the current build against the seed
+> in `garage_state.js` — so a stale seed or a broken regex fails loudly instead of
+> silently degrading in-game.
 
 ## Feature: Translator
 
@@ -569,6 +700,12 @@ it from the **game tab's** console (not the extension's DevTools):
 window.TankiQoL.DEBUG = true
 chrome.storage.local.get(['savedCombos'], r => console.log(r.savedCombos))  // ISOLATED only
 
+// combos — the garage-state hook (MAIN world, page console)
+__CMB_READ()          // print the current loadout as read from game state
+__CMB_STATE()         // captured?, discovered names, debug counters
+__CMB.read()          // the same read, as a plain object
+__CMB.state()         // the captured raw game state object (for poking around)
+
 // translator
 __CT_STATE()          // settings + discovered names + debug counters + capture status
 __CT_DEBUG            // {discovered, captured, intercepts, translations, rebuilds,
@@ -587,6 +724,12 @@ __CT_NOTR('some text')       // would this text be skipped?
   offset field name is wrong (detection bug or an architectural change).
 - Translations missing but `intercepts` climbing → check `lastError`; likely the
   service worker fetch failed (all backends down / host_permissions issue).
+- `__CMB_STATE().captured === false` after opening the garage → the trap never
+  validated. Either detection failed (`debug.discovered === false`, check the
+  `[combos] detect:` console warning) or the game restructured its garage state.
+- `captured` is true but a slot reads `—` → that category isn't in
+  `CATEGORY_TO_SLOT` in `garage_state.js`; the console log lists unmapped mounted
+  items precisely so the missing category name is visible.
 
 ## When a Tanki build breaks the translator (recovery procedure)
 
