@@ -35,7 +35,7 @@
   // (שדווקא כן מלא), וכל השדות החדשים יחזרו null. זה בדיוק הבאג שקרה כשנוספו
   // modificationFields/urlMethod/upgradeFields/deviceFields: הבאנדל לא התחלף,
   // ולכן ה-cache הישן והחסר נטען במקום גילוי מחודש.
-  const CACHE_VERSION = 7;
+  const CACHE_VERSION = 9;
   const CACHE_PREFIX = 'garageConstants:v' + CACHE_VERSION + ':';
 
   // ניקוי מפתחות מגרסאות סכמה קודמות (וגם של באנדלים ישנים מאותה משפחה),
@@ -261,6 +261,58 @@
     return out;
   }
 
+  // --- גילוי פעולת החלת הסקין ---
+  //
+  // סקינים אינם פריט מורכב רגיל (ניסינו — לא עובד). הם מערכת בצורת
+  // האוגמנטים: פעולה דו-ארגומנטית (סקין, פריט) שמעדכנת את הפריט *וגם*
+  // נשלחת לשרת דרך קונטרולר ייעודי. אין לה toString — היא לא data class —
+  // ולכן צריך עוגן מבני.
+  //
+  // העוגן: ה-reducer מייצר עותק של GarageItem שבו **רק** השדה mountedSkin
+  // משתנה, כלומר בקוד מופיע  copy(VOID ×30, skin.id). ספירת ה-VOID היא
+  // שמזהה איזה שדה נכתב, והמספר עצמו נגזר מסדר השדות ב-toString של
+  // GarageItem — שאותו כבר גילינו, אז אין כאן שום מספר קסם.
+  // (השדה שאחריו הוא mountedShotSkin, ואותה תבנית תמצא גם אותו. אפקט
+  //  הירייה הוסר מהפיצ'ר, ולכן לא מגלים אותו.)
+  function discoverSkinMount(src, itemFields, itemToStringBody) {
+    const names = [...itemToStringBody.matchAll(/([A-Za-z0-9]+)="\+/g)].map((m) => m[1]);
+    const skinPos = names.indexOf('mountedSkin');
+    if (skinPos < 0 || !itemFields.id) return null;
+
+    // שם ה-VOID של קוטלין מתחלף בין בילדים, ולכן לא מקודדים אותו: דורשים
+    // רק שכל הארגומנטים שלפני יהיו אותו מזהה בדיוק.
+    const re = new RegExp('\\{return t\\.[\\w$]+\\(((?:[\\w$]+,)+)([\\w$]+)\\.' +
+      escapeRe(itemFields.id) + '\\)\\}', 'g');
+    let hit = null, voidName = null, m;
+    while ((m = re.exec(src)) !== null) {
+      const toks = m[1].split(',').filter(Boolean);
+      if (toks.length !== skinPos) continue;
+      if (new Set(toks).size !== 1) continue;
+      hit = m; voidName = toks[0]; break;
+    }
+    if (!hit) return null;
+
+    // המתודה העוטפת
+    const seg = src.slice(Math.max(0, hit.index - 500), hit.index);
+    const decls = [...seg.matchAll(/\)\.([\w$]+)=function\(t,n\)\{/g)];
+    if (!decls.length) return null;
+    const method = decls[decls.length - 1][1];
+
+    // ענף ה-reducer שקורא לה — משם המחלקה ושני השדות
+    const br = new RegExp('instanceof ([\\w$]+)\\)[\\w$]+=[\\w$]+\\.[\\w$]+\\((?:' +
+      escapeRe(voidName) + ',)+[\\w$]+\\.[\\w$]+_1\\.' + escapeRe(method) +
+      '\\(t\\.([\\w$]+_1),t\\.([\\w$]+_1)\\)').exec(src);
+    if (!br) return null;
+
+    // אימות צולב: ה-ctor כותב בדיוק את שני השדות, בסדר הזה
+    const ctor = new RegExp('function ' + escapeRe(br[1]) + '\\(t,n\\)\\{[\\w$]+\\.call\\(this,n\\.' +
+      escapeRe(itemFields.id) + '\\),this\\.' + escapeRe(br[2]) + '=t,this\\.' +
+      escapeRe(br[3]) + '=n\\}').exec(src);
+    if (!ctor) return null;
+
+    return { skinMountClass: br[1], skinMountFields: { skin: br[2], item: br[3] } };
+  }
+
   function discover(src) {
     // --- מחלקת ה-state של המוסך ---
     const stateRe = /[\w$]+\(([\w$]+)\)\.toString=function\(\)\{return"Garage\((.*?)"\}/g;
@@ -376,6 +428,39 @@
       out.mountThunkClass = mountThunk.cls;
       out.mountThunkFields = mountThunk.fields;
     }
+
+    // --- פעולות האוגמנטים (במשחק: Devices) ---
+    //
+    // כאן שתי הפעולות שאנחנו צריכים הן ממילא הנמוכות, ושתיהן מעדכנות מקומית
+    // *וגם* שולחות לשרת — ההתקנה אפילו נקראת כך במפורש. (ההבדל מההגנות:
+    // שם ה-thunk הוא שעושה את העבודה, וכאן אין thunk באמצע.)
+    //   GarageInsertDeviceClientAndServer(device, item)
+    //   GarageRemoveDevice(device, item)
+    // המשחק תמיד מסיר את המותקן לפני שהוא מתקין אחר — לתותח/גוף יש אוגמנט
+    // אחד בלבד — ולכן גם אנחנו.
+    const insertDev = dataClass(src, 'GarageInsertDeviceClientAndServer');
+    if (insertDev && insertDev.fields.device && insertDev.fields.item) {
+      out.deviceInsertClass = insertDev.cls;
+      out.deviceInsertFields = insertDev.fields;
+    }
+    const removeDev = dataClass(src, 'GarageRemoveDevice');
+    if (removeDev && removeDev.fields.device && removeDev.fields.item) {
+      out.deviceRemoveClass = removeDev.cls;
+      out.deviceRemoveFields = removeDev.fields;
+    }
+    // בקשת טעינה של רשימת האוגמנטים לפריט. רשימות האוגמנטים נטענות בעצלות
+    // לפי baseItemId, ולכן אוגמנט של פריט שמסכו לא נפתח מעולם עלול פשוט לא
+    // להימצא ב-state. לא בשימוש עדיין — מגלים אותו כדי שיהיה זמין אם המקרה
+    // הזה יופיע בפועל.
+    const loadDev = dataClass(src, 'GarageLoadAvailableDevices');
+    if (loadDev && loadDev.fields.itemId) {
+      out.deviceLoadClass = loadDev.cls;
+      out.deviceLoadFields = loadDev.fields;
+    }
+
+    // --- החלת סקין ---
+    const skin = discoverSkinMount(src, itemFields, 'id=' + itemMatch[2]);
+    if (skin) Object.assign(out, skin);
 
     // כתובת התמונה: אובייקט ה-preview לא מחזיק מחרוזת אלא מתודה שבונה כתובת
     // CDN. מאתרים את שם המתודה משימוש אמיתי בקוד (`<preview>.<method>()`),

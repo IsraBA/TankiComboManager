@@ -15,10 +15,11 @@ with zero flicker: the server persists it, the local state updates, the item goe
 green in the list, AND the 3D tank preview follows. No manual bootstrap, no user
 action needed.
 
-**Writing protections is implemented and verified offline — awaiting a live
-test.** `__CMB_TRY_PROTECTIONS([id|null ×4])` applies a full 4-slot state with
-the diff optimisation intact. 13 offline checks pass, including running the
-shipped module against a fake game state (`test_apply_protections.js`).
+**Writing protections is proven live.** `__CMB_TRY_PROTECTIONS([id|null ×4])`
+applies a full 4-slot state with the diff intact.
+
+**Writing augments is implemented and verified offline — awaiting a live test.**
+`__CMB_TRY_AUGMENT(itemId, augId|null)`.
 
 **Nothing in the equip path is wired to the UI yet.** The Equip button (now: a
 click anywhere on the combo card) still runs the old DOM equipper
@@ -129,12 +130,13 @@ Run the harnesses after ANY change to `discover()` — see "Harnesses" below.
   constructor with exactly the two expected fields.
 - **select action** — a thunk whose body looks up the item by id and checks its
   category; matched head-then-tail (a single rigid regex only matched one build).
-- **the resistance actions** — the easiest anchor in the whole project: the
-  Redux actions are Kotlin **data classes**, so each one's `toString` spells out
-  its own field names, exactly like `Garage` and `GarageItem`. `dataClass()`
-  returns both the minified class name and the field map, and nothing structural
-  is involved. `GarageApplyResistanceMount` vs `GarageApplyResistanceMountOnBuy`
-  are disambiguated by the literal `(` the pattern requires after the name.
+- **the resistance and device actions** — the easiest anchor in the whole
+  project: the Redux actions are Kotlin **data classes**, so each one's
+  `toString` spells out its own field names, exactly like `Garage` and
+  `GarageItem`. `dataClass()` returns both the minified class name and the field
+  map, and nothing structural is involved. `GarageApplyResistanceMount` vs
+  `GarageApplyResistanceMountOnBuy` are disambiguated by the literal `(` the
+  pattern requires after the name.
 
 ### Getting the action classes at runtime (no user action required)
 
@@ -177,11 +179,19 @@ __CMB_TRY_PROTECTIONS([a,b,c,d])  // apply a full 4-slot state (ids or null)
 __CMB_TRY_PROT_MOUNT(id, slot)    // one slot, no diff, no slot clearing
 __CMB_TRY_PROT_UNMOUNT(id)        // remove one module
 
-__CMB.read() / .state() / .names() / .protections() / .applyProtections() / .debug
+__CMB_AUGMENTS()                  // what is installed on the mounted turret/hull
+__CMB_TRY_AUGMENT(itemId, augId)  // install; pass null to clear
+
+__CMB_DECOR()                     // owned paints + skins, with ids
+__CMB_TRY_SKIN(itemId, skinId)    // apply a skin to a turret/hull
+                                  // (paint is an ordinary item: __CMB_TRY_NATIVE)
+
+__CMB.read() / .state() / .names() / .debug
+__CMB.protections() / .applyProtections() / .applyAugment() / .installedAugment()
 ```
 
-Every protection probe prints the slot table before and 1 s after, so the state
-is its own verification.
+Every write probe prints the relevant state before and 1 s after, so the state is
+its own verification.
 
 ## Harnesses (scratchpad — recreate if the session is gone)
 
@@ -193,17 +203,19 @@ discovery). **Always run after touching `discover()`.**
 
 - `verify_shipped.js` — the main one, all fields, 8/8 must pass + SEED match.
 - `test_action.js`, `test_select.js`, `test_context.js`, `test_send_discovery.js`,
-  `test_resistance.js` — focused anchor tests, useful when adding a new anchor.
+  `test_resistance.js`, `test_devices.js`, `test_skin_mount.js` — focused anchor
+  tests, useful when adding a new anchor.
 - `test_taxonomy.js` — cross-validates the two-layer model: that the public
   thunk really does dispatch the low-level action we send, on every build.
-- `test_apply_protections.js` — a different animal: it loads the **shipped**
+- `test_write_path.js` — a different animal: it loads the **shipped**
   `garage_state.js` into a `vm` sandbox with a fake game state (fake store, fake
   proxy, fake action constructors) and asserts the actual dispatches. This is
-  what proves the diff optimisation without touching the game.
+  what proves the diff behaviour of both protections and augments without
+  touching the game. 27 checks.
 - `test_instant_saver.js`, `test_card_render.js`, `test_protection_equal.js` —
   the save/render/equality side.
 
-All of them are plain `node <file>` with no arguments; all 13 must pass.
+All of them are plain `node <file>` with no arguments; all 15 must pass.
 
 ## Hard-won lessons (do not regress)
 
@@ -252,21 +264,76 @@ set-based semantics, now keyed on **ids** rather than names — which makes
 `areProtectionsEqual` unnecessary on this path (it stays for the DOM fallback,
 which still needs it).
 
-### 2. Prove augments
+### 2. Augments — **code done, awaiting the live test**
 
-Devices system: `GarageInsertDeviceClientAndServer(device, item)`,
-`GarageRemoveDevice(device, item)` — both are data classes, so the same
-`dataClass()` anchor applies and discovery is a two-line addition. Join a device
-to its item by `baseItemId`.
+The simplest path of the three, because there is no thunk in the middle: the two
+actions we need are already the low-level ones, and both update local state *and*
+send to the server. The install one says so in its name.
 
-The one real risk is **lazy loading**: `GarageLoadDevicesIfNotLoaded(item)` is
-what the base-item mount thunk fires for turret/hull, and we do not fire it
-because we dispatch the low-level mount instead. So a device may simply be absent
-from state until that item's screen has been opened. Two ways out, decide when
-testing: dispatch `GarageLoadDevicesIfNotLoaded` ourselves (it is a plain data
-class → discoverable and subscribable, so probably resolvable by name), or find
-the mount thunk via a trap and use it. `mountThunkClass` is already discovered
-and in the SEED either way.
+```
+applyAugment(item, augmentId | null)
+  ├─ find the augment installed on this item (by baseItemId, not by "mounted")
+  ├─ already the wanted one → dispatch nothing
+  ├─ dispatch GarageRemoveDevice(current, item)             if there is one
+  └─ dispatch GarageInsertDeviceClientAndServer(want, item) if one is wanted
+```
+
+Removing before inserting is what the game itself does: a turret or hull holds
+exactly one augment. And the lookup is by `baseItemId` because **the game
+remembers an installed augment per item whether or not that item is mounted** —
+"what is installed on this turret" is a different question from "what is on my
+tank right now".
+
+Two things worth knowing:
+
+- `GarageInsertDeviceClientAndServer` has no `instanceof` branch in the reducer;
+  it is matched by an **interface** the class implements. That is why searching
+  for a reducer branch by class name comes up empty — the class registration
+  (`vd(CF,"",fd,Gm,[Gm,AF])`) is what shows the relationship.
+- Augment lists load **lazily per base item**, so an augment can simply be absent
+  from state until that item's screen has been opened. `applyAugment` fails with
+  a clear message when that happens. `GarageLoadAvailableDevices(baseItemId)` is
+  discovered and ready (`deviceLoadClass`) but not yet used — it is asynchronous,
+  so wiring it means a retry protocol, and it is not worth building until the
+  live test shows the case actually occurs.
+
+What the live test has to confirm: `deviceInsertResolved` / `deviceRemoveResolved`
+true in `__CMB_STATE()`, the change visible without a refresh, and — the real
+question — that it **survives** a refresh, since the remove command is the one
+piece of the chain not confirmed statically (its subscription sends a no-argument
+command, which fits "remove the augment from the item in context", but only the
+live test settles it).
+
+### 2b. Paint and skins
+
+**Paint is an ordinary garage item** (category `PAINT`), so mounting one is the
+same action as mounting a turret. Nothing new was needed and it is confirmed
+live. `__CMB_DECOR()` lists the ids.
+
+**Skins are not.** Mounting a skin as an item does nothing — tried live, no
+effect. They are shaped like augments: a two-argument action `(skin, item)` that
+writes `mountedSkin` on the turret/hull and is sent to the server by its own
+controller. There is no "remove a skin", only replace.
+
+Its discovery is the only **structural** anchor in the write path, because the
+class has no `toString` — it is not a data class. The anchor:
+
+> The reducer builds a copy of the `GarageItem` in which exactly one field
+> changes, and that shows up in the code as `copy(VOID ×30, skin.id)`. **The
+> count of leading `VOID`s is what identifies the field**, and the number 30
+> comes from `mountedSkin`'s position in `GarageItem`'s own `toString` — which
+> is already discovered, so there is no magic number in the code. The `VOID`
+> marker's minified name rotates per build, so it is never written down: the
+> pattern only requires that all the leading arguments be the same identifier.
+> From that method, its reducer branch gives the class and both field names, and
+> a constructor cross-check confirms it. Verified on all 8 bundles.
+
+The field right after `mountedSkin` is `mountedShotSkin` and the same pattern
+would find it. Shot effects were dropped from the feature, so it is not
+discovered.
+
+The old DOM equipper never equipped paint or skins, so both are new capability,
+not parity.
 
 ### 3. Then build the equipper
 

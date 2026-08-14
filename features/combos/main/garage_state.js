@@ -138,6 +138,16 @@
     resistMountFields: { resistance: 'prc_1', index: 'qrc_1' },
     mountThunkClass: 'JB',
     mountThunkFields: { item: 'jrc_1', needServerMount: 'krc_1' },
+    // פעולות האוגמנטים (Devices)
+    deviceInsertClass: 'CF',
+    deviceInsertFields: { device: 'gri_1', item: 'hri_1' },
+    deviceRemoveClass: 'SF',
+    deviceRemoveFields: { device: 'irg_1', item: 'jrg_1' },
+    deviceLoadClass: 'vU',
+    deviceLoadFields: { itemId: 'hrd_1' },
+    // החלת סקין — מערכת בצורת האוגמנטים, לא הרכבת פריט
+    skinMountClass: 'lU',
+    skinMountFields: { skin: 'erd_1', item: 'frd_1' },
   };
 
   let D = SEED;            // מפת השמות הפעילה
@@ -150,6 +160,9 @@
   let selectActionProto = null; // הפרוטוטייפ של פעולת "בחר פריט" (מרעננת את מודל התלת-ממד)
   let resistApplyProto = null;  // GarageApplyResistanceMount — הרכבת הגנה בחריץ
   let resistUnmountProto = null;// GarageResistanceUnMount — הסרת הגנה
+  let deviceInsertProto = null; // GarageInsertDeviceClientAndServer — התקנת אוגמנט
+  let deviceRemoveProto = null; // GarageRemoveDevice — הסרת אוגמנט
+  let skinMountProto = null;    // החלת סקין על תותח/גוף
   let storeInfo = null;         // {store, dispatch} — לשיגור הפעולה
 
   // רשימת שדות ה-state, מחושבת מראש. ה-setter של ה-trap הוא נתיב חם (הוא רץ
@@ -191,6 +204,12 @@
     resistUnmountResolved: false,
     resistMountsSent: 0,
     resistUnmountsSent: 0,
+    deviceInsertResolved: false,
+    deviceRemoveResolved: false,
+    devicesInstalled: 0,
+    devicesRemoved: 0,
+    skinMountResolved: false,
+    skinsApplied: 0,
     captures: 0,
     reads: 0,
     lastReadMs: 0,
@@ -1138,6 +1157,185 @@
     };
   }
 
+  // ---- אוגמנטים (במשחק: Devices) ----------------------------------------
+  //
+  // כאן אין thunk באמצע: שתי הפעולות שאנחנו צריכים הן ממילא הנמוכות, ושתיהן
+  // מעדכנות את ה-state המקומי *וגם* שולחות לשרת (ההתקנה אפילו נקראת
+  // GarageInsertDeviceClientAndServer). לכן זה המסלול הפשוט מכולם.
+  //
+  // כלל היסוד: **לתותח/גוף יש אוגמנט אחד בלבד**. המשחק תמיד מסיר את המותקן
+  // לפני שהוא מתקין אחר, וגם אנחנו. וחשוב: המשחק זוכר את האוגמנט המותקן לכל
+  // פריט בנפרד, גם כשהפריט לא מורכב — ולכן החיפוש הוא לפי baseItemId ולא
+  // לפי "מה מורכב עכשיו".
+
+  function resolveDeviceProtos() {
+    if (deviceInsertProto && deviceRemoveProto) return true;
+    if (!latestState || !D.deviceFields) return false;
+    const found = collect(latestState);
+    const dev = found.devices[0];
+    const item = found.items[0];
+    if (!dev || !item) return false;
+
+    if (!deviceInsertProto && D.deviceInsertClass && D.deviceInsertFields) {
+      const F = D.deviceInsertFields;
+      const Ctor = resolveActionCtor(D.deviceInsertClass, (C) => {
+        if (C.length !== 2) return false;
+        const p = new C(dev, item);
+        return p[F.device] === dev && p[F.item] === item;
+      });
+      if (Ctor) { deviceInsertProto = Ctor.prototype; NS.debug.deviceInsertResolved = true; }
+    }
+    if (!deviceRemoveProto && D.deviceRemoveClass && D.deviceRemoveFields) {
+      const F = D.deviceRemoveFields;
+      const Ctor = resolveActionCtor(D.deviceRemoveClass, (C) => {
+        if (C.length !== 2) return false;
+        const p = new C(dev, item);
+        return p[F.device] === dev && p[F.item] === item;
+      });
+      if (Ctor) { deviceRemoveProto = Ctor.prototype; NS.debug.deviceRemoveResolved = true; }
+    }
+    return !!(deviceInsertProto && deviceRemoveProto);
+  }
+
+  // האוגמנט המותקן על פריט נתון (או null)
+  function installedDeviceFor(rawItem, found) {
+    const DF = D.deviceFields;
+    if (!DF || !latestState) return null;
+    const base = baseItemIdOf(rawItem);
+    for (const d of (found || collect(latestState)).devices) {
+      if (d[DF.installed] !== true) continue;
+      if (idToString(d[DF.baseItemId]) === base) return d;
+    }
+    return null;
+  }
+
+  // מחיל אוגמנט על פריט. desiredDeviceId === null פירושו "בלי אוגמנט".
+  // אם המצוי כבר שווה לרצוי — לא משוגרת אף פעולה.
+  function applyAugment(rawItem, desiredDeviceId) {
+    if (!latestState) return { ok: false, error: 'garage state not captured' };
+    if (!rawItem) return { ok: false, error: 'no item given' };
+    if (!resolveDeviceProtos()) {
+      return { ok: false, error: 'device actions not available (insert=' +
+        !!deviceInsertProto + ', remove=' + !!deviceRemoveProto + ')' };
+    }
+    const si = findStore();
+    if (!si) return { ok: false, error: 'could not reach the game store' };
+
+    const DF = D.deviceFields;
+    const IF = D.itemFields;
+    const found = collect(latestState);
+    const base = baseItemIdOf(rawItem);
+    const current = installedDeviceFor(rawItem, found);
+    const currentId = current ? idToString(current[DF.id]) : null;
+    const wantId = desiredDeviceId == null ? null : String(desiredDeviceId);
+
+    if (currentId === wantId) {
+      return { ok: true, changed: false, kept: current ? current[DF.name] : null };
+    }
+
+    // הפריט הרצוי חייב להימצא ולהשתייך לאותו פריט בסיס
+    let wantDev = null;
+    if (wantId) {
+      for (const d of found.devices) {
+        if (idToString(d[DF.id]) === wantId) { wantDev = d; break; }
+      }
+      if (!wantDev) {
+        // רשימות האוגמנטים נטענות בעצלות לפי baseItemId — ייתכן שהאוגמנט
+        // פשוט עוד לא נטען. ראה deviceLoadClass בגילוי.
+        return { ok: false, error: 'augment ' + wantId + ' is not in the garage state ' +
+          '(its list may not be loaded yet — open that item\'s screen once)' };
+      }
+      if (idToString(wantDev[DF.baseItemId]) !== base) {
+        return { ok: false, error: 'augment ' + wantDev[DF.name] + ' does not belong to ' +
+          rawItem[IF.name] };
+      }
+    }
+
+    try {
+      if (current) {
+        si.store[si.dispatch](buildAction(deviceRemoveProto, [current, rawItem]));
+        NS.debug.devicesRemoved++;
+      }
+      if (wantDev) {
+        si.store[si.dispatch](buildAction(deviceInsertProto, [wantDev, rawItem]));
+        NS.debug.devicesInstalled++;
+      }
+    } catch (e) {
+      NS.debug.lastError = String(e);
+      return { ok: false, error: String(e) };
+    }
+
+    return {
+      ok: true,
+      changed: true,
+      item: rawItem[IF.name],
+      removed: current ? current[DF.name] : null,
+      installed: wantDev ? wantDev[DF.name] : null,
+    };
+  }
+
+  // ---- סקינים -----------------------------------------------------------
+  //
+  // סקין אינו פריט מורכב — ניסינו להרכיב אותו כמו תותח וזה פשוט לא קורה.
+  // הוא מערכת בצורת האוגמנטים: פעולה של (סקין, פריט) שכותבת את mountedSkin
+  // על התותח/הגוף ונשלחת לשרת. לכן אין "הסרת סקין": תמיד מוחלף באחר.
+
+  function resolveSkinProto() {
+    if (skinMountProto) return true;
+    if (!latestState || !D.skinMountClass || !D.skinMountFields) return false;
+    const F = D.skinMountFields;
+    const IF = D.itemFields;
+    const found = collect(latestState);
+    // שני פריטים כלשהם מספיקים לאימות; ה-ctor קורא את המזהה של השני
+    const a = found.items[0];
+    const b = found.items.find((it) => it !== a) || a;
+    if (!a) return false;
+
+    const Ctor = resolveActionCtor(D.skinMountClass, (C) => {
+      if (C.length !== 2) return false;
+      const p = new C(a, b);
+      return p[F.skin] === a && p[F.item] === b && b[IF.id] != null;
+    });
+    if (Ctor) { skinMountProto = Ctor.prototype; NS.debug.skinMountResolved = true; }
+    return !!skinMountProto;
+  }
+
+  // מחיל סקין על תותח/גוף. אם הסקין המבוקש כבר מוחל — לא משוגר כלום.
+  function applySkin(rawItem, skinId) {
+    if (!latestState) return { ok: false, error: 'garage state not captured' };
+    if (!rawItem) return { ok: false, error: 'no item given' };
+    if (skinId == null) return { ok: true, changed: false, kept: null };
+    if (!resolveSkinProto()) return { ok: false, error: 'skin action not available' };
+    const si = findStore();
+    if (!si) return { ok: false, error: 'could not reach the game store' };
+
+    const IF = D.itemFields;
+    const want = String(skinId);
+    const currentId = IF.mountedSkin ? idToString(rawItem[IF.mountedSkin]) : null;
+    if (currentId === want) return { ok: true, changed: false, kept: want };
+
+    const skin = collect(latestState).byId.get(want);
+    if (!skin) return { ok: false, error: 'skin not found in garage state: ' + want };
+    if (enumName(skin[IF.category]) !== 'SKIN') {
+      return { ok: false, error: 'item ' + want + ' is not a skin' };
+    }
+
+    try {
+      si.store[si.dispatch](buildAction(skinMountProto, [skin, rawItem]));
+      NS.debug.skinsApplied++;
+    } catch (e) {
+      NS.debug.lastError = String(e);
+      return { ok: false, error: String(e) };
+    }
+    // הדגמה של המשחק עצמו מרעננת את התצוגה אחרי השליחה; אצלנו הבחירה
+    // בפריט הבסיס היא מה שמזיז את מודל התלת-ממד.
+    const refreshed = selectItem(rawItem);
+    return {
+      ok: true, changed: true, previewRefreshed: refreshed,
+      item: rawItem[IF.name], skin: skin[IF.name],
+    };
+  }
+
   // מרכיב פריט בדרך של המשחק עצמו. needServer=false מעדכן **רק מקומית**
   // ולא שולח כלום החוצה — וזה מה שהופך את האימות לבטוח לחלוטין.
   //
@@ -1271,6 +1469,7 @@
         hasUpgrade: !!d.upgradeFields,
         hasDevices: !!d.deviceFields,
         hasResistanceActions: !!(d.resistApplyClass && d.resistUnmountClass),
+        hasDeviceActions: !!(d.deviceInsertClass && d.deviceRemoveClass),
       }));
   }
 
@@ -1316,6 +1515,9 @@
       selectActionCaptured: !!selectActionProto,
       resistApplyResolved: !!resistApplyProto,
       resistUnmountResolved: !!resistUnmountProto,
+      deviceInsertResolved: !!deviceInsertProto,
+      deviceRemoveResolved: !!deviceRemoveProto,
+      skinMountResolved: !!skinMountProto,
       store: findStore() ? NS.debug.storeFound : null,
       names: D,
       debug: NS.debug,
@@ -1500,9 +1702,146 @@
   NS.protections = protectionSnapshot;
   NS.applyProtections = applyProtections;
 
+  // ---- אוגמנטים: קונסול --------------------------------------------------
+
+  // מה מותקן על כל תותח/גוף מורכב, ומה זמין לו — כדי שיהיה מאיפה להעתיק
+  // מזהים לניסוי.
+  W.__CMB_AUGMENTS = function () {
+    if (!latestState) { console.warn('[combos] garage state not captured yet'); return null; }
+    const DF = D.deviceFields;
+    if (!DF) { console.warn('[combos] device fields were not discovered'); return null; }
+    const IF = D.itemFields;
+    const found = collect(latestState);
+
+    const rows = [];
+    const available = [];
+    for (const it of found.items) {
+      if (it[IF.mounted] !== true) continue;
+      const cat = enumName(it[IF.category]);
+      if (cat !== 'WEAPON' && cat !== 'ARMOR') continue;
+      const base = baseItemIdOf(it);
+      const inst = installedDeviceFor(it, found);
+      rows.push({
+        item: it[IF.name], itemId: idToString(it[IF.id]),
+        installed: inst ? inst[DF.name] : '—',
+        augmentId: inst ? idToString(inst[DF.id]) : null,
+      });
+      for (const d of found.devices) {
+        if (idToString(d[DF.baseItemId]) !== base) continue;
+        available.push({
+          forItem: it[IF.name], name: d[DF.name], augmentId: idToString(d[DF.id]),
+          installed: d[DF.installed] === true,
+        });
+      }
+    }
+
+    console.log('%c[combos] augments on the mounted turret/hull', 'color:#7ee787;font-weight:bold');
+    console.table(rows);
+    console.log('available for those items: ' + available.length +
+      ' (lists load lazily per item, so this can be short until you open the screen)');
+    console.table(available);
+    return { mounted: rows, available };
+  };
+
+  // ‏__CMB_TRY_AUGMENT(itemId, augmentId)  — מחיל אוגמנט על פריט
+  // ‏__CMB_TRY_AUGMENT(itemId, null)       — מסיר את האוגמנט מהפריט
+  W.__CMB_TRY_AUGMENT = function (itemId, augmentId) {
+    const raw = rawItemById(itemId);
+    if (!raw) { console.warn('[combos] item not found in state:', itemId); return null; }
+    const r = applyAugment(raw, augmentId == null ? null : augmentId);
+    if (!r.ok) { console.warn('[combos] augment failed:', r.error); return r; }
+    if (!r.changed) {
+      console.log('%c[combos] already correct — nothing dispatched (kept: ' + r.kept + ')',
+        'color:#8b949e');
+      return r;
+    }
+    console.log('%c[combos] augment applied on ' + r.item + ': removed=' + r.removed +
+      ' installed=' + r.installed, 'color:#7ee787;font-weight:bold', r);
+    setTimeout(() => {
+      const now = installedDeviceFor(rawItemById(itemId));
+      console.log('[combos] after 1s — installed augment is now: ' +
+        (now ? now[D.deviceFields.name] : 'none'));
+    }, 1000);
+    return r;
+  };
+
+  NS.applyAugment = applyAugment;
+  NS.installedAugment = function (itemId) {
+    const raw = rawItemById(itemId);
+    return raw ? installedDeviceFor(raw) : null;
+  };
+
+  // ---- צבע וסקינים: קונסול ----------------------------------------------
+  //
+  // אלה **פריטי מוסך רגילים** (קטגוריות PAINT / SKIN), כלומר הרכבתם היא
+  // בדיוק אותה פעולה של תותח או גוף — אין להם מסלול כתיבה משלהם, ולכן
+  // __CMB_TRY_NATIVE(id) הוא כל מה שדרוש. מה שכן היה חסר זה דרך לראות את
+  // המזהים כדי לנסות; זה מה שהפונקציה הזו נותנת.
+  //
+  // הסתייגות ידועה: פעולת ה"בחירה" שמרעננת את מודל התלת-ממד חלה רק על חלק
+  // מהקטגוריות. ייתכן שסקין יורכב נכון אבל המודל לא יתעדכן עד ריענון — אם
+  // כך יקרה, המענה הוא GarageSelectSkin, שכבר אותר בבאנדל.
+  W.__CMB_DECOR = function () {
+    if (!latestState) { console.warn('[combos] garage state not captured yet'); return null; }
+    const F = D.itemFields;
+    const found = collect(latestState);
+
+    // מה מורכב על התותח/גוף כרגע — כדי לסמן איזה סקין פעיל
+    const activeSkinIds = new Set();
+    for (const it of found.items) {
+      if (it[F.mounted] !== true) continue;
+      for (const f of [F.mountedSkin, F.mountedShotSkin]) {
+        const v = f ? it[f] : null;
+        if (v != null) activeSkinIds.add(idToString(v));
+      }
+    }
+
+    const pick = (cat) => found.items
+      .filter((it) => enumName(it[F.category]) === cat && it[F.owned] === true)
+      .map((it) => ({
+        name: it[F.name],
+        id: idToString(it[F.id]),
+        mounted: it[F.mounted] === true || activeSkinIds.has(idToString(it[F.id])),
+      }));
+
+    const paints = pick('PAINT');
+    const skins = pick('SKIN');
+
+    console.log('%c[combos] owned paints: ' + paints.length, 'color:#7ee787;font-weight:bold');
+    console.table(paints);
+    console.log('%c[combos] owned turret/hull skins: ' + skins.length, 'color:#7ee787;font-weight:bold');
+    console.table(skins);
+    console.log('%cPaint is an ordinary garage item — equip it with __CMB_TRY_NATIVE(id).\n' +
+      'Skins are NOT: they work like augments — __CMB_TRY_SKIN(turretOrHullId, skinId).',
+      'color:#8b949e');
+    return { paints, skins };
+  };
+
+  // ‏__CMB_TRY_SKIN('turretId', 'skinId') — מחיל סקין על תותח או גוף
+  W.__CMB_TRY_SKIN = function (itemId, skinId) {
+    const raw = rawItemById(itemId);
+    if (!raw) { console.warn('[combos] item not found in state:', itemId); return null; }
+    const r = applySkin(raw, skinId);
+    if (!r.ok) { console.warn('[combos] skin failed:', r.error); return r; }
+    if (!r.changed) { console.log('%c[combos] that skin is already applied — nothing dispatched',
+      'color:#8b949e'); return r; }
+    console.log('%c[combos] applied skin ' + r.skin + ' to ' + r.item +
+      '. 3D preview refresh: ' + (r.previewRefreshed ? 'sent' : 'NOT sent'),
+      'color:#7ee787;font-weight:bold');
+    setTimeout(() => {
+      const now = rawItemById(itemId);
+      const F = D.itemFields;
+      console.log('[combos] after 1s — mountedSkin is now: ' +
+        (now && F.mountedSkin ? idToString(now[F.mountedSkin]) : '?'));
+    }, 1000);
+    return r;
+  };
+
+  NS.applySkin = applySkin;
+
   // ---- boot -------------------------------------------------------------
   armAll();   // כיסוי מיידי עם שמות ה-seed, עד שהגילוי חוזר
   window.postMessage({ __cmb: true, dir: 'm2i', action: 'ready' }, '*');
-  console.log('[combos] garage-state hook armed. Use __CMB_READ() to print the current ' +
-    'loadout, __CMB_PROTECTIONS() for the protection slots, __CMB_STATE() for diagnostics.');
+  console.log('[combos] garage-state hook armed. Use __CMB_READ() for the current loadout, ' +
+    '__CMB_PROTECTIONS() / __CMB_AUGMENTS() for those slots, __CMB_STATE() for diagnostics.');
 })();
