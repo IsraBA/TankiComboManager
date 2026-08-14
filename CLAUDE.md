@@ -305,7 +305,6 @@ data: {
     turret:         { id, name, image, mk?, lvl? },
     turretAugment:  { id, name, image },
     turretSkin:     { id, name, image },   // decorative — not rendered/equipped yet
-    turretShotFx:   { id, name, image },   // decorative — not rendered/equipped yet
     hull:           { id, name, image, mk?, lvl? },
     hullAugment:    { id, name, image },
     hullSkin:       { id, name, image },   // decorative — not rendered/equipped yet
@@ -333,6 +332,11 @@ data: {
   `{ name, image }` per item, protections compacted (no positional nulls).
   Gen-1 entries stay valid forever; a future migration can resolve `name → id`
   against the live garage index.
+- **The turret's shot effect is deliberately not a slot.** It is readable (the
+  state reader still exposes `shotSkin` per item) but a product decision keeps it
+  out of combos entirely — not saved, not rendered, not equipped. Combos saved
+  before that decision may still carry a `turretShotFx` key; it is simply
+  ignored, which is why nothing migrates it away.
 
 ### CSS class prefix
 
@@ -383,12 +387,8 @@ The card has **two modes**, and almost every interaction rule follows from that:
   always visible (the button only appeared on hover).
 - **Skins are display-only**: `turretSkin` / `hullSkin` replace the turret/hull
   *image* on the card. They are not separately removable — removing the turret
-  takes its whole area with it (skin, augment, and shot fx), which is why
-  `removeItemFromCombo` cascades `turret → turretAugment + turretShotFx`.
-- **The shot effect is saved and equipped but deliberately not shown** on the
-  card, so it can't be cancelled on its own. It still rides along with the
-  turret (the cascade above). Re-exposing it is a one-line change in
-  `createRowsHTML` — the badge row already supports more than one badge.
+  takes its whole area with it (skin and augment), which is why
+  `removeItemFromCombo` cascades `turret → turretAugment`.
 - **Edit state lives in `ComboCardRenderer._editingCombos`** (a Set of combo
   ids), not on the card element: removing an item writes to storage and
   re-renders the whole list, which throws the element away. Keeping the flag
@@ -399,9 +399,9 @@ The card has **two modes**, and almost every interaction rule follows from that:
   SVG plus a CSS opacity swap. The opacity sits on the `<svg>`, not the button,
   because the button already animates its own opacity for the card-hover reveal
   and the two would multiply.
-- `ComboCleaner.isComboEmpty` counts paint and shot fx as real content (a combo
-  that only changes your paint is legitimate) but **not** skins, since a combo
-  with only skins left would equip nothing.
+- `ComboCleaner.isComboEmpty` counts paint as real content (a combo that only
+  changes your paint is legitimate) but **not** skins, since a combo with only
+  skins left would equip nothing.
 
 ### Language support
 
@@ -427,12 +427,25 @@ by its displayed name, click it, click Equip, wait. That is why equipping a comb
 is slow and visibly "walks" the UI. The replacement — ROADMAP feature 2, "Instant
 Combo Equipment" — reads and writes the game's own model instead.
 
-**Status: the read half is done and drives the save.** Clicking "Save Current
-Combo" now saves instantly from game state (`core/instant_saver.js` →
-`GarageBridge.readCombo()` → storage), with no tab navigation — the user never
-leaves the combos view. The DOM-scan save (`combo_saver.js`) is kept in the tree
-but wired to nothing. Nothing calls a game function or touches outbound traffic
-yet — writing (instant equip) is the next phase.
+**Status: the read half is done and drives the save; the write half works but is
+not wired to any button yet.** Clicking "Save Current Combo" saves instantly from
+game state (`core/instant_saver.js` → `GarageBridge.readCombo()` → storage), with
+no tab navigation — the user never leaves the combos view. The DOM-scan save
+(`combo_saver.js`) is kept in the tree but wired to nothing.
+
+Equipping still runs the old DOM path. The native write path lives in
+`main/garage_state.js` behind console helpers (`__CMB_TRY_NATIVE`,
+`__CMB_TRY_PROTECTIONS`, …) — **the in-progress detail, including how the game's
+own actions are dispatched and every anchor involved, is in
+`docs/INSTANT_EQUIP_STATUS.md`.** That file is the working note for this feature
+and gets deleted when it lands.
+
+The short version of the write path: every garage change is a Redux action, and
+those actions come in two layers — a public *thunk* the UI dispatches, and a
+*low-level* action the reducer plus a server-sending subscriber consume. We build
+and dispatch the low-level ones, because only they are subscribed and therefore
+locatable at runtime by class name. Anything the thunk does on top (freeing a
+protection slot, loading an item's devices) we do ourselves.
 
 Decisions already made for the write half:
 
@@ -440,8 +453,7 @@ Decisions already made for the write half:
   verify by re-reading the state (the reader is the verifier) → on failure
   (e.g. a bundle broke discovery) fall back to `combo_loader.js`'s DOM path,
   which gen-2 combos still support via their name/image snapshot. Known
-  degradation: the DOM path can't equip the decorative slots (paint, skins,
-  shot fx).
+  degradation: the DOM path can't equip the decorative slots (paint, skins).
 - The save side deliberately has NO such fallback (user's call): if the state
   isn't captured, the save button warns in console and saves nothing.
 
@@ -481,8 +493,10 @@ How it works:
 Confirmed live: turret, hull, drone, grenade, all four protections and the paint
 read correctly (names, ids, slot order, Mk, LVL, images, and the mounted item's
 augment). Grenade's category is **`BAZOOKA`**. The read also covers things the
-DOM version never did — paint, turret/hull **skins** and the turret's **shot
-effect** — so those can become combo slots cheaply when the write half lands.
+DOM version never did — paint and turret/hull **skins** — so those can become
+combo slots cheaply when the write half lands. It reads the turret's **shot
+effect** too, but that one is deliberately not a combo slot (see the gen-2
+data-shape notes above).
 
 ### Cross-build self-location (`isolated/detect.js`)
 
@@ -513,6 +527,12 @@ inferring it from code shape. Anchors:
   real call sites (`<preview>.<method>()`) and from the accessor that reflection
   names `"url"`. They agree on every build tested; disagreement sets
   `urlMethodAmbiguous`.
+- **the write actions** — the game's Redux actions are data classes too, so
+  `dataClass()` reads each one's class name *and* field map straight out of its
+  `toString`. `GarageResistanceUnMount`, `GarageApplyResistanceMount`,
+  `GarageResistanceMount` and `GarageItemMounted` are all discovered this way.
+  The class **name** matters as much as the fields here: the reducer branches on
+  `instanceof`, so building an action means finding the real constructor.
 
 Everything after the core four is **optional**: if one of these anchors breaks,
 detection still succeeds and only that column goes blank, rather than the whole
@@ -791,8 +811,10 @@ chrome.storage.local.get(['savedCombos'], r => console.log(r.savedCombos))  // I
 // combos — the garage-state hook (MAIN world, page console)
 __CMB_READ()          // print the current loadout as read from game state
 __CMB_STATE()         // captured?, discovered names, debug counters
+__CMB_PROTECTIONS()   // the 4 protection slots + every owned module, with ids
 __CMB.read()          // the same read, as a plain object
 __CMB.state()         // the captured raw game state object (for poking around)
+// the write probes (not wired to any button) are in docs/INSTANT_EQUIP_STATUS.md
 
 // translator
 __CT_STATE()          // settings + discovered names + debug counters + capture status

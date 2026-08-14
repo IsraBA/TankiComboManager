@@ -35,7 +35,7 @@
   // (שדווקא כן מלא), וכל השדות החדשים יחזרו null. זה בדיוק הבאג שקרה כשנוספו
   // modificationFields/urlMethod/upgradeFields/deviceFields: הבאנדל לא התחלף,
   // ולכן ה-cache הישן והחסר נטען במקום גילוי מחודש.
-  const CACHE_VERSION = 2;
+  const CACHE_VERSION = 7;
   const CACHE_PREFIX = 'garageConstants:v' + CACHE_VERSION + ':';
 
   // ניקוי מפתחות מגרסאות סכמה קודמות (וגם של באנדלים ישנים מאותה משפחה),
@@ -106,13 +106,159 @@
     return map;
   }
 
-  // מאתר data class לפי השם הסמנטי שלו ומחזיר את מפת השדות שלו.
-  // הלכידה כוללת כבר את השדה הראשון (התבנית עוצרת מיד אחרי הסוגר הפותח),
-  // ולכן אפשר להעביר את הגוף כמו שהוא.
-  function dataClassFields(src, name) {
-    const m = new RegExp('[\\w$]+\\([\\w$]+\\)\\.toString=function\\(\\)\\{return"' +
+  // מאתר data class לפי השם הסמנטי שלו ומחזיר את **שם המחלקה הממוזער** ואת
+  // מפת השדות שלו. הלכידה כוללת כבר את השדה הראשון (התבנית עוצרת מיד אחרי
+  // הסוגר הפותח), ולכן אפשר להעביר את הגוף כמו שהוא.
+  // שם המחלקה נדרש לכל פעולה שנרצה **לבנות** בזמן ריצה: ה-reducer של המשחק
+  // בודק instanceof, ולכן צריך את המחלקה עצמה ולא רק את שמות השדות.
+  function dataClass(src, name) {
+    const m = new RegExp('[\\w$]+\\(([\\w$]+)\\)\\.toString=function\\(\\)\\{return"' +
       escapeRe(name) + '\\((.*?)"\\}').exec(src);
-    return m ? parseFields(m[1]) : null;
+    return m ? { cls: m[1], fields: parseFields(m[2]) } : null;
+  }
+  function dataClassFields(src, name) {
+    const d = dataClass(src, name);
+    return d ? d.fields : null;
+  }
+
+  // --- גילוי מסלול השליחה לשרת (הרכבה מיידית, בלי ריצוד) ---
+  //
+  // כדי להרכיב פריט המשחק שולח פקודת mountItem לשרת, והשרת מחזיר אישור
+  // שמעדכן את ה-state (ולכן את ה-UI). אנחנו רוצים לקרוא לאותה פונקציית
+  // שליחה בדיוק — לא לזייף פרוטוקול: המשחק מקודד, מצפין ושולח בעצמו.
+  //
+  // שני אובייקטים נדרשים, שניהם נלכדים ב-Object.prototype trap:
+  //   * ה-proxy של המוסך — עליו יושבת מתודת השליחה של mountItem.
+  //   * ה-Space — מרשם הישויות, ממיר מזהה פריט לישות הרשת שהפקודה מקבלת.
+  //
+  // העוגן ל-proxy הוא **ה-hash של הפקודה** (‎595500642/251373796‎). הוא נגזר
+  // משם הפקודה ולכן קבוע בין בילדים — אומת שהוא מופיע בדיוק פעם אחת בכל
+  // אחד מ-8 הבאנדלים. העוגן ל-Space הוא מחרוזת שגיאה מילולית ששורדת
+  // מיניפיקציה ("has been unloaded from space").
+  // stateFields/itemFields מגיעים מ-discover() — נדרשים לעוגן פעולת הבחירה
+  function discoverSend(src, stateFields, itemFields) {
+    const out = {};
+
+    // ה-ctor של ה-proxy הוא זה שמכיל את ה-hash של mountItem
+    const hm = /new [\w$]+\(595500642,\s*251373796\)/.exec(src);
+    if (!hm) return null;
+    const ctorStart = src.lastIndexOf('function ', hm.index);
+    const ctorHead = /^function ([\w$]+)\(\)\{/.exec(src.slice(ctorStart, hm.index + 10));
+    if (!ctorHead) return null;
+    out.proxyClass = ctorHead[1];
+
+    const ctorBody = src.slice(ctorStart, src.indexOf('}', hm.index));
+    const fields = [...ctorBody.matchAll(/this\.([\w$]+_1)=/g)].map((m) => m[1]);
+    if (!fields.length) return null;
+    out.proxyTrapField = fields[fields.length - 1];   // אחרון => מאוכלס במלואו
+
+    const hashField = /this\.([\w$]+_1)=new [\w$]+\(595500642,\s*251373796\)/.exec(ctorBody);
+    if (!hashField) return null;
+
+    // מתודת השליחה = זו שבונה פקודה עם ה-hash של mountItem
+    const sm = new RegExp(
+      '[\\w$]+\\(' + escapeRe(out.proxyClass) + '\\)\\.([\\w$]+)=function\\(t\\)\\{' +
+      'this\\.([\\w$]+_1)\\.[\\w$]+\\(this\\.([\\w$]+_1),t\\);' +
+      'var n=new [\\w$]+\\([^,]*,this\\.' + escapeRe(hashField[1]) + ',this\\.\\3\\)').exec(src);
+    if (!sm) return null;
+    out.proxyMountMethod = sm[1];
+    out.proxyMethods = [...src.matchAll(new RegExp(
+      '[\\w$]+\\(' + escapeRe(out.proxyClass) + '\\)\\.([\\w$]+)=function', 'g'))].map((m) => m[1]);
+
+    // השדה שמקשר את ה-proxy חזרה לקונטרולר של המוסך (שמחזיק את ה-store)
+    const back = new RegExp('=[\\w$]+\\([\\w$]+\\(' + escapeRe(out.proxyClass) + '\\)\\),' +
+      escapeRe(out.proxyClass) + '\\.call\\([\\w$]+\\),[\\w$]+\\.([\\w$]+_1)=[\\w$]+,').exec(src);
+    if (back) out.proxyCcField = back[1];
+
+    // שדות **פעולת ההרכבה הפנימית** של המשחק. היא זו שעושה את שני הדברים:
+    // מעדכנת את ה-state המקומי *וגם* מפעילה את השליחה לשרת — ולכן היא היעד
+    // האמיתי, במקום התזמור הידני שלנו.
+    // העוגן: ה-handler של הקונטרולר, שמזוהה דרך שם פקודת ההרכבה שגילינו:
+    //   function(n){ if(n.<needServer>){ var i=…(…(n.<item>.<id>)); …<MOUNT>(i) } … }
+    const h = new RegExp(
+      'function\\((\\w+)\\)\\{if\\(\\1\\.([\\w$]+_1)\\)\\{var (\\w+)=[\\w$]+\\(' +
+      '[\\w$]+\\(\\)\\.[\\w$]+\\(\\)\\.[\\w$]+\\(\\)\\.[\\w$]+\\(\\1\\.([\\w$]+_1)\\.[\\w$]+_1\\)\\);' +
+      '[\\w$]+\\.[\\w$]+\\(\\)\\.' + escapeRe(out.proxyMountMethod) + '\\(\\3\\)').exec(src);
+    if (h) {
+      out.actionNeedServerField = h[2];
+      out.actionItemField = h[4];
+      // אימות צולב: קיים ctor עם בדיוק שני השדות האלה ובסדר הזה
+      const ctor = new RegExp('function ([\\w$]+)\\(t,n\\)\\{this\\.' + escapeRe(out.actionItemField) +
+        '=t,this\\.' + escapeRe(out.actionNeedServerField) + '=n\\}').exec(src);
+      if (ctor) out.mountActionClass = ctor[1];
+      else { delete out.actionNeedServerField; delete out.actionItemField; }
+    }
+
+    // **פעולת "בחר פריט במוסך"** — היא זו שמעדכנת את מודל התלת-ממד במוסך,
+    // ולא ההרכבה. בזרימה הרגילה במשחק הלחיצה על הפריט בוחרת אותו (והמודל
+    // מתעדכן), ורק אחר כך ה-Equip מרכיב. לכן אחרי הרכבה תכנותית צריך גם
+    // לשגר בחירה, אחרת המודל נשאר על הפריט הקודם.
+    // עוגן: thunk עם שדה יחיד, שגופו מאתר את הפריט לפי מזהה ובודק קטגוריה.
+    if (itemFields.category && stateFields.items) {
+      const head = new RegExp(
+        'function ([\\w$]+)\\(t\\)\\{var n;[\\w$]+\\.call\\(this,\\(n=t,function\\(t\\)\\{var i;' +
+        'if\\(null!=n\\)\\{var r=t\\.[\\w$]+_1\\.[\\w$]+_1\\.' + escapeRe(stateFields.items) +
+        '\\.[\\w$]+\\(n\\);\\(\\(i=r\\.' + escapeRe(itemFields.category) + '\\)\\.equals\\(').exec(src);
+      if (head) {
+        const tail = /\)\),this\.([\w$]+_1)=t\}/.exec(src.slice(head.index, head.index + 1200));
+        if (tail) {
+          out.selectActionClass = head[1];
+          out.selectItemIdField = tail[1];
+        }
+      }
+    }
+
+    // ה-Space: מזוהה לפי הודעת השגיאה של מתודת ה"שלוף-או-זרוק"
+    const sa = /([\w$]+)\(([\w$]+)\)\.([\w$]+)=function\(t\)\{var n,i=this\.([\w$]+)\(t\);if\(null==i\)throw n=this\.([\w$]+_1)\.h1\(t\)\?"Object "\+t\.toString\(\)\+" has been unloaded from space "/.exec(src);
+    if (!sa) return null;
+    out.spaceClass = sa[2];
+    out.spaceEnsureMethod = sa[3];
+    out.spaceLookupMethod = sa[4];   // מזהה -> ישות
+
+    // שם המחלקה חוזר בכמה מודולים — בוחרים את ההגדרה הקרובה ביותר לעוגן
+    const ctorRe = new RegExp('function ' + escapeRe(out.spaceClass) + '\\([^)]*\\)\\{', 'g');
+    let best = null, bestDist = Infinity, mm;
+    while ((mm = ctorRe.exec(src)) !== null) {
+      const d = Math.abs(mm.index - sa.index);
+      if (d < bestDist) { bestDist = d; best = mm; }
+    }
+    if (!best) return null;
+    const sBody = src.slice(best.index, src.indexOf('}function', best.index));
+    const sFields = [...sBody.matchAll(/this\.([\w$]+_1)=/g)].map((m) => m[1]);
+    if (!sFields.length) return null;
+    out.spaceTrapField = sFields[sFields.length - 1];
+
+    // --- מנגנון ההקשר (context stack) ---
+    // פקודה יוצאת ממוענת לישות שנמצאת "בהקשר" ברגע השליחה. המשחק תמיד עוטף:
+    //   ctx.push(ישות) -> שליחה -> ctx.pop()
+    // ובלי זה נזרקת השגיאה "GameObject in context is null" — שהיא גם העוגן
+    // המושלם לגילוי, כי היא מחרוזת מילולית ששורדת מיניפיקציה.
+    const g = /([\w$]+)\(([\w$]+)\)\.([\w$]+)=function\(\)\{var t=this\.([\w$]+_1);if\(null==t\)throw [\w$]+\("GameObject in context is null"\)/.exec(src);
+    if (!g) return out;
+    const helper = g[1];
+    out.ctxClass = g[2];
+    out.ctxGetMethod = g[3];
+    out.ctxCurrentField = g[4];
+
+    const push = new RegExp(escapeRe(helper) + '\\(' + escapeRe(out.ctxClass) +
+      '\\)\\.([\\w$]+)=function\\(t\\)\\{this\\.([\\w$]+_1)\\.[\\w$]+\\(this\\.' +
+      escapeRe(out.ctxCurrentField) + '\\),this\\.' + escapeRe(out.ctxCurrentField) + '=t\\}').exec(src);
+    if (!push) return out;
+    out.ctxPushMethod = push[1];
+    const stackField = push[2];
+
+    const pop = new RegExp(escapeRe(helper) + '\\(' + escapeRe(out.ctxClass) +
+      '\\)\\.([\\w$]+)=function\\(\\)\\{if\\(this\\.' + escapeRe(stackField) + '\\.[\\w$]+\\(\\)\\)throw').exec(src);
+    if (!pop) return out;
+    out.ctxPopMethod = pop[1];
+
+    const ctxCtor = new RegExp('function ' + escapeRe(out.ctxClass) + '\\(\\)\\{[\\w$]+=this,this\\.' +
+      escapeRe(stackField) + '=[^;]*?\\}').exec(src);
+    if (!ctxCtor) return out;
+    const cFields = [...ctxCtor[0].matchAll(/this\.([\w$]+_1)=/g)].map((m) => m[1]);
+    out.ctxTrapField = cFields[cFields.length - 1];
+
+    return out;
   }
 
   function discover(src) {
@@ -189,10 +335,56 @@
     const deviceFields = dataClassFields(src, 'GarageDevice');
     if (deviceFields && deviceFields.installed) out.deviceFields = deviceFields;
 
+    // --- פעולות ההגנות (Resistance modules) ---
+    //
+    // גם פעולות ה-Redux של המשחק הן data classes, ולכן ה-toString שלהן הוא
+    // עוגן ישיר בדיוק כמו של Garage/GarageItem — אין כאן שום זיהוי מבני.
+    //
+    // הטקסונומיה (אומתה על 8/8 באנדלים): לכל פעולה יש **thunk ציבורי** שהוא
+    // מה שה-UI משגר, ומתחתיו **פעולה "נמוכה"** שהריוסר צורך ושאליה מנוי גם
+    // ה-subscriber ששולח לשרת:
+    //
+    //   GarageResistanceMount(resistance, index)   [thunk]
+    //        -> GarageResistanceUnMount(מה שהיה בחריץ)      [נמוכה]
+    //        -> GarageApplyResistanceMount(resistance, index) [נמוכה]
+    //
+    // אנחנו משגרים את הנמוכות. הסיבה מעשית: רק הן **מנויות**, והרישום מחזיק
+    // KClass שמצביע על הבנאי — ולכן רק אותן אפשר לאתר בזמן ריצה לפי שם.
+    // (ה-thunks אינם מנויים בשום מקום, ולכן אינם נגישים מגרף האובייקטים.)
+    // שמות ה-thunks נשמרים בכל זאת — לתיעוד ולשימוש עתידי אם ייתפסו במלכודת.
+    const resistUn = dataClass(src, 'GarageResistanceUnMount');
+    if (resistUn && resistUn.fields.resistance && resistUn.fields.needServerUnmount) {
+      out.resistUnmountClass = resistUn.cls;
+      out.resistUnmountFields = resistUn.fields;
+    }
+    const resistApply = dataClass(src, 'GarageApplyResistanceMount');
+    if (resistApply && resistApply.fields.resistance &&
+        resistApply.fields.index && resistApply.fields.needServerMount) {
+      out.resistApplyClass = resistApply.cls;
+      out.resistApplyFields = resistApply.fields;
+    }
+    const resistMount = dataClass(src, 'GarageResistanceMount');
+    if (resistMount && resistMount.fields.resistance && resistMount.fields.index) {
+      out.resistMountClass = resistMount.cls;
+      out.resistMountFields = resistMount.fields;
+    }
+    // ה-thunk של הרכבת פריט רגיל. הוא עושה שלושה דברים מעבר לפעולה הנמוכה
+    // שאנחנו כבר משגרים: מכבד את מגבלת ההחלפה (delayMountTimeMs), משגר את
+    // הפעולה הנמוכה, ולתותח/גוף גם טוען את רשימת האוגמנטים של הפריט.
+    const mountThunk = dataClass(src, 'GarageItemMounted');
+    if (mountThunk && mountThunk.fields.item && mountThunk.fields.needServerMount) {
+      out.mountThunkClass = mountThunk.cls;
+      out.mountThunkFields = mountThunk.fields;
+    }
+
     // כתובת התמונה: אובייקט ה-preview לא מחזיק מחרוזת אלא מתודה שבונה כתובת
     // CDN. מאתרים את שם המתודה משימוש אמיתי בקוד (`<preview>.<method>()`),
     // ומצליבים מול ה-accessor שהריפלקשן קורא לו "url" — שתי דרכים עצמאיות
     // שמסכימות בכל הבילדים שנבדקו.
+    // מסלול השליחה לשרת (להרכבה מיידית). אופציונלי כמו שאר התוספות.
+    const send = discoverSend(src, stateFields, itemFields);
+    if (send) Object.assign(out, send);
+
     if (itemFields.preview) {
       const counts = {};
       const useRe = new RegExp('\\.' + escapeRe(itemFields.preview) + '\\.([\\w$]+)\\(\\)', 'g');

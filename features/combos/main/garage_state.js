@@ -44,9 +44,12 @@
 // כ-SEED הוא רק רשת ביטחון לבילד האחרון הידוע, שנותנת כיסוי מיידי בזמן
 // שהגילוי רץ. הגילוי דורס אותו.
 //
-// המודול הזה הוא **קריאה בלבד** — הוא לא קורא לשום פונקציה של המשחק ולא נוגע
-// בתעבורה יוצאת. (המתודות היחידות שכן נקראות הן getters טהורים של כתובת
-// תמונה ושל רמת מקסימום, ותמיד בתוך try.)
+// הקריאה עצמה היא קריאה בלבד: היא לא קוראת לשום פונקציה של המשחק ולא נוגעת
+// בתעבורה יוצאת (המתודות היחידות שכן נקראות הן getters טהורים של כתובת תמונה
+// ושל רמת מקסימום, ותמיד בתוך try). בהמשך הקובץ יש גם **מסלול כתיבה** —
+// הרכבת פריט והרכבת/הסרת הגנות — שכולו עובד ע"י שיגור הפעולות של המשחק
+// עצמו דרך ה-store שלו. הוא עדיין לא מחווט לשום כפתור; הכניסה אליו היא
+// דרך פונקציות הקונסול בסוף הקובץ.
 
 (function () {
   'use strict';
@@ -104,10 +107,50 @@
       previewImage: 'sra_1',
     },
     urlMethod: 'r92',
+    // מסלול השליחה לשרת (הרכבה מיידית) — ראה isolated/detect.js
+    proxyClass: 'M_',
+    proxyTrapField: 'ccn_1',
+    proxyMountMethod: 'ecn',
+    proxyMethods: ['ecn', 'fcn', 'gcn', 'hcn'],
+    spaceClass: 'Vr',
+    spaceTrapField: 'y7p_1',
+    spaceLookupMethod: 'b7n',
+    spaceEnsureMethod: 'x7o',
+    ctxClass: 'zi',
+    ctxTrapField: 'e7j_1',
+    ctxPushMethod: 'f7j',
+    ctxGetMethod: 'g7j',
+    ctxPopMethod: 'h7j',
+    ctxCurrentField: 'd7j_1',
+    proxyCcField: 'dcn_1',
+    mountActionClass: '$U',
+    actionItemField: 'vrd_1',
+    actionNeedServerField: 'wrd_1',
+    selectActionClass: 'KB',
+    selectItemIdField: 'brc_1',
+    // פעולות ההגנות. הנמוכות (apply/unmount) הן מה שאנחנו משגרים; שמות
+    // ה-thunks נשמרים לתיעוד. ראה isolated/detect.js להסבר הטקסונומיה.
+    resistApplyClass: 'FU',
+    resistApplyFields: { resistance: 'kre_1', index: 'lre_1', needServerMount: 'mre_1' },
+    resistUnmountClass: 'QB',
+    resistUnmountFields: { resistance: 'mrc_1', needServerUnmount: 'nrc_1' },
+    resistMountClass: 'tU',
+    resistMountFields: { resistance: 'prc_1', index: 'qrc_1' },
+    mountThunkClass: 'JB',
+    mountThunkFields: { item: 'jrc_1', needServerMount: 'krc_1' },
   };
 
   let D = SEED;            // מפת השמות הפעילה
   let latestState = null;  // מופע ה-state האחרון שנתפס
+  let garageProxy = null;  // ה-proxy של המוסך — עליו מתודת שליחת mountItem
+  let space = null;        // מרשם הישויות — ממיר מזהה פריט לישות רשת
+  let ctx = null;          // מחסנית ההקשר — ממענת את הפקודה היוצאת
+  let garageObject = null; // ישות המוסך, שאליה הפקודה ממוענת (נמצאת פעם אחת)
+  let mountActionProto = null;  // הפרוטוטייפ של פעולת ההרכבה הפנימית
+  let selectActionProto = null; // הפרוטוטייפ של פעולת "בחר פריט" (מרעננת את מודל התלת-ממד)
+  let resistApplyProto = null;  // GarageApplyResistanceMount — הרכבת הגנה בחריץ
+  let resistUnmountProto = null;// GarageResistanceUnMount — הסרת הגנה
+  let storeInfo = null;         // {store, dispatch} — לשיגור הפעולה
 
   // רשימת שדות ה-state, מחושבת מראש. ה-setter של ה-trap הוא נתיב חם (הוא רץ
   // על כל אובייקט במשחק שכותב לשדה באותו שם ממוזער), ולכן אסור שיקצה מערך חדש
@@ -133,6 +176,21 @@
 
   NS.debug = {
     discovered: false,
+    proxyCaptured: false,
+    spaceCaptured: false,
+    ctxCaptured: false,
+    garageObjectFound: false,
+    garageObjectSource: null,
+    mountActionCaptured: false,
+    mountActionSource: null,
+    selectActionCaptured: false,
+    selectsSent: 0,
+    storeFound: null,
+    mountsSent: 0,
+    resistApplyResolved: false,
+    resistUnmountResolved: false,
+    resistMountsSent: 0,
+    resistUnmountsSent: 0,
     captures: 0,
     reads: 0,
     lastReadMs: 0,
@@ -257,10 +315,33 @@
     return true;
   }
 
-  const armed = new Set();
-  function armTrap(prop) {
+  // ה-proxy של המוסך: מזוהה לפי מתודות השליחה שעל הפרוטוטייפ שלו.
+  function looksLikeProxy(o) {
+    if (!o || typeof o !== 'object' || !D.proxyMountMethod) return false;
+    const proto = Object.getPrototypeOf(o);
+    if (!proto) return false;
+    for (const m of (D.proxyMethods || [D.proxyMountMethod])) {
+      if (typeof proto[m] !== 'function') return false;
+    }
+    return true;
+  }
+
+  // ה-Space: מזוהה לפי מתודת החיפוש ומתודת ה"שלוף-או-זרוק".
+  function looksLikeSpace(o) {
+    if (!o || typeof o !== 'object' || !D.spaceLookupMethod) return false;
+    const proto = Object.getPrototypeOf(o);
+    if (!proto) return false;
+    return typeof proto[D.spaceLookupMethod] === 'function' &&
+           typeof proto[D.spaceEnsureMethod] === 'function';
+  }
+
+  // מלכודת גנרית: כל שדה מקבל בודק ומטפל משלו. השדות שונים זה מזה, ולכן
+  // אין התנגשות; הבדיקה המבנית היא מה שמונע לכידה של אובייקט זר שבמקרה
+  // כותב לשדה באותו שם ממוזער.
+  const armed = new Map();
+  function armTrap(prop, check, onCapture) {
     if (!prop || armed.has(prop)) return;
-    armed.add(prop);
+    armed.set(prop, true);
     try {
       Object.defineProperty(W.Object.prototype, prop, {
         configurable: true, enumerable: false,
@@ -271,14 +352,172 @@
             value: v, writable: true, configurable: true, enumerable: true,
           });
           try {
-            if (looksLikeState(this)) {
-              latestState = this;
-              NS.debug.captures++;
-            }
+            if (check(this)) onCapture(this);
           } catch (e) { NS.debug.lastError = String(e); }
         },
       });
     } catch (e) { NS.debug.lastError = String(e); }
+  }
+
+  // מחסנית ההקשר: מזוהה לפי שלוש המתודות push/get/pop שעל הפרוטוטייפ.
+  function looksLikeCtx(o) {
+    if (!o || typeof o !== 'object' || !D.ctxPushMethod) return false;
+    const proto = Object.getPrototypeOf(o);
+    if (!proto) return false;
+    return typeof proto[D.ctxPushMethod] === 'function' &&
+           typeof proto[D.ctxGetMethod] === 'function' &&
+           typeof proto[D.ctxPopMethod] === 'function';
+  }
+
+  // התקנת כל המלכודות לפי מפת השמות הפעילה
+  function armAll() {
+    armTrap(D.trapField, looksLikeState, (o) => {
+      latestState = o;
+      NS.debug.captures++;
+      // מצב המוסך השתנה — סימן טוב לכך שישות המוסך נמצאת עכשיו בהקשר
+      noteCtxCandidate();
+    });
+    armTrap(D.proxyTrapField, looksLikeProxy, (o) => {
+      garageProxy = o;
+      NS.debug.proxyCaptured = true;
+      wrapProxyForLearning(o);
+    });
+    armTrap(D.spaceTrapField, looksLikeSpace, (o) => {
+      space = o;
+      NS.debug.spaceCaptured = true;
+    });
+    armTrap(D.ctxTrapField, looksLikeCtx, (o) => {
+      ctx = o;
+      NS.debug.ctxCaptured = true;
+    });
+    // תבנית פעולת ההרכבה — נלכדת בפעם הראשונה שהמשחק מרכיב פריט בעצמו
+    armTrap(D.actionNeedServerField, looksLikeMountAction, (o) => {
+      if (mountActionProto) return;
+      mountActionProto = Object.getPrototypeOf(o);
+      NS.debug.mountActionCaptured = true;
+      NS.debug.mountActionSource = 'trapped-on-real-mount';
+      console.log('%c[combos] captured the game\'s mount action — instant equip is now available.',
+        'color:#7ee787;font-weight:bold');
+    });
+    // תבנית פעולת הבחירה — נלכדת כשהמשתמש לוחץ על פריט כלשהו במוסך.
+    // ה-check גם רושם אילו מחלקות כותבות לשדה הזה, כדי שאם הזיהוי נכשל
+    // נדע מיד מה כן עובר שם (ראה __CMB_DIAG).
+    armTrap(D.selectItemIdField, (o) => {
+      const n = ctorNameOf(o);
+      if (n && selectTrapSeen.size < 30) {
+        selectTrapSeen.set(n, (selectTrapSeen.get(n) || 0) + 1);
+      }
+      return looksLikeSelectAction(o);
+    }, (o) => {
+      if (selectActionProto) return;
+      selectActionProto = Object.getPrototypeOf(o);
+      NS.debug.selectActionCaptured = true;
+      console.log('%c[combos] captured the game\'s select action — 3D preview will now follow.',
+        'color:#7ee787;font-weight:bold');
+    });
+  }
+
+  // ---- איתור ישות המוסך ------------------------------------------------
+  //
+  // הפקודה היוצאת ממוענת לישות שנמצאת בהקשר ברגע השליחה — ישות המוסך.
+  // חשוב להבין למה אי אפשר "לחפש" אותה: ה-proxy הוא **סינגלטון משותף**
+  // (ה-ctor שלו לא מקבל דבר מלבד קבועי hash), הוא לא מחובר לשום ישות,
+  // וכל המיעון נעשה דרך ההקשר. כלומר אין קשר ישיר proxy->ישות לחפש.
+  //
+  // לכן לומדים מהמשחק עצמו, בשתי דרכים משלימות:
+  //   1. **ודאית** — עוטפים את מתודות השליחה של ה-proxy. כשהמשחק שולח
+  //      פקודת מוסך כלשהי, מה שנמצא בהקשר באותו רגע הוא בהגדרה הישות
+  //      הנכונה. זה המקור המועדף.
+  //   2. **הסתברותית** — מונים איזו ישות נמצאת בהקשר כשמצב המוסך משתנה.
+  //      שינויי מצב מוסך מגיעים כמעט תמיד מפקודות מוסך נכנסות, שהמסגרת
+  //      דוחפת עבורן את ישות המוסך. הישות השכיחה ביותר היא זו.
+  //
+  // מועמד נחשב "ישות" רק אם הפרוטוטייפ שלו זהה לזה של ישות פריט ידועה
+  // (מתקבלת מחיפוש במרשם) — בדיקה מדויקת שלא תלויה בשום שם ממוזער.
+  const selectTrapSeen = new Map();  // שם מחלקה -> כמה פעמים כתבה לשדה הבחירה
+  const ctxCandidates = new Map();   // ישות -> מספר פעמים שנראתה בהקשר
+  let definitiveGarageObject = null; // מהמקור הוודאי (עטיפת ה-proxy)
+  let gameObjectProto = null;        // הפרוטוטייפ של ישות, לזיהוי מועמדים
+
+  function currentCtxObject() {
+    try {
+      return ctx && D.ctxCurrentField ? ctx[D.ctxCurrentField] : null;
+    } catch (e) { return null; }
+  }
+
+  // לומדים את הפרוטוטייפ של ישות מתוך ישות אמיתית של פריט כלשהו
+  function learnGameObjectProto() {
+    if (gameObjectProto || !space || !latestState) return gameObjectProto;
+    try {
+      const F = D.itemFields;
+      const items = collect(latestState).items;
+      for (const it of items) {
+        const ent = space[D.spaceLookupMethod](it[F.id]);
+        if (ent && typeof ent === 'object') {
+          gameObjectProto = Object.getPrototypeOf(ent);
+          break;
+        }
+      }
+    } catch (e) { NS.debug.lastError = String(e); }
+    return gameObjectProto;
+  }
+
+  function isGameObject(o) {
+    return !!o && typeof o === 'object' && gameObjectProto != null &&
+           Object.getPrototypeOf(o) === gameObjectProto;
+  }
+
+  // נרשם בכל פעם שמצב המוסך משתנה — מונה את הישות שבהקשר
+  function noteCtxCandidate() {
+    const o = currentCtxObject();
+    if (!o || typeof o !== 'object') return;
+    ctxCandidates.set(o, (ctxCandidates.get(o) || 0) + 1);
+    if (ctxCandidates.size > 40) {   // תקרה, שלא נחזיק הפניות לנצח
+      const weakest = [...ctxCandidates.entries()].sort((a, b) => a[1] - b[1])[0];
+      if (weakest) ctxCandidates.delete(weakest[0]);
+    }
+  }
+
+  function findGarageObject() {
+    if (definitiveGarageObject) {
+      NS.debug.garageObjectSource = 'proxy-call';
+      return definitiveGarageObject;
+    }
+    learnGameObjectProto();
+    let best = null, bestCount = 0;
+    for (const [o, n] of ctxCandidates) {
+      if (!isGameObject(o)) continue;
+      if (n > bestCount) { best = o; bestCount = n; }
+    }
+    if (best) {
+      NS.debug.garageObjectSource = 'context-frequency(' + bestCount + ')';
+      return best;
+    }
+    return null;
+  }
+
+  // עוטפים את מתודות השליחה של ה-proxy כדי ללמוד את הישות הנכונה בוודאות
+  function wrapProxyForLearning(proxy) {
+    for (const m of (D.proxyMethods || [])) {
+      try {
+        const proto = Object.getPrototypeOf(proxy);
+        const orig = proto[m];
+        if (typeof orig !== 'function') continue;
+        Object.defineProperty(proxy, m, {
+          configurable: true, writable: true, enumerable: false,
+          value: function () {
+            try {
+              const o = currentCtxObject();
+              if (o && typeof o === 'object') {
+                definitiveGarageObject = o;
+                NS.debug.garageObjectFound = true;
+              }
+            } catch (e) { /* לא מפריעים למשחק */ }
+            return orig.apply(this, arguments);
+          },
+        });
+      } catch (e) { NS.debug.lastError = String(e); }
+    }
   }
 
   // ---- איסוף הפריטים והאוגמנטים -----------------------------------------
@@ -458,11 +697,10 @@
     combo.protection.sort((a, b) => (a.mountIndex || 0) - (b.mountIndex || 0));
     combo.turretAugment = combo.turret ? combo.turret.augment : null;
     combo.hullAugment = combo.hull ? combo.hull.augment : null;
-    // סקינים ואפקט ירייה — דקורטיביים, נקראים מהתותח/גוף המורכבים.
-    // (ברמת הפריט השדה נקרא shotSkin — כשם הקונספט במשחק, SKINS_SHOT;
-    //  ברמת הקומבו השם המוצרי הוא turretShotFx.)
+    // סקינים — דקורטיביים, נקראים מהתותח/גוף המורכבים.
+    // אפקט הירייה (shotSkin ברמת הפריט) נקרא ונשאר זמין ב-res.mounted, אבל
+    // **אינו חריץ בקומבו** — החלטה מוצרית: הוא לא נשמר, לא מוצג ולא מוחל.
     combo.turretSkin = combo.turret ? combo.turret.skin : null;
-    combo.turretShotFx = combo.turret ? combo.turret.shotSkin : null;
     combo.hullSkin = combo.hull ? combo.hull.skin : null;
 
     const t1 = (W.performance && W.performance.now) ? W.performance.now() : Date.now();
@@ -508,7 +746,6 @@
       'color:#7ee787;font-weight:bold');
     push('turret', c.turret);
     push('turret skin', c.turretSkin);
-    push('turret shot fx', c.turretShotFx);
     push('hull', c.hull);
     push('hull skin', c.hullSkin);
     push('grenade', c.grenade);
@@ -533,13 +770,497 @@
     console.groupEnd();
   }
 
+  // ---- שיגור פעולת ההרכבה הפנימית של המשחק ------------------------------
+  //
+  // זה היעד האמיתי: הפעולה הזו עושה את **שני** הדברים — מעדכנת את ה-state
+  // המקומי (ולכן את המסך) *וגם* מפעילה את השליחה לשרת עם ההקשר הנכון.
+  // כלומר במקום התזמור הידני שלנו (הקשר -> שליחה -> וה-UI נשאר ישן),
+  // קריאה אחת שמתנהגת בדיוק כמו לחיצה על Equip במשחק.
+  //
+  // המכשול היחיד: אי אפשר לבנות אובייקט של מחלקה שיושבת בתוך המודול הסגור
+  // של המשחק — ה-reducer בודק `instanceof`. הפתרון: להשיג **מופע אחד** של
+  // הפעולה, ומאז ליצור עוד כמותו ע"י קריאה לבנאי דרך הפרוטוטייפ שלו.
+  // המופע נלכד ע"י מלכודת על שדה ה-ctor שלה, כלומר בפעם הראשונה שהמשחק
+  // מרכיב פריט בעצמו.
+
+  function looksLikeMountAction(o) {
+    if (!o || typeof o !== 'object') return false;
+    if (!D.actionItemField || !D.actionNeedServerField) return false;
+    // אם שם המחלקה ידוע מהגילוי — זו הבדיקה החזקה ביותר
+    if (D.mountActionClass && ctorNameOf(o) === D.mountActionClass) return true;
+    if (!(D.actionItemField in o)) return false;
+    // אחרת: השדה הראשון חייב להחזיק אובייקט שנראה כמו פריט מוסך
+    const item = o[D.actionItemField];
+    return !!item && typeof item === 'object' &&
+           (D.itemFields.id in item) && (D.itemFields.mounted in item);
+  }
+
+  // מאתר את ה-store ואת מתודת השיגור, ע"י קריאת **קוד המקור** של מתודות
+  // הקונטרולר בזמן ריצה: כולן בצורה `this.<store>.<dispatch>(new …)`.
+  // כך אין צורך בגילוי נוסף מהבאנדל, וזה עמיד לשינויי שמות.
+  function findStore() {
+    if (storeInfo) return storeInfo;
+    if (!garageProxy || !D.proxyCcField) return null;
+    const controller = garageProxy[D.proxyCcField];
+    if (!controller || typeof controller !== 'object') return null;
+
+    try {
+      const proto = Object.getPrototypeOf(controller);
+      const counts = new Map();
+      for (const k of Object.getOwnPropertyNames(proto)) {
+        let fn;
+        try { fn = proto[k]; } catch (e) { continue; }
+        if (typeof fn !== 'function') continue;
+        const m = /this\.([\w$]+_1)\.([\w$]+)\(new /.exec(Function.prototype.toString.call(fn));
+        if (!m) continue;
+        const key = m[1] + '|' + m[2];
+        counts.set(key, (counts.get(key) || 0) + 1);
+      }
+      // הצירוף השכיח ביותר הוא ה-store ומתודת השיגור
+      let best = null, bestN = 0;
+      for (const [key, n] of counts) if (n > bestN) { best = key; bestN = n; }
+      if (!best) return null;
+      const [storeField, dispatchMethod] = best.split('|');
+      const store = controller[storeField];
+      if (!store || typeof store[dispatchMethod] !== 'function') return null;
+
+      storeInfo = { store, dispatch: dispatchMethod, controller };
+      NS.debug.storeFound = storeField + '.' + dispatchMethod + '()';
+      return storeInfo;
+    } catch (e) {
+      NS.debug.lastError = String(e);
+      return null;
+    }
+  }
+
+  // בונה פעולה של המשחק מתוך פרוטוטייפ שנלכד, ע"י **קריאה לבנאי האמיתי**.
+  //
+  // חשוב מאוד: אסור להשתמש כאן ב-Object.create. חלק מהפעולות הן thunks —
+  // ההתנהגות שלהן היא פונקציה שנוצרת *בתוך הבנאי* וסוגרת על הארגומנטים.
+  // Object.create מדלג על הבנאי, ולכן מייצר קליפה ריקה: פרוטוטייפ נכון,
+  // בלי שום פונקציה בפנים. היא נשלחת, לא קורה כלום, ונראה כאילו הצליח.
+  // בדיוק זה קרה עם פעולת הבחירה (ולא נראה עם ההרכבה, כי היא נתונים בלבד).
+  function buildAction(proto, args) {
+    const Ctor = proto && proto.constructor;
+    if (typeof Ctor !== 'function') throw new Error('action prototype has no constructor');
+    return new Ctor(...args);
+  }
+
+  // ---- איתור הבנאי של פעולה לפי שם המחלקה -------------------------------
+  //
+  // פעולת הבחירה נתפסת מעצמה (המשחק משגר אותה בטעינת המוסך), אבל פעולת
+  // ההרכבה נוצרת רק כשמרכיבים — כלומר בלי זה היינו דורשים מהמשתמש להחליף
+  // פריט ידנית פעם אחת בכל סשן. במקום זה מאתרים את הבנאי ישירות: הגילוי
+  // כבר יודע את **שם המחלקה**, והשמות הממוזערים הם הצהרות פונקציה, ולכן
+  // אפשר לסרוק את גרף האובייקטים ולחפש פונקציה עם בדיוק אותו שם.
+  //
+  // האימות הוא מה שהופך את זה לוודאי ולא לניחוש: בונים מופע ניסיון ובודקים
+  // שהשדות אכן קיבלו את מה שהעברנו. מופע שנבנה ולא משוגר הוא חסר תופעות
+  // לוואי לחלוטין.
+  function findCtorByName(root, name, validate) {
+    const seen = new Set();
+    const stack = [[root, 0]];
+    let nodes = 0;
+
+    while (stack.length) {
+      const [o, depth] = stack.pop();
+      if (o == null || typeof o !== 'object' || depth > 10) continue;
+      if (seen.has(o)) continue;
+      seen.add(o);
+      if (++nodes > 200000) break;
+
+      const consider = (v) => {
+        if (typeof v === 'function') {
+          if (v.name === name) { try { if (validate(v)) return v; } catch (e) { /* לא זה */ } }
+          return null;
+        }
+        if (v && typeof v === 'object') stack.push([v, depth + 1]);
+        return null;
+      };
+
+      try {
+        for (const k of Object.keys(o)) {
+          let v; try { v = o[k]; } catch (e) { continue; }
+          const hit = consider(v);
+          if (hit) return hit;
+        }
+        if (o instanceof Map) {
+          for (const v of o.values()) { const hit = consider(v); if (hit) return hit; }
+        }
+      } catch (e) { /* אובייקט לא נגיש -> מדלגים */ }
+    }
+    return null;
+  }
+
+  // מאתר בנאי של פעולה לפי שם המחלקה, מכל השורשים שאנחנו מחזיקים.
+  // עובד לפעולות ש**מנויות** אצל קונטרולר כלשהו: הרישום מחזיק KClass
+  // שמצביע על הבנאי, וכך הוא נגיש מגרף האובייקטים של ה-store.
+  function resolveActionCtor(className, validate) {
+    if (!className) return null;
+    const si = findStore();
+    const roots = [];
+    if (si) { roots.push(si.controller, si.store); }
+    if (garageProxy) roots.push(garageProxy);
+    for (const root of roots) {
+      const Ctor = findCtorByName(root, className, validate);
+      if (Ctor) return Ctor;
+    }
+    return null;
+  }
+
+  function resolveMountActionProto() {
+    if (mountActionProto) return mountActionProto;
+    if (!D.mountActionClass || !latestState) return null;
+
+    const items = collect(latestState).items;
+    const sample = items && items.length ? items[0] : null;
+    if (!sample) return null;
+
+    // אימות: בונים מופע ניסיון (לא משגרים) ובודקים שהשדות התמלאו נכון
+    const Ctor = resolveActionCtor(D.mountActionClass, (C) => {
+      if (C.length !== 2) return false;
+      const probe = new C(sample, false);
+      return probe[D.actionItemField] === sample &&
+             probe[D.actionNeedServerField] === false;
+    });
+    if (!Ctor) return null;
+
+    mountActionProto = Ctor.prototype;
+    NS.debug.mountActionCaptured = true;
+    NS.debug.mountActionSource = 'resolved-by-name';
+    console.log('%c[combos] resolved the game\'s mount action by class name — ' +
+      'no manual equip needed.', 'color:#7ee787;font-weight:bold');
+    return mountActionProto;
+  }
+
+  // ---- הגנות (Resistance modules) ---------------------------------------
+  //
+  // המשחק מרכיב הגנה דרך thunk בשם GarageResistanceMount(resistance, index),
+  // שגופו עושה בדיוק שני דברים: מסיר את מה שמורכב באותו חריץ
+  // (GarageResistanceUnMount) ואז מחיל את החדשה (GarageApplyResistanceMount).
+  // אנחנו משגרים את שתי הפעולות הנמוכות ישירות, כי רק הן **מנויות** ולכן
+  // ניתנות לאיתור בזמן ריצה לפי שם; ה-thunk עצמו לא מופיע בשום רישום.
+  //
+  // מה שכן שונה אצלנו, ובכוונה: ל-thunk יש מקרה מיוחד ל"הגנה אוניברסלית"
+  // (פריט שאחת מתכונותיו היא ALL_RESISTANCE) — כשמרכיבים אותה הוא מוריד את
+  // **כל** ההגנות האחרות. אנחנו לא צריכים את המקרה הזה: המשחק זקוק לו כי
+  // ה-UI שלו מרכיב הגנה אחת בכל פעם בלי לדעת מה המצב הסופי הרצוי, בעוד
+  // שאנחנו תמיד מחילים את מצב 4 החריצים **במלואו** — ולכן כל מה שאינו רצוי
+  // מוסר ממילא בשלב ההסרה.
+
+  // פריט הגנה כלשהו מה-state, לאימות הבנאים
+  function sampleResistance() {
+    if (!latestState) return null;
+    const F = D.itemFields;
+    for (const it of collect(latestState).items) {
+      if (enumName(it[F.category]) === 'RESISTANCE_MODULE') return it;
+    }
+    return null;
+  }
+
+  function resolveResistProtos() {
+    if (resistApplyProto && resistUnmountProto) return true;
+    const sample = sampleResistance();
+    if (!sample) return false;
+
+    if (!resistApplyProto && D.resistApplyClass && D.resistApplyFields) {
+      const F = D.resistApplyFields;
+      // אינדקס 3 ו-needServerMount=false בבנייה בלבד; המופע לעולם לא משוגר
+      const Ctor = resolveActionCtor(D.resistApplyClass, (C) => {
+        if (C.length !== 3) return false;
+        const p = new C(sample, 3, false);
+        return p[F.resistance] === sample && p[F.index] === 3 &&
+               p[F.needServerMount] === false;
+      });
+      if (Ctor) {
+        resistApplyProto = Ctor.prototype;
+        NS.debug.resistApplyResolved = true;
+      }
+    }
+    if (!resistUnmountProto && D.resistUnmountClass && D.resistUnmountFields) {
+      const F = D.resistUnmountFields;
+      const Ctor = resolveActionCtor(D.resistUnmountClass, (C) => {
+        if (C.length !== 2) return false;
+        const p = new C(sample, false);
+        return p[F.resistance] === sample && p[F.needServerUnmount] === false;
+      });
+      if (Ctor) {
+        resistUnmountProto = Ctor.prototype;
+        NS.debug.resistUnmountResolved = true;
+      }
+    }
+    return !!(resistApplyProto && resistUnmountProto);
+  }
+
+  // 4 חריצי ההגנה כפי שהם כרגע, לפי mountIndex (null בחריץ ריק).
+  // מקבל אופציונלית תוצאת collect קיימת, כדי לא לסרוק את הגרף פעמיים.
+  function currentProtectionSlots(found) {
+    const slots = [null, null, null, null];
+    if (!latestState) return slots;
+    const F = D.itemFields;
+    for (const it of (found || collect(latestState)).items) {
+      if (it[F.mounted] !== true) continue;
+      if (enumName(it[F.category]) !== 'RESISTANCE_MODULE') continue;
+      const idx = it[F.mountIndex];
+      if (typeof idx === 'number' && idx >= 0 && idx < 4) slots[idx] = it;
+    }
+    return slots;
+  }
+
+  function unmountProtection(rawItem) {
+    if (!resolveResistProtos() || !resistUnmountProto) {
+      return { ok: false, error: 'resistance unmount action not available' };
+    }
+    const si = findStore();
+    if (!si) return { ok: false, error: 'could not reach the game store' };
+    try {
+      si.store[si.dispatch](buildAction(resistUnmountProto, [rawItem, true]));
+      NS.debug.resistUnmountsSent++;
+      return { ok: true };
+    } catch (e) {
+      NS.debug.lastError = String(e);
+      return { ok: false, error: String(e) };
+    }
+  }
+
+  function mountProtection(rawItem, index) {
+    if (!resolveResistProtos() || !resistApplyProto) {
+      return { ok: false, error: 'resistance mount action not available' };
+    }
+    const si = findStore();
+    if (!si) return { ok: false, error: 'could not reach the game store' };
+    try {
+      si.store[si.dispatch](buildAction(resistApplyProto, [rawItem, index, true]));
+      NS.debug.resistMountsSent++;
+      return { ok: true };
+    } catch (e) {
+      NS.debug.lastError = String(e);
+      return { ok: false, error: String(e) };
+    }
+  }
+
+  // מחיל מצב מלא של 4 חריצים. desiredIds הוא מערך באורך 4 של מזהים או null.
+  //
+  // **ההשוואה היא לפי קבוצה, לא לפי חריץ** — וזו הנקודה החשובה כאן. 4 החריצים
+  // מתחלפים ביניהם ואין להם משמעות במשחק: מה שקובע הוא אילו הגנות מורכבות,
+  // לא באיזה סדר. לכן הגנה שכבר מורכבת **באיזשהו** חריץ נשארת במקומה, וקומבו
+  // שמכיל בדיוק את אותן הגנות בסדר אחר לא מייצר ולו פעולה אחת. (זו בדיוק
+  // הסמנטיקה של האקוויפר הישן ב-equippers/protection_equipper.js; גרסה
+  // מוקדמת כאן השוותה חריץ מול חריץ והפכה שינוי סדר ל-8 פעולות מיותרות.)
+  //
+  // המיקום שנשמר בקומבו כן משמש, אבל רק כ**העדפה** לשיבוץ הגנה חדשה: אם
+  // החריץ שלה בקומבו יתפנה, היא תיכנס אליו; אחרת לחריץ הפנוי הראשון.
+  //
+  // סדר הביצוע: קודם כל ההסרות ואז ההרכבות — הגנה יכולה להיות מורכבת בחריץ
+  // אחד בלבד, וחריץ תפוס חייב להתפנות לפני שממלאים אותו.
+  function applyProtections(desiredIds) {
+    if (!latestState) return { ok: false, error: 'garage state not captured' };
+    if (!Array.isArray(desiredIds)) return { ok: false, error: 'expected an array of 4 ids/nulls' };
+
+    const F = D.itemFields;
+    // סריקה אחת של הגרף לכל התכנון: גם מצב החריצים וגם חיפוש הפריטים הרצויים
+    const found = collect(latestState);
+    const current = currentProtectionSlots(found);
+
+    // הרצוי: קבוצה של מזהים, עם החריץ המועדף לכל אחד
+    const wantSet = new Set();
+    const preferred = new Map();   // id -> החריץ שבו הוא מופיע בקומבו
+    for (let i = 0; i < 4; i++) {
+      if (desiredIds[i] == null) continue;
+      const id = String(desiredIds[i]);
+      if (!wantSet.has(id)) { wantSet.add(id); preferred.set(id, i); }
+    }
+
+    // המצב הנוכחי כקבוצה: id -> החריץ שבו הוא מורכב
+    const mountedAt = new Map();
+    for (let i = 0; i < 4; i++) {
+      if (current[i]) mountedAt.set(idToString(current[i][F.id]), i);
+    }
+
+    const plan = { unmount: [], mount: [], unchanged: [] };
+
+    // להסיר: מורכב אבל לא רצוי
+    for (const [id, slot] of mountedAt) {
+      if (wantSet.has(id)) plan.unchanged.push({ slot, id });
+      else plan.unmount.push({ slot, item: current[slot], id });
+    }
+
+    // להוסיף: רצוי אבל לא מורכב באף חריץ
+    const toAdd = [];
+    for (const id of wantSet) {
+      if (mountedAt.has(id)) continue;
+      const raw = found.byId.get(id);
+      if (!raw) return { ok: false, error: 'protection id not found in garage state: ' + id };
+      if (enumName(raw[F.category]) !== 'RESISTANCE_MODULE') {
+        return { ok: false, error: 'item ' + id + ' is not a resistance module' };
+      }
+      toAdd.push({ id, item: raw, preferred: preferred.get(id) });
+    }
+
+    // החריצים שיהיו פנויים: הריקים עכשיו + אלה שמתפנים בשלב ההסרה
+    const free = new Set();
+    for (let i = 0; i < 4; i++) if (!current[i]) free.add(i);
+    for (const u of plan.unmount) free.add(u.slot);
+
+    // שיבוץ: קודם מי שהחריץ המועדף שלו פנוי, ורק אז השאר — אחרת הגנה אחת
+    // הייתה יכולה לתפוס חריץ שמיועד לאחרת ולשבש את הסדר השמור בלי סיבה.
+    const ordered = toAdd.filter((a) => free.has(a.preferred))
+      .concat(toAdd.filter((a) => !free.has(a.preferred)));
+    for (const a of ordered) {
+      let slot = free.has(a.preferred) ? a.preferred : null;
+      if (slot === null) for (let i = 0; i < 4; i++) if (free.has(i)) { slot = i; break; }
+      if (slot === null) {
+        return { ok: false, error: 'no free protection slot for ' + a.item[F.name] };
+      }
+      free.delete(slot);
+      plan.mount.push({ slot, item: a.item, id: a.id });
+    }
+
+    const errors = [];
+    for (const u of plan.unmount) {
+      const r = unmountProtection(u.item);
+      if (!r.ok) errors.push('unmount slot ' + u.slot + ': ' + r.error);
+    }
+    for (const m of plan.mount) {
+      const r = mountProtection(m.item, m.slot);
+      if (!r.ok) errors.push('mount slot ' + m.slot + ': ' + r.error);
+    }
+
+    return {
+      ok: errors.length === 0,
+      errors,
+      plan: {
+        unmounted: plan.unmount.map((u) => ({ slot: u.slot, name: u.item[F.name] })),
+        mounted: plan.mount.map((m) => ({ slot: m.slot, name: m.item[F.name] })),
+        kept: plan.unchanged.map((u) => ({ slot: u.slot, name: current[u.slot][F.name] })),
+        untouched: plan.unchanged.length,
+      },
+    };
+  }
+
+  // מרכיב פריט בדרך של המשחק עצמו. needServer=false מעדכן **רק מקומית**
+  // ולא שולח כלום החוצה — וזה מה שהופך את האימות לבטוח לחלוטין.
+  //
+  // ההרכבה לבדה לא מספיקה לתצוגה: מודל התלת-ממד במוסך מתעדכן מ**בחירת
+  // פריט**, לא מההרכבה. בזרימה הרגילה המשתמש קודם לוחץ על הפריט (בחירה,
+  // והמודל מתעדכן) ורק אז על Equip. לכן אחרי ההרכבה משגרים גם בחירה.
+  function mountViaAction(rawItem, needServer) {
+    if (!mountActionProto) resolveMountActionProto();
+    if (!mountActionProto) {
+      return { ok: false, error: 'mount-action template not available (equip one item manually once, then retry)' };
+    }
+    const si = findStore();
+    if (!si) return { ok: false, error: 'could not reach the game store' };
+
+    try {
+      si.store[si.dispatch](buildAction(mountActionProto, [rawItem, !!needServer]));
+    } catch (e) {
+      NS.debug.lastError = String(e);
+      return { ok: false, error: String(e) };
+    }
+
+    // רענון מודל התלת-ממד. נכשל בשקט: ההרכבה עצמה כבר הצליחה, וזו רק תצוגה.
+    const refreshed = selectItem(rawItem);
+    return { ok: true, previewRefreshed: refreshed };
+  }
+
+  // משגר "בחר פריט" — מה שמרענן את מודל התלת-ממד במוסך
+  function selectItem(rawItem) {
+    if (!selectActionProto || !D.selectItemIdField) return false;
+    const si = findStore();
+    if (!si) return false;
+    try {
+      si.store[si.dispatch](buildAction(selectActionProto, [rawItem[D.itemFields.id]]));
+      NS.debug.selectsSent++;
+      return true;
+    } catch (e) {
+      NS.debug.lastError = String(e);
+      return false;
+    }
+  }
+
+  // שם המחלקה של אובייקט. השמות הממוזערים בבאנדל הם הצהרות פונקציה
+  // (`function KB(t){…}`), ולכן `constructor.name` מחזיר בדיוק את השם
+  // שהגילוי מצא — זיהוי מדויק, בלי ניחושים מבניים.
+  function ctorNameOf(o) {
+    try {
+      const p = Object.getPrototypeOf(o);
+      return p && p.constructor ? p.constructor.name : null;
+    } catch (e) { return null; }
+  }
+
+  // פעולת הבחירה. חשוב: המלכודת יורה **תוך כדי הבנאי**, ובאותו רגע לאובייקט
+  // כבר יש שדות ממחלקת הבסיס (thunk) — ולכן בדיקה מסוג "כמה שדות יש לו"
+  // תיכשל תמיד. משווים את שם המחלקה במקום.
+  function looksLikeSelectAction(o) {
+    if (!o || typeof o !== 'object' || !D.selectActionClass) return false;
+    return ctorNameOf(o) === D.selectActionClass;
+  }
+
+  // ---- הרכבת פריט (ניסיוני, קונסול בלבד) --------------------------------
+  //
+  // ⚠️ זו הפעולה הראשונה שאינה קריאה בלבד. היא **לא** מזייפת פרוטוקול: היא
+  // קוראת למתודת השליחה של המשחק עצמו, שמקודדת/מצפינה/שולחת כרגיל. השרת
+  // אמור להשיב באישור שמעדכן את ה-state — ומכאן שגם ה-UI מתעדכן לבד, בלי
+  // ריצוד. עדיין לא מחווט לשום כפתור; מטרתו לאמת את המנגנון חי.
+  function mountItemById(idStr) {
+    if (!garageProxy) return { ok: false, error: 'garage proxy not captured' };
+    if (!space) return { ok: false, error: 'space (entity registry) not captured' };
+    if (!ctx) return { ok: false, error: 'context stack not captured' };
+    if (!latestState) return { ok: false, error: 'garage state not captured' };
+
+    // ישות המוסך — מחפשים פעם אחת ומשמרים
+    if (!garageObject) {
+      garageObject = findGarageObject();
+      NS.debug.garageObjectFound = !!garageObject;
+    }
+    if (!garageObject) {
+      return {
+        ok: false,
+        error: 'could not locate the garage entity yet — browse the garage a bit ' +
+               '(open a tab, click an item) so the game performs a garage action, then retry. ' +
+               'candidates seen: ' + ctxCandidates.size,
+      };
+    }
+
+    // מאתרים את הפריט כדי לקבל את אובייקט המזהה **המקורי** (Long של קוטלין).
+    // מחרוזת לא תעבוד — החיפוש במרשם מצפה לאובייקט המזהה עצמו.
+    const F = D.itemFields;
+    const found = collect(latestState);
+    let raw = null;
+    for (const it of found.items) {
+      if (idToString(it[F.id]) === String(idStr)) { raw = it; break; }
+    }
+    if (!raw) return { ok: false, error: 'item id not found in garage state: ' + idStr };
+
+    try {
+      const entity = space[D.spaceLookupMethod](raw[F.id]);
+      if (entity == null) return { ok: false, error: 'no entity for item ' + idStr };
+
+      // בדיוק כמו המשחק: דוחפים את ישות המוסך להקשר, שולחים, ותמיד שולפים
+      // בחזרה ב-finally — אחרת נשאיר את מחסנית ההקשר של המשחק מזוהמת.
+      ctx[D.ctxPushMethod](garageObject);
+      try {
+        garageProxy[D.proxyMountMethod](entity);
+      } finally {
+        ctx[D.ctxPopMethod]();
+      }
+
+      NS.debug.mountsSent++;
+      return { ok: true, name: raw[F.name], id: String(idStr) };
+    } catch (e) {
+      NS.debug.lastError = String(e);
+      return { ok: false, error: String(e) };
+    }
+  }
+
   // ---- שמות שהתגלו + גשר -----------------------------------------------
 
   function applyNames(d) {
     D = d;
     stateFieldList = Object.values(d.stateFields);
     NS.debug.discovered = true;
-    armTrap(d.trapField);
+    armAll();
     // מדפיסים גם אילו קבוצות אופציונליות הגיעו — אם אחת מהן false, העמודה
     // המתאימה בלוג תהיה ריקה וזה המקום הראשון לבדוק (cache ישן / עוגן שנשבר).
     console.log('[combos] using discovered garage-state names for this build:',
@@ -549,6 +1270,7 @@
         hasModification: !!d.modificationFields,
         hasUpgrade: !!d.upgradeFields,
         hasDevices: !!d.deviceFields,
+        hasResistanceActions: !!(d.resistApplyClass && d.resistUnmountClass),
       }));
   }
 
@@ -585,6 +1307,16 @@
   W.__CMB_STATE = function () {
     const s = {
       captured: !!latestState,
+      proxyCaptured: !!garageProxy,
+      spaceCaptured: !!space,
+      ctxCaptured: !!ctx,
+      garageObject: !!(garageObject || definitiveGarageObject),
+      ctxCandidates: ctxCandidates.size,
+      mountActionCaptured: !!mountActionProto,
+      selectActionCaptured: !!selectActionProto,
+      resistApplyResolved: !!resistApplyProto,
+      resistUnmountResolved: !!resistUnmountProto,
+      store: findStore() ? NS.debug.storeFound : null,
       names: D,
       debug: NS.debug,
     };
@@ -592,9 +1324,185 @@
     return s;
   };
 
+  // הוסר: ניסיון "רענון" ע"י שליחת הפקודה חסרת-הארגומנטים (hcn).
+  // היא איננה בקשת רענון — היא קשורה לאירוע "המוסך נטען" ונשלחת בתגובה
+  // לבקשת טעינה מחדש מהשרת. שליחתה מחוץ להקשר גרמה לטעינת נתוני מוסך
+  // שאינם של המשתמש. **לקח: לא לשלוח פקודה שלא זוהתה בוודאות.**
+  // מיפוי הפקודות היוצאות של המוסך (מתוך רישום המנויים של הקונטרולר):
+  //   ecn(item)     <- אירוע ההרכבה, כשמבוקש עדכון שרת   = mountItem
+  //   fcn(item)     <- אירוע אחר על פריט
+  //   gcn(arg)      <- אירוע אחר
+  //   hcn()         <- "המוסך נטען" / תגובה ל-reloadGarage  ← לא לגעת
+
+  // אבחון איתור ישות המוסך — מה נלמד עד כה ומאיזה מקור
+  W.__CMB_DIAG = function () {
+    learnGameObjectProto();
+    const rows = [];
+    for (const [o, n] of ctxCandidates) {
+      rows.push({ seen: n, isGameObject: isGameObject(o), ctor: (o && o.constructor && o.constructor.name) || '?' });
+    }
+    rows.sort((a, b) => b.seen - a.seen);
+    const info = {
+      definitiveFromProxyCall: !!definitiveGarageObject,
+      learnedGameObjectProto: !!gameObjectProto,
+      candidates: rows,
+      currentlyInContext: !!currentCtxObject(),
+      mountActionCaptured: !!mountActionProto,
+      selectActionCaptured: !!selectActionProto,
+      selectActionWanted: D.selectActionClass || null,
+      // מי כתב לשדה של פעולת הבחירה — אם הזיהוי נכשל, התשובה כאן
+      classesWritingSelectField: [...selectTrapSeen.entries()]
+        .sort((a, b) => b[1] - a[1])
+        .map(([name, n]) => name + ' ×' + n),
+    };
+    console.log('[combos] garage-entity diagnostics:', info);
+    if (!gameObjectProto) {
+      console.warn('[combos] could not learn the entity prototype — the item lookup returned nothing.');
+    }
+    return info;
+  };
+
+  // ניסיוני: מרכיב פריט בודד לפי מזהה, דרך פונקציית השליחה של המשחק.
+  // שימוש: __CMB_TRY_MOUNT('920009630987')
+  NS.mountItemById = mountItemById;
+
+  // מדווח אם הפריט המבוקש אכן מופיע כמורכב ב-state המקומי
+  function mountedNow(idStr) {
+    try {
+      const F = D.itemFields;
+      const items = collect(latestState).items;
+      for (const it of items) {
+        if (idToString(it[F.id]) === String(idStr)) return it[F.mounted] === true;
+      }
+    } catch (e) { /* לא קריטי */ }
+    return null;
+  }
+
+  W.__CMB_TRY_MOUNT = function (id) {
+    const r = mountItemById(id);
+    if (!r.ok) { console.warn('[combos] mount failed:', r.error); return r; }
+    console.log('%c[combos] mount command sent for ' + r.name + ' — checking whether the local view catches up…',
+      'color:#7ee787;font-weight:bold');
+    // בדיקה אוטומטית: האם ה-state המקומי התעדכן מעצמו (כלומר השרת החזיר אישור)
+    setTimeout(() => {
+      console.log('[combos] after 1.5s — local state says mounted:', mountedNow(id));
+    }, 1500);
+    return r;
+  };
+
+  // מאתר פריט גולמי לפי מזהה
+  function rawItemById(idStr) {
+    if (!latestState) return null;
+    const F = D.itemFields;
+    for (const it of collect(latestState).items) {
+      if (idToString(it[F.id]) === String(idStr)) return it;
+    }
+    return null;
+  }
+
+  // ההרכבה בדרך של המשחק עצמו — מעדכנת את המסך *וגם* שולחת לשרת.
+  // ‏__CMB_TRY_LOCAL(id)  — עדכון מקומי בלבד, בלי שום תעבורה החוצה (בטוח לאימות)
+  // ‏__CMB_TRY_NATIVE(id) — הדבר האמיתי: מקומי + שרת, בקריאה אחת
+  function nativeMount(id, needServer) {
+    const raw = rawItemById(id);
+    if (!raw) return { ok: false, error: 'item not found in state: ' + id };
+    const r = mountViaAction(raw, needServer);
+    if (!r.ok) { console.warn('[combos] native mount failed:', r.error); return r; }
+    const label = needServer ? 'local + server' : 'LOCAL ONLY (nothing sent out)';
+    console.log('%c[combos] dispatched the game\'s own mount action (' + label + ') for ' +
+      raw[D.itemFields.name] + '. 3D preview refresh: ' +
+      (r.previewRefreshed ? 'sent' : 'NOT sent (select-action template not captured yet)'),
+      'color:#7ee787;font-weight:bold');
+    setTimeout(() => {
+      console.log('[combos] after 1s — local state says mounted:', mountedNow(id));
+    }, 1000);
+    return r;
+  }
+  W.__CMB_TRY_LOCAL = function (id) { return nativeMount(id, false); };
+  W.__CMB_TRY_NATIVE = function (id) { return nativeMount(id, true); };
+
+  // ---- הגנות: קונסול -----------------------------------------------------
+
+  // תמונת מצב של 4 החריצים — לפני ואחרי, כדי לראות מיד אם הפעולה תפסה
+  function protectionSnapshot() {
+    const F = D.itemFields;
+    return currentProtectionSlots().map((it, i) => ({
+      slot: i,
+      name: it ? it[F.name] : '—',
+      id: it ? idToString(it[F.id]) : null,
+      lvl: it ? upgradeLevel(it) : null,
+    }));
+  }
+
+  W.__CMB_PROTECTIONS = function () {
+    if (!latestState) { console.warn('[combos] garage state not captured yet'); return null; }
+    const F = D.itemFields;
+    const found = collect(latestState);
+    const snap = currentProtectionSlots(found).map((it, i) => ({
+      slot: i,
+      name: it ? it[F.name] : '—',
+      id: it ? idToString(it[F.id]) : null,
+      lvl: it ? upgradeLevel(it) : null,
+    }));
+    console.log('%c[combos] protection slots (by mountIndex)', 'color:#7ee787;font-weight:bold');
+    console.table(snap);
+    // כל ההגנות שבבעלות המשתמש, כדי שיהיה מאיפה להעתיק מזהים לניסוי
+    const owned = found.items
+      .filter((it) => enumName(it[F.category]) === 'RESISTANCE_MODULE' && it[F.owned] === true)
+      .map((it) => ({ name: it[F.name], id: idToString(it[F.id]),
+                      lvl: upgradeLevel(it), mounted: it[F.mounted] === true }));
+    console.log('owned resistance modules: ' + owned.length);
+    console.table(owned);
+    return { slots: snap, owned };
+  };
+
+  // אחרי כל פעולה מדפיסים שוב את החריצים — ה-state נבנה מחדש בכל שיגור,
+  // אז ההשוואה לפני/אחרי היא האימות עצמו.
+  function reportAfter(label, result) {
+    console.log('%c[combos] ' + label, 'color:#7ee787;font-weight:bold', result);
+    setTimeout(() => {
+      console.log('[combos] protection slots after 1s:');
+      console.table(protectionSnapshot());
+    }, 1000);
+    return result;
+  }
+
+  // ‏__CMB_TRY_PROT_UNMOUNT('123') — מסיר הגנה בודדת
+  W.__CMB_TRY_PROT_UNMOUNT = function (id) {
+    const raw = rawItemById(id);
+    if (!raw) { console.warn('[combos] resistance not found in state:', id); return null; }
+    return reportAfter('unmount ' + raw[D.itemFields.name], unmountProtection(raw));
+  };
+
+  // ‏__CMB_TRY_PROT_MOUNT('123', 0) — מרכיב הגנה בחריץ. שים לב: לא מפנה את
+  // החריץ קודם — לשם כך יש את __CMB_TRY_PROTECTIONS, שמחשב diff מלא.
+  W.__CMB_TRY_PROT_MOUNT = function (id, slot) {
+    const raw = rawItemById(id);
+    if (!raw) { console.warn('[combos] resistance not found in state:', id); return null; }
+    return reportAfter('mount ' + raw[D.itemFields.name] + ' -> slot ' + slot,
+      mountProtection(raw, Number(slot)));
+  };
+
+  // ‏__CMB_TRY_PROTECTIONS(['123', null, '456', null]) — הדבר האמיתי:
+  // מחיל מצב מלא של 4 חריצים עם אופטימיזציית diff (חריץ תקין לא נוגעים בו).
+  W.__CMB_TRY_PROTECTIONS = function (ids) {
+    const before = protectionSnapshot();
+    const r = applyProtections(ids);
+    if (!r.ok && r.error) { console.warn('[combos] apply protections failed:', r.error); return r; }
+    console.log('%c[combos] applied protections — untouched slots: ' + r.plan.untouched,
+      'color:#7ee787;font-weight:bold', r.plan);
+    if (r.errors && r.errors.length) console.warn('[combos] partial failures:', r.errors);
+    console.log('before:'); console.table(before);
+    setTimeout(() => { console.log('after 1s:'); console.table(protectionSnapshot()); }, 1000);
+    return r;
+  };
+
+  NS.protections = protectionSnapshot;
+  NS.applyProtections = applyProtections;
+
   // ---- boot -------------------------------------------------------------
-  armTrap(SEED.trapField);   // כיסוי מיידי עם שמות ה-seed, עד שהגילוי חוזר
+  armAll();   // כיסוי מיידי עם שמות ה-seed, עד שהגילוי חוזר
   window.postMessage({ __cmb: true, dir: 'm2i', action: 'ready' }, '*');
-  console.log('[combos] garage-state hook armed (read-only). Use __CMB_READ() ' +
-    'to print the current loadout, __CMB_STATE() for diagnostics.');
+  console.log('[combos] garage-state hook armed. Use __CMB_READ() to print the current ' +
+    'loadout, __CMB_PROTECTIONS() for the protection slots, __CMB_STATE() for diagnostics.');
 })();
