@@ -459,25 +459,20 @@ the callback API (not promisified) — keep this consistent. Errors use **gracef
 degradation**: log a warning and continue. If an item can't be found or equipped,
 skip it and move on. Never block the user or show alerts for non-critical errors.
 
-### Reading the loadout from the game's own state (in progress)
+### Reading and writing the game's own state (ROADMAP feature 2 — DONE)
 
-Everything above equips by **simulating the user**: navigate a tab, find the item
-by its displayed name, click it, click Equip, wait. That is why equipping a combo
-is slow and visibly "walks" the UI. The replacement — ROADMAP feature 2, "Instant
-Combo Equipment" — reads and writes the game's own model instead.
+The equippers/scanners above work by **simulating the user**: navigate a tab,
+find the item by its displayed name, click it, click Equip, wait. That is why
+they are slow and visibly "walk" the UI. Since Aug 2026 they are the fallback
+only — both saving and equipping run against the game's own model:
 
-**Status: the read half is done and drives the save; the write half works but is
-not wired to any button yet.** Clicking "Save Current Combo" saves instantly from
-game state (`core/instant_saver.js` → `GarageBridge.readCombo()` → storage), with
-no tab navigation — the user never leaves the combos view. The DOM-scan save
-(`combo_saver.js`) is kept in the tree but wired to nothing.
-
-**Equipping now runs natively too** (`core/instant_loader.js` →
-`GarageBridge.applyCombo()` → `main/garage_state.js`). The DOM equipper stays in
-the tree as a fallback. **The in-progress detail, including how the game's own
-actions are dispatched and every anchor involved, is in
-`docs/INSTANT_EQUIP_STATUS.md`.** That file is the working note for this feature
-and gets deleted when it lands.
+- **Save**: `core/instant_saver.js` → `GarageBridge.readCombo()` → storage. No
+  tab navigation; the user never leaves the combos view. Deliberately NO
+  fallback (user's call): if the state isn't captured, the save button warns in
+  console and saves nothing.
+- **Equip**: `core/instant_loader.js` → `GarageBridge.applyCombo()` →
+  `main/garage_state.js` dispatches the game's own Redux actions. Zero flicker,
+  server-persisted. Also used by random-from-saved.
 
 How equipping is split: `instant_loader.js` (ISOLATED) decides **what** to
 apply — it strips what the user removed on the card and honours
@@ -495,19 +490,29 @@ randomised pause between actions. Two distinct outcomes matter:
 The short version of the write path: every garage change is a Redux action, and
 those actions come in two layers — a public *thunk* the UI dispatches, and a
 *low-level* action the reducer plus a server-sending subscriber consume. We build
-and dispatch the low-level ones, because only they are subscribed and therefore
-locatable at runtime by class name. Anything the thunk does on top (freeing a
-protection slot, loading an item's devices) we do ourselves.
+and dispatch the low-level ones (always via `new proto.constructor(...)`, never
+`Object.create` — some actions are thunks whose behaviour is a closure built in
+the ctor, and a ctor-less shell dispatches fine and does nothing). Only
+subscribed actions are locatable at runtime by class name; anything the thunk
+does on top (freeing a protection slot, loading an item's device catalog) we do
+ourselves. **The full write-path story — the action taxonomy, every discovery
+anchor, and the ownership/lazy-loading traps — is in `../../research/CLAUDE.md`
+under "Two layers of actions", "Augments (Devices)" and "Skins".**
 
-Decisions already made for the write half:
+Behaviours worth knowing when touching the equip path:
 
-- **The DOM equipper stays as an automatic fallback.** Instant equip →
-  verify by re-reading the state (the reader is the verifier) → on failure
-  (e.g. a bundle broke discovery) fall back to `combo_loader.js`'s DOM path,
-  which gen-2 combos still support via their name/image snapshot. Known
-  degradation: the DOM path can't equip the decorative slots (paint, skins).
-- The save side deliberately has NO such fallback (user's call): if the state
-  isn't captured, the save button warns in console and saves nothing.
+- Mounting alone does not move the 3D tank model — **the model follows item
+  SELECTION**, so every native mount is followed by a select dispatch.
+- Protections are compared **as a set** (the four slots are interchangeable);
+  the saved slot index is only a placement preference. A reorder-only combo
+  dispatches nothing.
+- Augment ownership is checked **before** anything is dispatched (the remove
+  runs first, so a late failure would strip the current augment). Device
+  catalogs load lazily per item; the read path waits for them (capped), and the
+  equip path requests a missing catalog itself, since the low-level mount skips
+  the load the game's own thunk fires.
+- Equipping resolves items by `baseItemId` → highest owned Mk *at equip time*;
+  the DOM path can't equip the decorative slots (paint, skins).
 
 How it works:
 
@@ -616,11 +621,15 @@ bundles. The state class has had exactly 29 fields in every build checked, which
 is a good sign the shape is stable. The deep research trail is in
 `../../research/CLAUDE.md` under "Garage state".
 
-> Re-verify after any change to `discover()`. The scratchpad harness extracts the
+> Re-verify after any change to `discover()`. The scratchpad harness
+> (`verify_shipped.js` — session-local, recreate it if gone) extracts the
 > **shipped** `discover()` out of `detect.js` and runs it against every bundle in
 > `../../research/`, then diffs the result for the current build against the seed
 > in `garage_state.js` — so a stale seed or a broken regex fails loudly instead of
-> silently degrading in-game.
+> silently degrading in-game. A sibling harness (`test_write_path.js`) loads the
+> shipped `garage_state.js` into a `vm` sandbox with a fake store/state and
+> asserts which actions each write dispatches — the diff logic is tested there
+> without touching the game.
 
 ## Feature: Translator
 
@@ -863,10 +872,19 @@ chrome.storage.local.get(['savedCombos'], r => console.log(r.savedCombos))  // I
 // combos — the garage-state hook (MAIN world, page console)
 __CMB_READ()          // print the current loadout as read from game state
 __CMB_STATE()         // captured?, discovered names, debug counters
-__CMB_PROTECTIONS()   // the 4 protection slots + every owned module, with ids
+__CMB_DIAG()          // garage-entity + action-template diagnostics
 __CMB.read()          // the same read, as a plain object
 __CMB.state()         // the captured raw game state object (for poking around)
-// the write probes (not wired to any button) are in docs/INSTANT_EQUIP_STATUS.md
+
+// combos — write probes (bypass the card; useful to isolate a failing slot)
+__CMB_TRY_NATIVE(id)          // mount a base item: local + server + 3D preview
+__CMB_TRY_LOCAL(id)           // local state only — sends NOTHING out (safe probe)
+__CMB_PROTECTIONS()           // the 4 slots + every owned module, with ids
+__CMB_TRY_PROTECTIONS([a,b,c,d])  // apply a full 4-slot state (ids or null)
+__CMB_AUGMENTS()              // installed + full catalog for mounted turret/hull, with owned flags
+__CMB_TRY_AUGMENT(itemId, augId)  // install; null clears
+__CMB_DECOR()                 // owned paints + skins, with ids
+__CMB_TRY_SKIN(itemId, skinId)    // apply a skin to a turret/hull
 
 // translator
 __CT_STATE()          // settings + discovered names + debug counters + capture status
