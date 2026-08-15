@@ -15,10 +15,12 @@
 // |-------|------------------|----------------------------|-------------------------------|
 // | i2m   | garageConstants  | מפת שמות שהתגלתה           | מ-detect.js (ראה שם)          |
 // | i2m   | readCombo        | {id}                       | בקשה לקרוא את הקומבו הנוכחי   |
-// | i2m   | readIndex        | {id}                       | בקשה לאינדקס הפריטים שבבעלות  |
+// | i2m   | readIndex        | {id}                       | בקשה לאינדקס פריטי המוסך      |
+// | i2m   | applyCombo       | {id, desired, opts}        | בקשה להחיל קומבו              |
 // | m2i   | ready            | —                          | MAIN מודיע שה-listeners שלו עלו |
 // | m2i   | comboResult      | {id, ok, combo, ...}       | תשובה לבקשת קריאה             |
 // | m2i   | indexResult      | {id, ok, items, devices}   | תשובה לבקשת אינדקס            |
+// | m2i   | applyResult      | {id, ok, results[], ...}   | תשובה לבקשת החלה              |
 //
 // כל בקשה נושאת מזהה רץ, והתשובה מותאמת אליו — כך אפשר להריץ כמה בקשות
 // במקביל בלי שיתבלבלו, ולכל אחת יש תקרת זמן משלה.
@@ -27,8 +29,9 @@
   'use strict';
   window.TankiQoL = window.TankiQoL || {};
 
-  const TIMEOUT_MS = 4000;   // תקרה קשיחה, כדי ש-Promise לא ייתקע לעולם
-  const REPLIES = { comboResult: true, indexResult: true };
+  const TIMEOUT_MS = 4000;         // תקרה קשיחה, כדי ש-Promise לא ייתקע לעולם
+  const APPLY_TIMEOUT_MS = 20000;  // החלה משהה בין פריט לפריט, ולכן ארוכה יותר
+  const REPLIES = { comboResult: true, indexResult: true, applyResult: true };
 
   let nextId = 1;
   const pending = new Map();   // id -> {resolve, timer}
@@ -47,16 +50,19 @@
     entry.resolve(p);
   });
 
-  function request(action) {
+  function request(action, extra, timeoutMs) {
     return new Promise((resolve) => {
       const id = nextId++;
       const timer = setTimeout(() => {
         pending.delete(id);
         resolve({ ok: false, error: 'timeout — MAIN world did not answer' });
-      }, TIMEOUT_MS);
+      }, timeoutMs || TIMEOUT_MS);
 
       pending.set(id, { resolve, timer });
-      window.postMessage({ __cmb: true, dir: 'i2m', action, payload: { id } }, '*');
+      window.postMessage({
+        __cmb: true, dir: 'i2m', action,
+        payload: Object.assign({ id }, extra || {}),
+      }, '*');
     });
   }
 
@@ -65,8 +71,14 @@
     // מחזיר Promise עם {ok, combo, mounted, stats} או {ok:false, error}.
     readCombo() { return request('readCombo'); },
 
-    // אינדקס שטוח של כל מה שהמשתמש מחזיק: {ok, items[], devices[]}.
-    // משמש את המיגרציה של קומבואים ישנים (שם -> מזהה).
+    // אינדקס שטוח של פריטי המוסך (כולל מה שאינו בבעלות, עם דגל):
+    // {ok, items[], devices[]}. משמש את המיגרציה (שם -> מזהה).
     readIndex() { return request('readIndex'); },
+
+    // מחיל קומבו. `desired` הוא ה-data השמור אחרי הסרת מה שבוטל בכרטיס.
+    // מחזיר {ok, results[], failed[], unavailable[], ms} — דוח לפי חריץ.
+    applyCombo(desired, opts) {
+      return request('applyCombo', { desired, opts }, APPLY_TIMEOUT_MS);
+    },
   };
 })();

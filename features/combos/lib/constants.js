@@ -26,10 +26,28 @@
     GARAGE_WRAPPER: ".GarageCommonStyle-garageContainer",
     TANK_PREVIEW_CANVAS: "#tankPreviewCanvas",
     POSITION_CONTENT: ".GarageCommonStyle-positionContent",
+    // מארחי תצוגת הטנק: הקונטיינרים שבתוכם יושב #tankPreviewContainer —
+    // האלמנט שהמשחק מודד כדי למקם את מודל הטנק המסתובב. יש אחד לכל סוג
+    // טאב, ומי מהם קיים תלוי באיזו כרטיסייה היה המשתמש לפני שעבר לקומבואים.
+    //
+    // **אסור להסתיר אותם ב-display:none.** אב מוסתר נותן לתצוגה תיבה בגודל
+    // אפס, ואז כל מדידה מחדש — שינוי גודל חלון, או כל שינוי state כמו
+    // החלפת צבע — מעלימה את המודל עד שיוצאים וחוזרים לכרטיסייה. זו גם
+    // הסיבה שהגרירה לסיבוב מעולם לא עבדה אצלנו: אלמנט מוסתר לא מקבל
+    // אירועי עכבר. במקום זה מוציאים אותם מהזרימה (ראה keepTankPreviewAlive)
+    // ומסתירים את **התוכן שלצד התצוגה** דרך ELEMENTS_TO_HIDE.
+    PREVIEW_HOSTS: `
+            .GarageCommonStyle-positionContent,
+            .PaintsCollectionComponentStyle-containerPaints
+        `,
+
+    // התצוגה עצמה, בתוך המארח
+    TANK_PREVIEW: "#tankPreviewContainer, .GarageComponentStyle-tankPreview",
+
+    // מה שמוסתר בזמן שכרטיסיית הקומבואים פתוחה — **מחוץ** למארחי התצוגה.
+    // מה שבתוכם מוסתר לבד ע"י keepTankPreviewAlive, שמסתיר כל מה שאינו על
+    // המסלול אל התצוגה; אין צורך לנקוב שם בשמות מחלקות.
     ELEMENTS_TO_HIDE: `
-            .GarageCommonStyle-positionContent, 
-            .PaintsCollectionComponentStyle-containerPaints,
-            .PaintsCollectionComponentStyle-blockPaints,
             .GarageSuppliesPreviewComponentStyle-view,
             .GarageCommonStyle-positionContentAlteration,
             .TanksPartComponentStyle-amountItems,

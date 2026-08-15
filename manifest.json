@@ -108,6 +108,7 @@
         "features/combos/core/equippers/augment_equipper.js",
         "features/combos/core/equippers/protection_equipper.js",
         "features/combos/core/combo_loader.js",
+        "features/combos/core/instant_loader.js",
         "features/combos/core/navigation_helpers.js",
         "features/combos/core/auto_navigator.js",
         "features/combos/core/randomizer/item_list_scanner.js",

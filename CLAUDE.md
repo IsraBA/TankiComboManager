@@ -58,7 +58,8 @@ JS worlds, different storage areas. They share only the UI components in
 │   │   ├── core/
 │   │   │   ├── instant_saver.js  # THE save path: reads the loadout from game state, saves instantly
 │   │   │   ├── combo_saver.js    # LEGACY save path (DOM tab-walk) — kept, wired to nothing
-│   │   │   ├── combo_loader.js   # reads saved combo and equips items (DOM path — still THE equip path)
+│   │   │   ├── instant_loader.js # THE equip path: dispatches the game's own actions
+│   │   │   ├── combo_loader.js   # LEGACY equip path (DOM) — kept, used as a per-slot fallback
 │   │   │   ├── combo_cleaner.js  # cleans up stale/invalid combo data
 │   │   │   ├── combo_migrator.js # backfills ids on old combos, in the background
 │   │   │   ├── tab_navigator.js  # navigates between garage tabs (incl. COMBOS)
@@ -471,12 +472,25 @@ game state (`core/instant_saver.js` → `GarageBridge.readCombo()` → storage),
 no tab navigation — the user never leaves the combos view. The DOM-scan save
 (`combo_saver.js`) is kept in the tree but wired to nothing.
 
-Equipping still runs the old DOM path. The native write path lives in
-`main/garage_state.js` behind console helpers (`__CMB_TRY_NATIVE`,
-`__CMB_TRY_PROTECTIONS`, …) — **the in-progress detail, including how the game's
-own actions are dispatched and every anchor involved, is in
+**Equipping now runs natively too** (`core/instant_loader.js` →
+`GarageBridge.applyCombo()` → `main/garage_state.js`). The DOM equipper stays in
+the tree as a fallback. **The in-progress detail, including how the game's own
+actions are dispatched and every anchor involved, is in
 `docs/INSTANT_EQUIP_STATUS.md`.** That file is the working note for this feature
 and gets deleted when it lands.
+
+How equipping is split: `instant_loader.js` (ISOLATED) decides **what** to
+apply — it strips what the user removed on the card and honours
+`equipProtectionsOnLoad` — and `garage_state.js` (MAIN) decides **how**, because
+resolving a saved slot to a real item depends on live state (owned? which Mk?
+already mounted?) which only exists there. One message out, a per-slot report
+back. Order: base items → decorative → protections → augments, with a short
+randomised pause between actions. Two distinct outcomes matter:
+
+| result | meaning | what happens |
+|---|---|---|
+| `failed` | the native dispatch did not work | that **one slot** falls back to the DOM equipper |
+| `unavailable` | this account does not own the item | skipped and reported — no fallback, since no path could equip it |
 
 The short version of the write path: every garage change is a Redux action, and
 those actions come in two layers — a public *thunk* the UI dispatches, and a

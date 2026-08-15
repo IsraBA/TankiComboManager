@@ -2,10 +2,15 @@
 /* העתקת העיצוב המדויק מכרטיסיית הצבעים */
 
 /* === Main Container === */
+/* תצוגת הטנק של המשחק נשארת חיה מתחתינו (ראה keepTankPreviewAlive), ולכן
+   צריך שכבה משלנו מעליה — אחרת היא תבלע את הלחיצות על הכרטיסים. הטנק
+   נשאר ניתן לגרירה בכל השטח שהתוכן שלנו לא מכסה. */
 #combo-manager-view {
   width: 100%;
   display: none;
   color: white;
+  position: relative;
+  z-index: 1;
 }
 
 .cme_main {

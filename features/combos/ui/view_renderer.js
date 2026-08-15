@@ -782,9 +782,15 @@
       });
     },
 
-    // הצטיידות בקומבו
+    // הצטיידות בקומבו — נקודת הכניסה היחידה, גם מהכרטיס וגם מהלובי.
+    // המסלול המיידי משגר את הפעולות של המשחק עצמו; הוא נופל לאקוויפר
+    // ה-DOM לבד, וברמת הפריט הבודד (ראה core/instant_loader.js).
     async equipCombo(combo) {
-      // console.log('[ComboManager] Equipping combo:', combo);
+      const InstantLoader = window.TankiQoL.InstantLoader;
+      if (InstantLoader) {
+        await InstantLoader.equipCombo(combo);
+        return;
+      }
       if (window.TankiQoL.ComboLoader) {
         await window.TankiQoL.ComboLoader.equipCombo(combo);
       } else {
@@ -845,6 +851,73 @@
       });
     },
 
+    // משאיר את תצוגת הטנק המסתובבת חיה בזמן שהכרטיסייה שלנו פתוחה.
+    //
+    // המשחק מודד את #tankPreviewContainer כדי למקם את המודל, ולכן המארח שלו
+    // חייב להישאר עם תיבה אמיתית — אחרת כל מדידה מחדש מעלימה את המודל
+    // (ראה ההערה ליד PREVIEW_HOSTS). מצד שני, המארח הוא אח שלנו ב-flex
+    // column ותופס height:100%, כך שאם יישאר בזרימה הוא יחלוק איתנו את
+    // הגובה וידחס את התצוגה.
+    //
+    // הפתרון: מוציאים אותו מהזרימה לשכבה שמתחתינו. התיבה נשמרת, הפריסה
+    // שלנו לא נפגעת, והטנק מסתובב בגרירה בכל שטח שהתוכן שלנו לא מכסה.
+    //
+    // מטפלים בכל המארחים ולא רק באחד: איזה מהם קיים תלוי בכרטיסייה שממנה
+    // המשתמש הגיע (לתותחים/גופים יש מבנה אחד, לצבעים אחר).
+    keepTankPreviewAlive(active) {
+      const wrapper = document.querySelector(DOM.GARAGE_WRAPPER);
+      if (!wrapper) return;
+      const hosts = document.querySelectorAll(DOM.PREVIEW_HOSTS);
+
+      // שחזור: כל מה שהסתרנו בדרך מסומן, ולכן אין צורך לזכור רשימות
+      document.querySelectorAll("[data-cme-preview-hidden]").forEach((el) => {
+        el.style.removeProperty("display");
+        delete el.dataset.cmePreviewHidden;
+      });
+
+      if (!active) {
+        wrapper.style.removeProperty("position");
+        hosts.forEach((host) => {
+          for (const p of ["position", "top", "left", "margin", "z-index"]) {
+            host.style.removeProperty(p);
+          }
+        });
+        return;
+      }
+
+      // נדרש כדי שה-absolute שלמטה יתמקם ביחס למוסך ולא לחלון
+      wrapper.style.position = "relative";
+
+      hosts.forEach((host) => {
+        const preview = host.querySelector(DOM.TANK_PREVIEW);
+        if (!preview) {
+          // אין תצוגה במארח הזה — אין מה לשמר, מסתירים אותו כולו כמו פעם
+          host.dataset.cmePreviewHidden = "1";
+          host.style.display = "none";
+          return;
+        }
+
+        host.style.position = "absolute";
+        host.style.top = "0";
+        host.style.left = "0";
+        host.style.margin = "0";
+        host.style.zIndex = "0";
+
+        // מסתירים את כל מה שבמארח **חוץ מהמסלול אל התצוגה**: מטפסים
+        // מהתצוגה כלפי מעלה ובכל רמה מסתירים את האחים. כך זה עובד לכל
+        // מבנה טאב, גם כזה שלא ראינו, בלי לנקוב בשמות מחלקות שמשתנים.
+        for (let el = preview; el && el !== host; el = el.parentElement) {
+          const parent = el.parentElement;
+          if (!parent) break;
+          for (const sib of parent.children) {
+            if (sib === el) continue;
+            sib.dataset.cmePreviewHidden = "1";
+            sib.style.display = "none";
+          }
+        }
+      });
+    },
+
     show() {
       if (this.viewElement) {
         this.viewElement.style.display = "flex";
@@ -856,6 +929,7 @@
       // הסתרת כל האלמנטים המפריעים
       const elementsToHide = document.querySelectorAll(DOM.ELEMENTS_TO_HIDE);
       elementsToHide.forEach((el) => (el.style.display = "none"));
+      this.keepTankPreviewAlive(true);
     },
 
     hide() {
@@ -867,6 +941,7 @@
       // החזרת כל האלמנטים שהסתרנו
       const elementsToRestore = document.querySelectorAll(DOM.ELEMENTS_TO_HIDE);
       elementsToRestore.forEach((el) => (el.style.display = ""));
+      this.keepTankPreviewAlive(false);
       const tankCanvas = document.querySelector(DOM.TANK_PREVIEW_CANVAS);
       if (tankCanvas) {
         tankCanvas.style.removeProperty("display");

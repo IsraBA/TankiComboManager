@@ -9,7 +9,6 @@
   window.TankiQoL.RandomFromSaved = {
     // ביצוע רנדום מתוך קומבואים שמורים — מחזיר את ה-data של הקומבו שנבחר
     async execute() {
-      const ComboLoader = window.TankiQoL.ComboLoader;
       const LanguageManager = window.TankiQoL.LanguageManager;
 
       // טעינת קומבואים מה-storage
@@ -33,10 +32,16 @@
       const randomIndex = Math.floor(Math.random() * filtered.length);
       const randomCombo = filtered[randomIndex];
 
-      // הצטיידות בקומבו
-      await ComboLoader.equipCombo(randomCombo);
+      // הצטיידות בקומבו — במסלול המיידי, עם נפילה ל-DOM כמו מהכרטיס עצמו
+      const InstantLoader = window.TankiQoL.InstantLoader;
+      if (InstantLoader) {
+        await InstantLoader.equipCombo(randomCombo);
+      } else {
+        await window.TankiQoL.ComboLoader.equipCombo(randomCombo);
+      }
 
-      // חזרה לכרטיסיית COMBOS
+      // חזרה לכרטיסיית COMBOS (רלוונטי רק כשמסלול ה-DOM ניווט בין טאבים;
+      // במסלול המיידי אנחנו כבר שם וזה no-op מהיר)
       await this._navigateBackToCombos();
 
       // החזרת data הקומבו שנבחר (ללא removedItems)

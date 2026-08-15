@@ -105,6 +105,11 @@
       name: 'mra_1',
       category: 'nra_1',
       previewImage: 'sra_1',
+      // דגל הבעלות. השם מטעה — במשחק זהו בדיוק המבחן קנוי/לא-קנוי:
+      // iri() = infinityLifetimeItem ? BOUGHT : NOT_OWNED (שמות ה-enum
+      // מופיעים בבאנדל כמחרוזות). state.devices מחזיק את הקטלוג המלא של
+      // כל פריט — קנויים ולא-קנויים יחד — ולכן חובה לסנן לפי השדה הזה.
+      infinityLifetimeItem: 'arb_1',
     },
     urlMethod: 'r92',
     // מסלול השליחה לשרת (הרכבה מיידית) — ראה isolated/detect.js
@@ -162,6 +167,7 @@
   let resistUnmountProto = null;// GarageResistanceUnMount — הסרת הגנה
   let deviceInsertProto = null; // GarageInsertDeviceClientAndServer — התקנת אוגמנט
   let deviceRemoveProto = null; // GarageRemoveDevice — הסרת אוגמנט
+  let deviceLoadProto = null;   // GarageLoadAvailableDevices — בקשת קטלוג אוגמנטים
   let skinMountProto = null;    // החלת סקין על תותח/גוף
   let storeInfo = null;         // {store, dispatch} — לשיגור הפעולה
 
@@ -211,6 +217,7 @@
     deviceRemoveResolved: false,
     devicesInstalled: 0,
     devicesRemoved: 0,
+    catalogRequests: 0,
     skinMountResolved: false,
     skinsApplied: 0,
     captures: 0,
@@ -699,7 +706,8 @@
       // (המשחק זוכר התקנה לכל פריט בנפרד).
       augmentsOnUnmounted = [];
       if (DF) {
-        const installed = found.devices.filter((d) => d[DF.installed] === true);
+        // מהרשימה הקנונית בלבד — סריקה כללית אוספת עותקים גם מהחנות
+        const installed = stateDevices().filter((d) => d[DF.installed] === true);
         const byBase = new Map();
         for (const d of installed) byBase.set(idToString(d[DF.baseItemId]), d);
 
@@ -791,13 +799,17 @@
         });
       }
 
+      // אוגמנטים: הקטלוג הקנוני, עם דגל בעלות — כמו הפריטים. המיגרציה
+      // פותרת מזהים גם ללא-קנויים (מזהה הוא עובדה על המשחק), וההצטיידות
+      // היא שמסרבת לצייד את מה שלא קנוי.
       const devices = [];
       if (DF) {
-        for (const d of found.devices) {
+        for (const d of stateDevices()) {
           devices.push({
             id: idToString(d[DF.id]),
             baseItemId: idToString(d[DF.baseItemId]),
             name: d[DF.name],
+            owned: deviceOwned(d),
           });
         }
       }
@@ -1238,9 +1250,9 @@
   function resolveDeviceProtos() {
     if (deviceInsertProto && deviceRemoveProto) return true;
     if (!latestState || !D.deviceFields) return false;
-    const found = collect(latestState);
-    const dev = found.devices[0];
-    const item = found.items[0];
+    // כאן כל אוגמנט מספיק — הוא משמש רק כדגימה לאימות הבנאי
+    const dev = collect(latestState).devices[0];
+    const item = collect(latestState).items[0];
     if (!dev || !item) return false;
 
     if (!deviceInsertProto && D.deviceInsertClass && D.deviceInsertFields) {
@@ -1264,12 +1276,40 @@
     return !!(deviceInsertProto && deviceRemoveProto);
   }
 
+  // רשימת האוגמנטים הקנונית: תת-העץ state.devices. חשוב פעמיים:
+  //   * לא סריקה של כל הגרף — זו אוספת עותקים גם מ-itemsOnMarket.
+  //   * זה עדיין **הקטלוג המלא** של כל פריט שנטען, קנויים ולא-קנויים יחד
+  //     (אומת חי: 43 אוגמנטים לשני פריטים). הבעלות היא שדה, לא מיקום.
+  function stateDevices() {
+    if (!latestState || !D.stateFields || !D.stateFields.devices) return [];
+    const sub = latestState[D.stateFields.devices];
+    if (!sub || typeof sub !== 'object') return [];
+    try {
+      return collect(sub).devices;
+    } catch (e) {
+      NS.debug.lastError = String(e);
+      return [];
+    }
+  }
+
+  // האם האוגמנט קנוי. זה בדיוק המבחן של המשחק עצמו:
+  //   iri() = infinityLifetimeItem ? BOUGHT : NOT_OWNED
+  // (שמות ה-enum מופיעים בבאנדל כמחרוזות — אין כאן פרשנות שלנו.)
+  // אם השדה לא התגלה משום מה — מתירנים, שלא נשבית אוגמנטים לגמרי.
+  function deviceOwned(device) {
+    const DF = D.deviceFields;
+    if (!DF || !device) return true;
+    const f = DF.infinityLifetimeItem;
+    if (!f || !(f in device)) return true;
+    return device[f] === true;
+  }
+
   // האוגמנט המותקן על פריט נתון (או null)
-  function installedDeviceFor(rawItem, found) {
+  function installedDeviceFor(rawItem) {
     const DF = D.deviceFields;
     if (!DF || !latestState) return null;
     const base = baseItemIdOf(rawItem);
-    for (const d of (found || collect(latestState)).devices) {
+    for (const d of stateDevices()) {
       if (d[DF.installed] !== true) continue;
       if (idToString(d[DF.baseItemId]) === base) return d;
     }
@@ -1290,9 +1330,8 @@
 
     const DF = D.deviceFields;
     const IF = D.itemFields;
-    const found = collect(latestState);
     const base = baseItemIdOf(rawItem);
-    const current = installedDeviceFor(rawItem, found);
+    const current = installedDeviceFor(rawItem);
     const currentId = current ? idToString(current[DF.id]) : null;
     const wantId = desiredDeviceId == null ? null : String(desiredDeviceId);
 
@@ -1300,21 +1339,29 @@
       return { ok: true, changed: false, kept: current ? current[DF.name] : null };
     }
 
-    // הפריט הרצוי חייב להימצא ולהשתייך לאותו פריט בסיס
+    // כל הבדיקות קורות לפני שנוגעים במשהו, וזה קריטי: ההסרה מתבצעת
+    // ראשונה, כך שכישלון באמצע היה משאיר את הפריט בלי אוגמנט בכלל
+    // (וזה בדיוק מה שקרה כשצוידו אוגמנטים לא-קנויים: מקומית "הצליח",
+    // השרת דחה, ואחרי ריענון — בלי אוגמנט).
     let wantDev = null;
     if (wantId) {
-      for (const d of found.devices) {
+      for (const d of stateDevices()) {
         if (idToString(d[DF.id]) === wantId) { wantDev = d; break; }
       }
       if (!wantDev) {
-        // רשימות האוגמנטים נטענות בעצלות לפי baseItemId — ייתכן שהאוגמנט
-        // פשוט עוד לא נטען. ראה deviceLoadClass בגילוי.
-        return { ok: false, error: 'augment ' + wantId + ' is not in the garage state ' +
-          '(its list may not be loaded yet — open that item\'s screen once)' };
+        // רשימת האוגמנטים של הפריט עוד לא נטענה (טעינה עצלה לפי
+        // baseItemId — ראה deviceLoadClass בגילוי)
+        return { ok: false, notOwned: true,
+          error: 'augment ' + wantId + ' is not in the garage state' };
       }
       if (idToString(wantDev[DF.baseItemId]) !== base) {
         return { ok: false, error: 'augment ' + wantDev[DF.name] + ' does not belong to ' +
           rawItem[IF.name] };
+      }
+      // הקטלוג מכיל גם את מה שלא נקנה — הבעלות היא שדה, לא מיקום
+      if (!deviceOwned(wantDev)) {
+        return { ok: false, notOwned: true,
+          error: 'augment ' + wantDev[DF.name] + ' is not owned on this account' };
       }
     }
 
@@ -1519,6 +1566,284 @@
     }
   }
 
+  // ---- החלת קומבו שלם ----------------------------------------------------
+  //
+  // כל ההיגיון יושב כאן ולא בצד ISOLATED, ובכוונה: הפתרון של פריט תלוי
+  // במצב החי (מה בבעלות, איזו Mk, מה כבר מורכב), והמצב נמצא רק כאן. הצד
+  // השני שולח את הקומבו הרצוי ומקבל דוח לפי חריץ.
+  //
+  // סדר: פריטי בסיס -> דקורטיביים -> הגנות -> אוגמנטים. האוגמנט אחרון כי
+  // הוא נתלה בפריט שלו; השאר בסדר הזה כדי שמה שהמשתמש רואה יתייצב מוקדם.
+  //
+  // בין פעולה לפעולה יש השהיה קצרה. לא בגלל שהמשחק דורש זאת — הוא לא —
+  // אלא כדי שרצף של עשר פקודות בתוך אותה מילישנייה לא ייראה חריג.
+
+  const DEFAULT_DELAY_MS = 80;
+  const DELAY_JITTER_MS = 40;
+
+  function sleep(ms) {
+    return new Promise((resolve) => W.setTimeout(resolve, ms));
+  }
+
+  // פותר חריץ שמור לפריט אמיתי במוסך.
+  //
+  // המפתח הוא **baseItemId**, לא ה-id השמור: כל Mk היא פריט נפרד והמשתמש
+  // מחזיק את כולן, אז קומבו שנשמר ב-Mk5 אמור לצייד את ה-Mk הנוכחית ולא
+  // לנעול על הישנה. זו בדיוק ההתנהגות של המשחק, שאינו מציע בחירת Mk.
+  function resolveOwnedItem(entry, category, found) {
+    if (!entry) return null;
+    const IF = D.itemFields;
+    const base = entry.baseItemId != null ? String(entry.baseItemId) : null;
+    const wantId = entry.id != null ? String(entry.id) : null;
+    if (!base && !wantId) return null;
+
+    let best = null;
+    for (const it of (found || collect(latestState)).items) {
+      if (it[IF.owned] !== true) continue;
+      if (category && enumName(it[IF.category]) !== category) continue;
+      const hit = base ? baseItemIdOf(it) === base : idToString(it[IF.id]) === wantId;
+      if (!hit) continue;
+      if (!best || (mkLevel(it) || 0) > (mkLevel(best) || 0)) best = it;
+    }
+    return best;
+  }
+
+  // מחיל קומבו. `desired` הוא מבנה הנתונים השמור, אחרי שהצד השני כבר
+  // הסיר ממנו את מה שהמשתמש ביטל בכרטיס.
+  //   protection === null      -> לא נוגעים בהגנות בכלל
+  //   protection === [4 ערכים] -> מחילים את המצב במלואו (null בחריץ = הסרה)
+  async function applyCombo(desired, opts) {
+    if (!latestState) return { ok: false, error: 'garage state not captured' };
+    if (!desired || typeof desired !== 'object') return { ok: false, error: 'no combo given' };
+
+    const o = opts || {};
+    const baseDelay = typeof o.delayMs === 'number' ? o.delayMs : DEFAULT_DELAY_MS;
+    const jitter = typeof o.delayMs === 'number' ? 0 : DELAY_JITTER_MS;
+    const IF = D.itemFields;
+    const results = [];
+    const t0 = (W.performance && W.performance.now) ? W.performance.now() : Date.now();
+
+    const pause = () => sleep(baseDelay + (jitter ? Math.floor(Math.random() * jitter) : 0));
+
+    // פריט בסיס / דקורטיבי — הרכבה רגילה
+    async function doItem(slot, category) {
+      const entry = desired[slot];
+      if (!entry) return;
+      const raw = resolveOwnedItem(entry, category, collect(latestState));
+      if (!raw) {
+        results.push({ slot, name: entry.name || null, status: 'unavailable' });
+        return;
+      }
+      if (raw[IF.mounted] === true) {
+        results.push({ slot, name: raw[IF.name], status: 'unchanged' });
+        return;
+      }
+      const r = mountViaAction(raw, true);
+      results.push({
+        slot, name: raw[IF.name],
+        status: r.ok ? 'applied' : 'failed',
+        error: r.ok ? undefined : r.error,
+      });
+      await pause();
+    }
+
+    // סקין — פעולה משלו, ותמיד ביחס לפריט הבסיס
+    async function doSkin(slot, ownerSlot, ownerCategory) {
+      const entry = desired[slot];
+      if (!entry || entry.id == null) return;
+      const owner = resolveOwnedItem(desired[ownerSlot], ownerCategory, collect(latestState));
+      if (!owner) return;   // בלי הפריט אין למה להחיל — לא שגיאה
+      const r = applySkin(owner, entry.id);
+      if (!r.ok) {
+        results.push({ slot, name: entry.name || null, status: 'failed', error: r.error });
+        return;
+      }
+      results.push({ slot, name: entry.name || null, status: r.changed ? 'applied' : 'unchanged' });
+      if (r.changed) await pause();
+    }
+
+    // אוגמנט — נתלה בפריט שלו, ולכן אחרי שהוא כבר הורכב
+    async function doAugment(slot, ownerSlot, ownerCategory) {
+      const entry = desired[slot];
+      if (!entry || entry.id == null) return;
+      const owner = resolveOwnedItem(desired[ownerSlot], ownerCategory, collect(latestState));
+      if (!owner) return;
+      const r = applyAugment(owner, entry.id);
+      if (!r.ok) {
+        // אוגמנט שאינו בבעלות אינו כשל אלא חוסר — אין מסלול שיצליח בו,
+        // ולכן גם אין טעם ליפול ל-DOM (ראה core/instant_loader.js).
+        results.push({
+          slot, name: entry.name || null,
+          status: r.notOwned ? 'unavailable' : 'failed',
+          error: r.notOwned ? undefined : r.error,
+        });
+        return;
+      }
+      results.push({ slot, name: entry.name || null, status: r.changed ? 'applied' : 'unchanged' });
+      if (r.changed) await pause();
+    }
+
+    try {
+      // 1. פריטי בסיס
+      await doItem('turret', 'WEAPON');
+      await doItem('hull', 'ARMOR');
+      await doItem('grenade', 'BAZOOKA');
+      await doItem('drone', 'DRONE');
+
+      // 2. דקורטיביים
+      await doItem('paint', 'PAINT');
+      await doSkin('turretSkin', 'turret', 'WEAPON');
+      await doSkin('hullSkin', 'hull', 'ARMOR');
+
+      // 3. הגנות — מצב מלא, עם ה-diff הקבוצתי שכבר קיים
+      if (Array.isArray(desired.protection)) {
+        const found = collect(latestState);
+        const ids = [];
+        for (let i = 0; i < 4; i++) {
+          const raw = resolveOwnedItem(desired.protection[i], 'RESISTANCE_MODULE', found);
+          if (!raw && desired.protection[i]) {
+            results.push({
+              slot: 'protection ' + i,
+              name: desired.protection[i].name || null,
+              status: 'unavailable',
+            });
+          }
+          ids.push(raw ? idToString(raw[IF.id]) : null);
+        }
+        const r = applyProtections(ids);
+        if (!r.ok && r.error) {
+          results.push({ slot: 'protection', status: 'failed', error: r.error });
+        } else {
+          const touched = r.plan.unmounted.length + r.plan.mounted.length;
+          results.push({
+            slot: 'protection',
+            status: touched ? 'applied' : 'unchanged',
+            detail: r.plan,
+            error: (r.errors && r.errors.length) ? r.errors.join('; ') : undefined,
+          });
+          if (touched) await pause();
+        }
+      }
+
+      // 4. אוגמנטים. שני מכשולי תזמון מכוסים כאן:
+      //   * טעינה עצלה אחרי ריענון — הקטלוג עוד לא הגיע.
+      //   * ההרכבה הנמוכה שלנו מדלגת על טעינת הקטלוג שה-thunk של המשחק
+      //     מפעיל — אז לפריט שמסכו מעולם לא נפתח מבקשים אותו בעצמנו.
+      if (desired.turretAugment || desired.hullAugment) {
+        for (const [slot, cat] of [['turret', 'WEAPON'], ['hull', 'ARMOR']]) {
+          if (!desired[slot + 'Augment']) continue;
+          const owner = resolveOwnedItem(desired[slot], cat, collect(latestState));
+          if (owner) requestDeviceCatalog(owner);
+        }
+        await waitForMountedDeviceCatalogs(2000);
+      }
+      await doAugment('turretAugment', 'turret', 'WEAPON');
+      await doAugment('hullAugment', 'hull', 'ARMOR');
+    } catch (e) {
+      NS.debug.lastError = String(e);
+      return { ok: false, error: String(e), results };
+    }
+
+    const t1 = (W.performance && W.performance.now) ? W.performance.now() : Date.now();
+    const failed = results.filter((r) => r.status === 'failed');
+    const unavailable = results.filter((r) => r.status === 'unavailable');
+    return {
+      ok: failed.length === 0,
+      results,
+      failed: failed.map((r) => r.slot),
+      unavailable: unavailable.map((r) => r.slot),
+      ms: Math.round(t1 - t0),
+    };
+  }
+
+  // מבקש מהשרת את קטלוג האוגמנטים של פריט, אם הוא עוד לא ב-state.
+  //
+  // למה זה נדרש: ה-thunk של ההרכבה במשחק משגר GarageLoadDevicesIfNotLoaded
+  // אחרי כל הרכבת תותח/גוף — ואנחנו משגרים את הפעולה הנמוכה שמדלגת על זה.
+  // בלי ההשלמה הזו, פריט שמסכו מעולם לא נפתח לעולם לא יקבל קטלוג, ואוגמנט
+  // שלו ידווח unavailable בטעות. הפקודה מזוהה בוודאות: זו בדיוק הפעולה
+  // שה-thunk של המשחק משגר (GarageLoadAvailableDevices(baseItemId)).
+  function requestDeviceCatalog(ownerRaw) {
+    const DF = D.deviceFields;
+    const IF = D.itemFields;
+    if (!DF || !ownerRaw) return false;
+    const base = baseItemIdOf(ownerRaw);
+
+    // כבר טעון? אין מה לבקש
+    for (const d of stateDevices()) {
+      if (idToString(d[DF.baseItemId]) === base) return true;
+    }
+
+    if (!deviceLoadProto) {
+      if (!D.deviceLoadClass || !D.deviceLoadFields || !latestState) return false;
+      const F = D.deviceLoadFields;
+      const sampleId = ownerRaw[IF.id];
+      const Ctor = resolveActionCtor(D.deviceLoadClass, (C) => {
+        if (C.length !== 1) return false;
+        const p = new C(sampleId);
+        return p[F.itemId] === sampleId;
+      });
+      if (!Ctor) return false;
+      deviceLoadProto = Ctor.prototype;
+    }
+    const si = findStore();
+    if (!si) return false;
+
+    // המזהה הגולמי (Long) של משפחת הפריט — לא המחרוזת
+    const mod = ownerRaw[IF.modification];
+    const MF = D.modificationFields;
+    const rawBase = (mod != null && MF && mod[MF.baseItemId] != null)
+      ? mod[MF.baseItemId] : ownerRaw[IF.id];
+
+    try {
+      si.store[si.dispatch](buildAction(deviceLoadProto, [rawBase]));
+      NS.debug.catalogRequests++;
+      return true;
+    } catch (e) {
+      NS.debug.lastError = String(e);
+      return false;
+    }
+  }
+
+  // ---- המתנה לקטלוג האוגמנטים --------------------------------------------
+  //
+  // המשחק טוען את רשימת האוגמנטים של כל פריט **בעצלות**, זמן קצר אחרי
+  // הכניסה למוסך. שמירה (או החלה) מיד אחרי ריענון עלולה להקדים את הטעינה —
+  // ואז התותח/גוף נקראים בלי האוגמנט שלהם, למרות שהוא מותקן. התסמין:
+  // השמירה הראשונה בלי אוגמנטים, השנייה תקינה.
+  //
+  // לא משגרים שום בקשת טעינה — רק ממתינים למה שהמשחק עושה ממילא, עם
+  // תקרה. אם הקטלוג לא הגיע עד אז, ממשיכים בלעדיו (ההתנהגות הישנה).
+  async function waitForMountedDeviceCatalogs(maxMs) {
+    const DF = D.deviceFields;
+    const IF = D.itemFields;
+    if (!DF || !latestState) return true;
+
+    // הפריטים שיש להם בכלל אוגמנטים: התותח והגוף המורכבים
+    const wanted = [];
+    try {
+      for (const it of collect(latestState).items) {
+        if (it[IF.mounted] !== true) continue;
+        const cat = enumName(it[IF.category]);
+        if (cat === 'WEAPON' || cat === 'ARMOR') wanted.push(baseItemIdOf(it));
+      }
+    } catch (e) { return true; }
+    if (!wanted.length) return true;
+
+    const deadline = Date.now() + (maxMs || 2500);
+    for (;;) {
+      const have = new Set();
+      for (const d of stateDevices()) have.add(idToString(d[DF.baseItemId]));
+      if (wanted.every((b) => have.has(b))) return true;
+      if (Date.now() >= deadline) {
+        NS.debug.lastError = 'device catalogs not loaded in time for: ' +
+          wanted.filter((b) => !have.has(b)).join(', ');
+        return false;
+      }
+      await sleep(150);
+    }
+  }
+
   // ---- שמות שהתגלו + גשר -----------------------------------------------
 
   function applyNames(d) {
@@ -1552,14 +1877,20 @@
 
     if (m.action === 'readCombo') {
       const id = (m.payload || {}).id;
-      let res;
-      try { res = readCombo(); } catch (err) { res = { ok: false, error: String(err) }; }
-      try { logCombo(res); } catch (err) { NS.debug.lastError = String(err); }
-      // מחזירים גם לצד ISOLATED — שם ייעשה בהמשך השימוש האמיתי בנתונים
-      window.postMessage({
-        __cmb: true, dir: 'm2i', action: 'comboResult',
-        payload: Object.assign({ id }, res),
-      }, '*');
+      // אסינכרוני: ממתינים (עם תקרה) לקטלוג האוגמנטים, שנטען בעצלות אחרי
+      // הכניסה למוסך — אחרת שמירה מיידית אחרי ריענון יוצאת בלי אוגמנטים.
+      // תקרת ההמתנה קטנה מה-timeout של הגשר (4s), כך שהתשובה תמיד מגיעה.
+      (async () => {
+        try { await waitForMountedDeviceCatalogs(2500); } catch (e) { /* ממשיכים בלעדיו */ }
+        let res;
+        try { res = readCombo(); } catch (err) { res = { ok: false, error: String(err) }; }
+        try { logCombo(res); } catch (err) { NS.debug.lastError = String(err); }
+        // מחזירים גם לצד ISOLATED — שם ייעשה השימוש האמיתי בנתונים
+        window.postMessage({
+          __cmb: true, dir: 'm2i', action: 'comboResult',
+          payload: Object.assign({ id }, res),
+        }, '*');
+      })();
       return;
     }
 
@@ -1571,6 +1902,20 @@
         __cmb: true, dir: 'm2i', action: 'indexResult',
         payload: Object.assign({ id }, res),
       }, '*');
+      return;
+    }
+
+    if (m.action === 'applyCombo') {
+      const p = m.payload || {};
+      // אסינכרוני: יש השהיות בין פריט לפריט
+      applyCombo(p.desired, p.opts)
+        .catch((err) => ({ ok: false, error: String(err) }))
+        .then((res) => {
+          window.postMessage({
+            __cmb: true, dir: 'm2i', action: 'applyResult',
+            payload: Object.assign({ id: p.id }, res),
+          }, '*');
+        });
     }
   });
 
@@ -1791,6 +2136,7 @@
     if (!DF) { console.warn('[combos] device fields were not discovered'); return null; }
     const IF = D.itemFields;
     const found = collect(latestState);
+    const catalog = stateDevices();
 
     const rows = [];
     const available = [];
@@ -1799,25 +2145,27 @@
       const cat = enumName(it[IF.category]);
       if (cat !== 'WEAPON' && cat !== 'ARMOR') continue;
       const base = baseItemIdOf(it);
-      const inst = installedDeviceFor(it, found);
+      const inst = installedDeviceFor(it);
       rows.push({
         item: it[IF.name], itemId: idToString(it[IF.id]),
         installed: inst ? inst[DF.name] : '—',
         augmentId: inst ? idToString(inst[DF.id]) : null,
       });
-      for (const d of found.devices) {
+      for (const d of catalog) {
         if (idToString(d[DF.baseItemId]) !== base) continue;
         available.push({
           forItem: it[IF.name], name: d[DF.name], augmentId: idToString(d[DF.id]),
           installed: d[DF.installed] === true,
+          owned: deviceOwned(d),
         });
       }
     }
 
     console.log('%c[combos] augments on the mounted turret/hull', 'color:#7ee787;font-weight:bold');
     console.table(rows);
-    console.log('available for those items: ' + available.length +
-      ' (lists load lazily per item, so this can be short until you open the screen)');
+    const ownedCount = available.filter((a) => a.owned).length;
+    console.log('catalog for those items: ' + available.length + ' (owned: ' + ownedCount +
+      ') — equipping refuses owned:false');
     console.table(available);
     return { mounted: rows, available };
   };
