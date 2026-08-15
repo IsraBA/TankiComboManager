@@ -44,7 +44,7 @@ meant to be read there.
 
 | Path | Reason |
 |---|---|
-| `CLAUDE.md` | the development guide — read it on GitHub, it doesn't run |
+| `CLAUDE.md`, `CLAUDE.mds/**` | the development guide — read it on GitHub, it doesn't run |
 | `docs/**` | `PACKAGING.md` (this file), `STORE.md` (dashboard paperwork), `PRIVACY.md` (belongs at its URL) |
 | `build/**` | the packaging script itself |
 | `HTML-examples/**` | captured game HTML/CSS samples — dev reference only, and large |
@@ -57,8 +57,8 @@ meant to be read there.
 
 - [ ] **Bump `version` in `manifest.json`.** CWS rejects a re-upload of an
       existing version.
-- [ ] Load unpacked and run the full manual test pass in `CLAUDE.md` → "Testing"
-      (both features).
+- [ ] Load unpacked and run the full manual test pass in `CLAUDE.mds/store.md` →
+      "Testing" (both features).
 - [ ] Run the script and skim its printed file list.
 - [ ] Host `docs/PRIVACY.md` publicly (GitHub Pages / Gist) and put that URL in
       the dashboard's **Privacy policy URL** field — mandatory now that the

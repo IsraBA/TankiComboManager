@@ -1,31 +1,12 @@
 // background.js  [service worker]
 
-// Service worker: cross-origin translation fetch.
-//
-// WHY THIS EXISTS (the one real difference vs the userscript):
-// The original userscript used GM_xmlhttpRequest to call the translation
-// APIs, which fires outside the page and bypasses CORS. In an MV3
-// extension there is no GM_* API, and a content-script fetch (even in the
-// ISOLATED world) is still subject to the page's CORS policy — the
-// translation endpoints do NOT reliably send permissive CORS headers, so a
-// content-script fetch would often fail. A background service worker,
-// however, may read cross-origin responses for any host listed in
-// `host_permissions`. So ALL translation network traffic goes here.
-//
-// Flow: MAIN world needs a translation -> postMessage -> features/translator/isolated/bridge.js
-// -> chrome.runtime.sendMessage({type:'translate', ...}) -> HERE -> fetch ->
-// sendResponse -> back down the same chain. See CLAUDE.md "Translation flow".
-//
-// The SW is ephemeral (Chrome terminates it when idle and restarts it on the
-// next message). Do not rely on module-level state surviving between calls —
-// the durable translation cache lives in the MAIN-world translate.js for the
-// page session. A tiny best-effort in-memory cache here only helps within a
-// single SW lifetime.
+// The only context allowed to read cross-origin translation responses.
+// Why, and the full flow: CLAUDE.mds/translator.md
 
 const TRANSLATE_TIMEOUT_MS = 8000;
 const LINGVA_INSTANCES = ['https://lingva.lunar.icu', 'https://lingva.ml'];
 
-// Best-effort, non-durable (see header). key = targetLang + '\n' + text.
+// The SW is ephemeral, so this cache only helps within one lifetime
 const swCache = new Map();
 
 async function fetchJson(url) {

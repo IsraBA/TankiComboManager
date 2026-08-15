@@ -1,29 +1,7 @@
 // features/combos/isolated/bridge.js  [ISOLATED world]
 
-// הגשר בין קוד הקומבואים (עולם ISOLATED, עובד מול ה-DOM) לבין ההוק שקורא את
-// מצב המוסך מתוך המשחק עצמו (עולם MAIN).
-//
-// למה בכלל צריך גשר: תוכן-סקריפטים רצים כברירת מחדל בעולם ISOLATED, שם יש
-// גישה ל-chrome.* אבל אין גישה ל-JS של הדף. ה-trap על Object.prototype שתופס
-// את אובייקט מצב המוסך עובד רק בעולם MAIN, ושם אין chrome.*. לכן פיצול לשניים
-// והודעות ביניהם — בדיוק כמו בפיצ'ר התרגום ובמו Shaft-Extension-V2.
-//
-// פרוטוקול: window.postMessage, כל הודעה מתויגת `__cmb` עם כיוון
-// (`i2m` = isolated->main, `m2i` = main->isolated).
-//
-// | כיוון | action           | payload                    | משמעות                        |
-// |-------|------------------|----------------------------|-------------------------------|
-// | i2m   | garageConstants  | מפת שמות שהתגלתה           | מ-detect.js (ראה שם)          |
-// | i2m   | readCombo        | {id}                       | בקשה לקרוא את הקומבו הנוכחי   |
-// | i2m   | readIndex        | {id}                       | בקשה לאינדקס פריטי המוסך      |
-// | i2m   | applyCombo       | {id, desired, opts}        | בקשה להחיל קומבו              |
-// | m2i   | ready            | —                          | MAIN מודיע שה-listeners שלו עלו |
-// | m2i   | comboResult      | {id, ok, combo, ...}       | תשובה לבקשת קריאה             |
-// | m2i   | indexResult      | {id, ok, items, devices}   | תשובה לבקשת אינדקס            |
-// | m2i   | applyResult      | {id, ok, results[], ...}   | תשובה לבקשת החלה              |
-//
-// כל בקשה נושאת מזהה רץ, והתשובה מותאמת אליו — כך אפשר להריץ כמה בקשות
-// במקביל בלי שיתבלבלו, ולכל אחת יש תקרת זמן משלה.
+// גשר בקשה/תשובה אל ההוק בעולם MAIN. כל בקשה נושאת מזהה רץ ותקרת זמן.
+// הפרוטוקול המלא: CLAUDE.mds/garage-native.md
 
 (function () {
   'use strict';
@@ -67,16 +45,13 @@
   }
 
   window.TankiQoL.GarageBridge = {
-    // קורא את הקומבו המצויד כרגע ישירות ממצב המשחק (בלי DOM, בלי ניווט טאבים).
-    // מחזיר Promise עם {ok, combo, mounted, stats} או {ok:false, error}.
+    // {ok, combo, mounted, stats} — הציוד המורכב, ממצב המשחק
     readCombo() { return request('readCombo'); },
 
-    // אינדקס שטוח של פריטי המוסך (כולל מה שאינו בבעלות, עם דגל):
-    // {ok, items[], devices[]}. משמש את המיגרציה (שם -> מזהה).
+    // {ok, items[], devices[]} — אינדקס שטוח למיגרציה (שם -> מזהה)
     readIndex() { return request('readIndex'); },
 
-    // מחיל קומבו. `desired` הוא ה-data השמור אחרי הסרת מה שבוטל בכרטיס.
-    // מחזיר {ok, results[], failed[], unavailable[], ms} — דוח לפי חריץ.
+    // {ok, results[], failed[], unavailable[], ms} — דוח לפי חריץ
     applyCombo(desired, opts) {
       return request('applyCombo', { desired, opts }, APPLY_TIMEOUT_MS);
     },

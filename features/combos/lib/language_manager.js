@@ -856,7 +856,6 @@
       const rootTitle = document.querySelector(DOM.GARAGE_ROOT_TITLE);
 
       if (!rootTitle) {
-        // console.warn('[LanguageManager] GARAGE_ROOT_TITLE not found, defaulting to English');
         this.currentLanguage = LANGUAGES.en;
         this.detectedLanguageCode = "en";
         return this.currentLanguage;
@@ -913,7 +912,6 @@
         if (score === 4) {
           this.currentLanguage = langData;
           this.detectedLanguageCode = langCode;
-          // console.log(`[LanguageManager] Detected language: ${langData.name} (${langCode}) from "${garageText}" and tabs`);
           return this.currentLanguage;
         }
 
@@ -928,12 +926,10 @@
       if (bestMatch && bestMatchScore >= 2) {
         this.currentLanguage = bestMatch.langData;
         this.detectedLanguageCode = bestMatch.langCode;
-        // console.log(`[LanguageManager] Detected language: ${bestMatch.langData.name} (${bestMatch.langCode}) with score ${bestMatchScore}`);
         return this.currentLanguage;
       }
 
       // אם לא זיהינו שפה, נשתמש באנגלית כברירת מחדל
-      // console.warn(`[LanguageManager] Could not detect language from "${garageText}", defaulting to English`);
       this.currentLanguage = LANGUAGES.en;
       this.detectedLanguageCode = "en";
       return this.currentLanguage;

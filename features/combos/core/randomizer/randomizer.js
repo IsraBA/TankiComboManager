@@ -37,7 +37,6 @@
       const DOM = window.TankiQoL.DOM;
       const menuContainer = document.querySelector(DOM.MENU_CONTAINER);
       if (!menuContainer) {
-        console.warn("[ComboManager] Randomizer: Not in garage");
         return;
       }
 

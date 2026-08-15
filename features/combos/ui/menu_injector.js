@@ -27,7 +27,6 @@
         return;
       }
 
-      // console.log("Tanki Combos: Injecting Menu Button...");
 
       // קבלת שם הטאב בשפה הנוכחית
       const LanguageManager = window.TankiQoL?.LanguageManager;

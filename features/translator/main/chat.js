@@ -1,40 +1,7 @@
 // features/translator/main/chat.js  [MAIN world]
 
-// Battle-chat takeover + in-place translation (MAIN world). THE CORE MODULE.
-//
-// The battle chat is drawn to the WebGL canvas as positioned glyph meshes.
-// There is no "edit message" API, so to change displayed text we TAKE OVER:
-// clear the chat and replay messages through the game's own render methods
-// with the text we want. (Validated in research: mutating a render arg's text
-// before the original call changes what's drawn, and a full clear+replay
-// rebuild works even out of tick — which is how an async translation returns.)
-//
-// Pipeline: engine renders a message -> our wrapper records it + shows it
-// (original + braille spinner while translating) -> translation returns ->
-// debounced REBUILD (clear + replay last N with current display text).
-//
-// ENGINE RESIZE REPLAY dedup: on every resize/fullscreen change the engine
-// blanks the chat and re-emits the last <=max stored messages through the SAME
-// render methods (fresh arg objects). We detect this (a render call arriving
-// while the visible-line count is 0 although we still hold records) and adopt
-// the replayed args instead of re-recording -> no duplicated lines.
-//
-// RTL FIX: the game's glyph renderer has no bidi handling, so Hebrew/Arabic
-// text is drawn reversed. Every display path runs through __CT.bidi.toVisual
-// (logical -> visual order), which also covers translations INTO an RTL
-// target language. Applies to all messages while the translator is enabled,
-// including "show original" mode and slang-skipped ones.
-//
-// Consumes __CT.settings (enabled / showOriginal / targetLang), __CT.translate
-// (network via the SW), __CT.skip (no-translate slang), and __CT.bidi (RTL
-// logical->visual conversion). All the minified
-// HUD names are DISCOVERED per build by features/translator/isolated/detect.js and delivered as a
-// `hudConstants` message; the seed below only bootstraps the latest-known build
-// and the trap so nothing is inert during the discovery fetch.
-//
-// See CLAUDE.md for the full canvas render model, the historical duplicate-line
-// bugs this code is shaped around, and the recovery procedure when a build
-// breaks detection.
+// THE CORE MODULE: takes over the canvas chat — capture, intercept, rebuild.
+// The render model and the bugs this is shaped around: CLAUDE.mds/translator.md
 
 (function () {
   const W = window;
@@ -50,11 +17,7 @@
   const LOADER_FRAMES = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
   const LOADER_INTERVAL_MS = 80;
 
-  // Active HUD name-set. Seeded with the latest known build (009aa16b) so we
-  // work even before/without discovery; detect.js overrides it per build via
-  // the `hudConstants` message. Field meanings: see detect.js / CLAUDE.md.
-  // (ySub/zSub are discovered but unused by the current rebuild — kept for
-  // parity with the discovered shape.)
+  // Seed for the latest known build (009aa16b); detect.js overrides it
   let D = {
     helper: 'v$', cls: 'MAn', appendFn: 'kAn', finalizeFn: 'yAn',
     offset: 'k1fr_1', ySub: 'o4r_1', zSub: 'p4r_1',
@@ -78,9 +41,7 @@
   function get(o, k) { try { return o[k]; } catch (_) { return undefined; } }
   function hasLetter(text) { return !!text && /\p{L}/u.test(text); }
 
-  // תיקון RTL: המשחק מצייר גליפים בסדר המחרוזת בלי bidi, אז עברית/ערבית
-  // מוצגות הפוך. ממירים לסדר ויזואלי (bidi.js) בכל נקודת תצוגה; טקסט
-  // בלי תווי RTL חוזר כמות שהוא. fallback זהותי אם המודול חסר.
+  // לקנבס של המשחק אין bidi, ולכן ממירים לסדר ויזואלי בכל תצוגה
   function toVisual(text) { return NS.bidi ? NS.bidi.toVisual(text) : text; }
 
   // Message text = the (longest) top-level own STRING on the render arg.
@@ -129,10 +90,7 @@
     });
   }
 
-  // Re-evaluate the visible messages after the user turns the extension on or
-  // changes the target language. force=true (lang change) re-requests even
-  // already-translated messages; force=false (enabled on) only starts ones not
-  // yet translating. Slang stays verbatim in both cases.
+  // force=true (language changed) re-requests even translated messages
   function refreshVisibleTranslations(force) {
     if (!S.enabled) return;
     for (const m of W.__CT_MSGS.slice(-MAX_VISIBLE)) {
@@ -151,12 +109,8 @@
     if (!hud || !S.enabled) return;
     const proto = Object.getPrototypeOf(hud);
     try {
-      // Clear by evicting every visible line, exactly as the engine does when
-      // old messages scroll off. Do NOT manually reset the ring pointer or the
-      // vertical offset (that was the v0.10 duplicate-lines bug) — the offset
-      // grows monotonically, so poking it desyncs the meshes once a translated
-      // message wraps to a different line count. Let the engine manage its own
-      // counters; we only evict + replay (= native append).
+      // Evict every visible line, as the engine does when messages scroll off.
+      // NEVER reset the ring pointer or offset — that was the duplicate-lines bug.
       const evict = proto[D.evict];
       for (let i = 0; i < 60 && hud[D.count] > 0; i++) evict.call(hud);
       for (const m of W.__CT_MSGS.slice(-MAX_VISIBLE)) {
@@ -175,8 +129,7 @@
   NS.rebuild = rebuildNow;
 
   // ---- animated loader -----------------------------------------------
-  // Runs while any visible message is still pending a translation; advances the
-  // spinner frame and rebuilds. Stops once nothing is pending.
+  // Advances the spinner while any visible message is still pending
   let loaderTimer = null;
   function anyLoaderPending() {
     if (S.showOriginal || !S.enabled) return false;
@@ -193,11 +146,8 @@
   }
 
   // ---- render-method interception ------------------------------------
-  // Engine resize-replay dedup state: a queue of our records the engine is
-  // expected to re-emit after blanking the chat (see header). Armed when a
-  // render call arrives with the visible line count at 0 while we hold records;
-  // matched entries are consumed front-to-front (the model replays oldest ->
-  // newest). Time-bounded so a stale queue can't swallow a genuine new message.
+  // Resize-replay dedup: records the engine is about to re-emit, oldest first.
+  // Time-bounded so a stale queue can't swallow a genuine new message.
   let replayQ = [];
   let replayT = 0;
 
@@ -286,14 +236,10 @@
     W.__CT_DEBUG.captured++;
     W.__CT_DEBUG.wrappedMethods = [];
     D.renderMethods.forEach((m) => wrapRenderMethod(hud, m));
-    console.log('[ct] battle-chat HUD captured; translating foreign messages. ' +
-      'Toggle: Alt+T, the chat button, or __CT_TOGGLE().');
   }
 
   // ---- Object.prototype trap to grab the HUD on construction ----------
-  // Trap the offset-object field (ctor writes `this.<offset> = new ...`).
-  // (Re)capture on EVERY new HUD instance — a new battle creates a fresh HUD;
-  // the previous capture would otherwise go stale.
+  // Re-captures on every new HUD, because each battle builds a fresh one
   const armed = new Set();
   function armTrap(prop) {
     if (!prop || armed.has(prop)) return;
@@ -320,7 +266,6 @@
     W.__CT_DEBUG.names = d;
     W.__CT_DEBUG.discovered = true;
     armTrap(d.offset);   // arm the discovered offset field too
-    console.log('[ct] using discovered chat-HUD names for this build:', JSON.stringify(d));
   }
 
   window.addEventListener('message', (e) => {
@@ -355,7 +300,7 @@
   };
   W.__CT_TOGGLE_MSG = function (i) {
     const m = W.__CT_MSGS[i];
-    if (!m) { console.log('[ct] no message at index ' + i); return; }
+    if (!m) return;
     const cur = m.userShowOriginal != null ? m.userShowOriginal : S.showOriginal;
     m.userShowOriginal = !cur;
     rebuildNow();
@@ -365,7 +310,6 @@
     for (let i = W.__CT_MSGS.length - 1; i >= 0; i--) {
       if (W.__CT_MSGS[i].willTranslate) return W.__CT_TOGGLE_MSG(i);
     }
-    console.log('[ct] no translated message to toggle');
   };
   W.__CT_REBUILD = rebuildNow;
   W.__CT_STATE = function () {
@@ -373,13 +317,9 @@
       settings: S, names: D, debug: W.__CT_DEBUG,
       recorded: W.__CT_MSGS.length, captured: !!W.__CT_HUD,
     };
-    console.log('[ct] state:', s);
     return s;
   };
 
   // ---- boot -----------------------------------------------------------
   armTrap(D.offset);   // instant coverage with the seeded (latest-known) names
-  console.log('[ct] Tanki Chat Translator core armed (self-locating). Foreign ' +
-    'messages show original (braille spinner) then swap to translation. Toggle ' +
-    'with Alt+T, the chat button, or __CT_TOGGLE().');
 })();

@@ -1,39 +1,7 @@
 // features/translator/isolated/detect.js  [ISOLATED world]
 
-// Auto-detect the chat-HUD minified names from the bundle (ISOLATED world).
-//
-// Tanki rebuilds the game bundle every few weeks and every minified name of
-// the battle-chat HUD class, its render methods, its ring counters, and its
-// vertical-offset object all rotate. This module finds them by parsing the
-// bundle source, so we don't hand-edit constants each build. It mirrors
-// Shaft-Extension-V2/content/detect.js; the discovery logic is ported verbatim
-// from the research userscript's discover(), verified across 5 builds
-// (bcae4cb9 / c4428a58 / e76a162c / a81c6ab2 / 41560f11).
-//
-// Anchors (all stable across those builds):
-//   - append fn  = the `NAME(this,": ",` call (the "name: text" separator) in
-//     the player render methods -> the glyph-append fn.
-//   - HUD class + proto-set helper (`s$`/`_q`/`sk` — can contain `$`, so
-//     `[\w$]+`) = a single-arg render method body that reaches
-//     `<appendFn>(this,": ",`.
-//   - finalize free-fn tail: resets per-line x, advances y by 23, bumps the
-//     visible-count and ring write-pointer -> offset field + its two sub-fields
-//     + count + write-pointer + (walk back for) the finalize fn name.
-//   - evict method = `<helper>(<class>).<m>=function(){if(this.<count><1)return`
-//     with the count matching the finalize's (sanity check).
-//   - render methods = single-arg (`function(t){`) methods on the class whose
-//     body calls BOTH the append fn and the finalize fn. (The resize method
-//     also calls them but takes two args, so the single-arg filter excludes it.)
-//
-// The MAIN-world chat.js seeds the latest-known names so it works even if this
-// fetch fails; when discovery succeeds we send the running build's names and
-// chat.js arms the discovered trap too. Result is cached in chrome.storage.local
-// keyed by bundle URL (which includes the build hash).
-//
-// If detection fails (Tanki restructures the chat HUD), log a clear warning;
-// chat.js falls back to its seed, and if that seed doesn't match the running
-// build the trap simply never validates (harmless) — a manual pattern update
-// here is then needed. See CLAUDE.md "When a build breaks it".
+// Finds the chat-HUD minified names in the live bundle, per build.
+// The anchors and the recovery procedure: CLAUDE.mds/translator.md
 
 (function () {
   const BUNDLE_URL_RE = /\/main\.[A-Za-z0-9]+\.js(?:[?#]|$)/;
@@ -132,8 +100,7 @@
     try {
       url = await waitForBundleUrl(30000);
     } catch (e) {
-      console.warn('[ct] detect:', e.message);
-      return;
+      return;   // הבאנדל לא נמצא בזמן
     }
     const cacheKey = CACHE_PREFIX + url;
 
@@ -150,15 +117,10 @@
       }
     }
 
-    if (!constants) {
-      console.warn('[ct] could not auto-detect chat-HUD names for bundle', url,
-        '— translation will rely on chat.js seed names (may be inert if this ' +
-        'build differs). Manual pattern update may be needed. See CLAUDE.md.');
-      return;
-    }
+    // בלי גילוי נשארים על שמות ה-seed של chat.js
+    if (!constants) return;
     lastConstants = constants;
     send('hudConstants', constants);
-    console.log('[ct] detect: discovered chat-HUD names for this build.');
   })();
 
   // Re-send on MAIN ready (covers detect finishing before MAIN's listeners).

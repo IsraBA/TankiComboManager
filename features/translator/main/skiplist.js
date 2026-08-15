@@ -1,21 +1,7 @@
 // features/translator/main/skiplist.js  [MAIN world]
 
-// No-translate slang list (MAIN world).
-//
-// Messages made up ENTIRELY of universal gaming/chat slang or already-English
-// filler ("gg", "ez", "noob", "hahaha", ...) are shown verbatim — never sent
-// to the translation API (no request, no spinner, no "[LANG] >>" prefix).
-//
-// Exposes `window.__CT.skip.shouldSkip(text)` used by chat.js, plus the
-// runtime-editable debug surfaces __CT_SKIP_WORDS (the live Set — .add('foo'))
-// and __CT_NOTR('text') (test whether a string would skip).
-//
-// Matching is case-insensitive, elongation-tolerant and plural-tolerant:
-// squeeze() collapses repeated letters ("gg"=="gggg", "hiii"=="hi"); LAUGH_RE
-// catches alternating-letter laughter/fillers squeeze can't fold
-// ("haha"/"hehe"/"jaja"/"xddd"/"looool"); a trailing s/z is stripped as a
-// fallback so plurals match ("noobs"->"noob"). A message skips only when EVERY
-// letter-run in it is a skip word — any foreign token keeps it in translation.
+// Messages made up ENTIRELY of universal slang are shown verbatim.
+// Matching tolerates elongation and plurals; every word must match.
 
 (function () {
   const NS = (window.__CT = window.__CT || {});

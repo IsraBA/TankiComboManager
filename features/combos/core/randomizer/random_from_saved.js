@@ -24,7 +24,6 @@
       });
 
       if (filtered.length === 0) {
-        console.warn("[ComboManager] Randomizer: No saved combos to pick from");
         return null;
       }
 
@@ -32,7 +31,7 @@
       const randomIndex = Math.floor(Math.random() * filtered.length);
       const randomCombo = filtered[randomIndex];
 
-      // הצטיידות בקומבו — במסלול המיידי, עם נפילה ל-DOM כמו מהכרטיס עצמו
+      // אותו מסלול כמו לחיצה על הכרטיס: מיידי, עם נפילה ל-DOM
       const InstantLoader = window.TankiQoL.InstantLoader;
       if (InstantLoader) {
         await InstantLoader.equipCombo(randomCombo);
@@ -40,8 +39,7 @@
         await window.TankiQoL.ComboLoader.equipCombo(randomCombo);
       }
 
-      // חזרה לכרטיסיית COMBOS (רלוונטי רק כשמסלול ה-DOM ניווט בין טאבים;
-      // במסלול המיידי אנחנו כבר שם וזה no-op מהיר)
+      // רלוונטי רק אחרי מסלול ה-DOM שניווט בין טאבים
       await this._navigateBackToCombos();
 
       // החזרת data הקומבו שנבחר (ללא removedItems)

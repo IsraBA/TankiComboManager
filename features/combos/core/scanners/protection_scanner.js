@@ -79,16 +79,11 @@
     // פונקציה שמחלצת את שם הקובץ מה-URL
     extractIconFileName(iconUrl) {
       if (!iconUrl) return null;
-      // מחלץ את שם הקובץ מה-URL
-      // לדוגמה: "/play/static/images/Railgun.e2aea740.svg" -> "Railgun.e2aea740.svg"
-      // או: "https://tankionline.com/play/static/images/Railgun.e2aea740.svg" -> "Railgun.e2aea740.svg"
+      // ".../Railgun.e2aea740.svg" -> "Railgun.e2aea740.svg"
       const match = iconUrl.match(/\/(?:([^\/]+)\/)?([^\/]+\.svg)$/i);
       if (!match || !match[2]) return null;
 
-      // תמונות ה-CDN של המשחק (קומבואים שנשמרו ממצב המשחק) נגמרות תמיד
-      // ב-"image.svg" — שם כזה לא מבחין בין הגנות שונות. במקרה כזה מצרפים
-      // את מקטע הנתיב הקודם (מזהה המשאב הייחודי), כדי ששתי הגנות שונות
-      // לעולם לא ייראו "שוות" רק כי לשתיהן קוראים image.svg.
+      // תמונות CDN נגמרות תמיד ב-image.svg, אז מצרפים את מקטע הנתיב
       if (/^image\./i.test(match[2]) && match[1]) {
         return match[1] + '/' + match[2];
       }

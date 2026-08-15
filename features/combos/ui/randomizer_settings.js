@@ -27,7 +27,6 @@
       const Randomizer = window.TankiQoL.Randomizer;
 
       if (!Drawer || !Switch || !Select || !Randomizer) {
-        console.warn("[ComboManager] RandomizerSettings: Missing dependencies");
         return;
       }
 

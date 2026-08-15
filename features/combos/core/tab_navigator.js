@@ -321,7 +321,7 @@
         }
 
         // מקימים observer על document.body *לפני* הלחיצה כדי לתפוס את השינוי ב-DOM
-        // חשוב: לא צופים ב-POSITION_CONTENT כי React מחליף את האלמנט בין סוגי טאבים שונים
+        // צופים ב-body: React מחליף את קונטיינר התוכן בין סוגי טאבים
         const NavigationHelpers = window.TankiQoL.NavigationHelpers;
         const contentReady = NavigationHelpers.waitForDOMChange(null);
         targetTab.click();
@@ -331,7 +331,6 @@
         const allTabTexts = Array.from(tabs)
           .map((t) => t.textContent?.trim() || "")
           .join(", ");
-        // console.error(`[ComboManager] Tab ${tabName} (key: ${tabKey}) not found! Available tabs: ${allTabTexts}`);
       }
     },
 

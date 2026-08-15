@@ -133,7 +133,6 @@
         combos.push(newCombo);
 
         chrome.storage.local.set({ savedCombos: combos }, () => {
-          // console.log("[ComboManager] Combo saved to localStorage:", newCombo);
         });
       });
     },

@@ -1,6 +1,6 @@
 // features/combos/core/equippers/base_item_equipper.js
-// הצטיידות בסיסית בפריטים פשוטים - תותחים, גופים, רימונים, דרונים
-// מכיל את הלוגיקה המשותפת לכל הפריטים האלה
+
+// הצטיידות ב-DOM בפריט בסיס: תותח, גוף, רימון, דרון.
 
 (function () {
   "use strict";
@@ -9,10 +9,7 @@
   const Utils = window.TankiQoL.Utils;
 
   window.TankiQoL.BaseItemEquipper = {
-    // פונקציה גנרית להצטיידות בפריט בסיסי
-    // item - אובייקט עם name ו-image
-    // tabName - שם הטאב (Turrets, Hulls, Grenades, Drones)
-    // itemType - סוג הפריט (לצורך הודעות שגיאה)
+    // item={name,image}, tabName=Turrets/Hulls/Grenades/Drones
     async equipItem(item, tabName, itemType) {
       if (!item || !item.name) return;
 
@@ -24,13 +21,11 @@
 
       const itemElement = ComboLoader.findItemInList(item.name);
       if (!itemElement) {
-        // console.warn(`[ComboManager] ${itemType} ${item.name} not found in garage`);
         return;
       }
 
       // בדיקה אם הפריט נרכש (אם יש תמונה והוא לא מוסתר)
       if (!ComboLoader.isItemPurchased(itemElement)) {
-        // console.warn(`[ComboManager] ${itemType} ${item.name} not purchased`);
         return;
       }
 
@@ -52,7 +47,6 @@
 
       // בדיקה נוספת אחרי הלחיצה - אם אין כפתור equip, הפריט לא נרכש
       if (!ComboLoader.isItemPurchased(null)) {
-        // console.warn(`[ComboManager] ${itemType} ${item.name} not purchased (no equip button)`);
         return;
       }
 

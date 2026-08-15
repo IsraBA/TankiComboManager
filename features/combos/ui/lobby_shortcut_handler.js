@@ -36,7 +36,6 @@
         this.keydownHandler = this.handleKeyPress.bind(this);
         document.addEventListener("keydown", this.keydownHandler);
         this.listenerAdded = true;
-        // console.log("[ComboManager] Lobby shortcut listener attached - Press C to open Combos");
       } else if (!shouldListen && this.listenerAdded) {
         // לנתק את ה-listener
         if (this.keydownHandler) {
@@ -44,7 +43,6 @@
           this.keydownHandler = null;
         }
         this.listenerAdded = false;
-        // console.log("[ComboManager] Lobby shortcut listener detached");
       }
     },
 
@@ -72,7 +70,6 @@
       e.preventDefault();
       e.stopPropagation();
 
-      // console.log("[ComboManager] C key pressed in main lobby - Navigating to Combos");
 
       // פתיחת המוסך וניווט לקומבואים
       await this.openGarageAndNavigateToCombos();

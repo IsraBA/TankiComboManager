@@ -10,10 +10,8 @@
   window.TankiQoL.ComboLoader = {
     // פונקציה ראשית להצטיידות בקומבו
     async equipCombo(combo) {
-      // console.log('[ComboManager] Equipping combo:', combo);
 
       if (!combo || !combo.data) {
-        // console.error('[ComboManager] Invalid combo data');
         return;
       }
 
@@ -97,7 +95,6 @@
           );
         }
 
-        // console.log('[ComboManager] Combo equipped successfully');
       } catch (error) {
         console.error("[ComboManager] Error during equip:", error);
         // לא נציג alert כדי לא להפריע למשתמש

@@ -10,7 +10,6 @@
   window.TankiQoL.ProtectionEquipper = {
     async equipProtection(protections, removedProtectionIndices = []) {
       if (!protections || !Array.isArray(protections)) {
-        // console.warn('[ComboManager] Invalid protections data');
         return;
       }
 
@@ -97,7 +96,6 @@
       const ProtectionScanner = window.TankiQoL.ProtectionScanner;
 
       if (!ProtectionScanner) {
-        // console.warn('[ComboManager] ProtectionScanner not available');
         return currentState;
       }
 
@@ -121,7 +119,6 @@
         if (protectionData) {
           currentState[i] = protectionData;
         } else {
-          // console.warn(`[ComboManager] Slot ${i}: Could not find protection data for icon: ${iconImg.src}`);
           // ננסה לחלץ את הנתונים ישירות מה-DOM
           const iconFileName = ProtectionScanner.extractIconFileName(
             iconImg.src,
@@ -301,12 +298,7 @@
         return false;
       }
 
-      // השוואה לפי שם קודם. השם אמין בשני דורות הנתונים, בעוד שהתמונות לא
-      // ניתנות להשוואה ביניהם: קומבו שנשמר ממצב המשחק (instant_saver) מחזיק
-      // תמונת CDN שנגמרת תמיד ב-"image.svg", ואילו הסריקה מה-DOM מחזיקה
-      // אייקון עם שם ייחודי ("Railgun.e2aea740.svg") — השוואת תמונה ביניהם
-      // תמיד תיכשל (וגרוע מזה: כל תמונות ה-CDN "שוות" זו לזו). זה בדיוק
-      // הבאג שגרם לקומבואים חדשים לא להחיל הגנות.
+      // שם קודם: תמונות אינן ניתנות להשוואה בין שני דורות הנתונים
       if (protection1.name && protection2.name) {
         return (
           protection1.name.toUpperCase().trim() ===
@@ -334,14 +326,12 @@
     // הצטיידות בהגנה ב-חריץ מסוים
     async equipProtectionAtSlot(protection, slotIndex) {
       if (!protection || !protection.name) {
-        // console.warn(`[ComboManager] Invalid protection data for slot ${slotIndex}`);
         return;
       }
 
       // חיפוש ההגנה ברשימה לפי שם או תמונה
       const protectionItem = this.findProtectionInList(protection);
       if (!protectionItem) {
-        // console.warn(`[ComboManager] Protection ${protection.name} not found in garage`);
         return;
       }
 
@@ -407,7 +397,6 @@
             const spanText = span.innerText || "";
           }
         }
-        // console.warn(`[ComboManager] Protection ${protection.name} not purchased (no equip button)`);
         return;
       }
 
@@ -430,7 +419,6 @@
       const ProtectionScanner = window.TankiQoL.ProtectionScanner;
 
       if (!ProtectionScanner) {
-        // console.warn('[ComboManager] ProtectionScanner not available');
         return;
       }
 
@@ -438,7 +426,6 @@
         protection.image,
       );
       if (!protectionIconFileName) {
-        // console.warn('[ComboManager] Could not extract icon filename from:', protection.image);
         return;
       }
 
@@ -593,7 +580,6 @@
         }
       }
 
-      // console.warn(`[ComboManager] Protection not found in list!`);
       return null;
     },
   };

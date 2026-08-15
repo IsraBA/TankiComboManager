@@ -1,39 +1,14 @@
 // features/combos/core/instant_saver.js
 
-// שמירה מיידית של הקומבו הנוכחי — קורא את הציוד ישירות ממצב המשחק (דרך
-// GarageBridge -> ההוק בעולם MAIN) ושומר, בלי לנווט בין טאבים ובלי לגעת
-// ב-DOM. זה המסלול שמחווט לכפתור השמירה; המסלול הישן (combo_saver.js,
-// שסורק את ה-DOM טאב-טאב) נשאר בקוד אך לא מחווט לכלום — בכוונה.
-//
-// מבנה הרשומה הנשמרת (רשומות "דור 2"):
-//   * baseItemId — מזהה ה"משפחה" של הפריט, שאינו משתנה בשדרוג. **זה
-//     המפתח שההצטיידות עובדת לפיו.** כל Mk היא פריט נפרד עם id משלה,
-//     והמשתמש מחזיק את כולן — כך שקומבו שנשמר ב-Mk5 אינו אמור לצייד Mk5
-//     אחרי שדרוג ל-Mk6. ההצטיידות מתרגמת baseItemId -> ה-Mk הגבוהה
-//     שבבעלות **בזמן ההחלה**, שזו בדיוק ההתנהגות של המשחק עצמו (אין בו
-//     בחירת Mk — הוא תמיד מצייד את הדרגה הגבוהה שלך).
-//   * id — הפריט המדויק שהיה מצויד בזמן השמירה. תצלום נוח ללוגים; אינו
-//     משמש להצטיידות דווקא מהסיבה הזו. **היוצא מן הכלל: אוגמנטים** — שם
-//     ה-baseItemId מצביע על התותח/גוף שאליו האוגמנט שייך, ולכן הוא אינו
-//     ייחודי, וה-id הוא המפתח.
-//   * name + image — snapshot לתצוגה בכרטיסים, וגם מה שמאפשר לאקוויפר
-//     ה-DOM הישן (ה-fallback) להחיל גם קומבואים חדשים.
-//   * mk / lvl — לתצוגה עתידית; לא בשימוש כרגע.
-//   * חריצים חדשים: paint, turretSkin, hullSkin.
-// אפקט הירייה (SKINS_SHOT) **אינו** חלק מהקומבו — החלטה מוצרית: הוא לא
-// מספיק מעניין כדי להיות חריץ. הוא לא נשמר, לא מוצג ולא מוחל.
-// רשומות ישנות (name+image בלבד, ללא id) נשארות תקפות — כל הצרכנים
-// סובלניים למפתחות חסרים.
+// שומר את הקומבו הנוכחי ממצב המשחק, בלי DOM ובלי ניווט. בלי fallback.
+// מבנה הרשומה ומשמעות baseItemId: CLAUDE.mds/combos.md
 
 (function () {
   "use strict";
 
   window.TankiQoL = window.TankiQoL || {};
 
-  // --- מיפוי פריט מהקורא (garage_state.js) לצורת האחסון ---
-
-  // פריט רגיל: id+baseItemId+name+image תמיד; mk/lvl רק כשקיימים
-  // (חוסך רעש באחסון)
+  // פריט רגיל: mk/lvl נשמרים רק כשקיימים, שלא ייצבר רעש באחסון
   function pickItem(it) {
     if (!it) return null;
     const out = {
@@ -47,8 +22,7 @@
     return out;
   }
 
-  // פריט דקורטיבי/אוגמנט: אין לו mk/lvl. baseItemId קיים רק לחלקם
-  // (לאוגמנט הוא מצביע על התותח/גוף שאליו הוא שייך, ולכן שימושי לזיהוי).
+  // דקורטיבי/אוגמנט: בלי mk/lvl, ו-baseItemId רק למי שיש לו
   function pickPlain(it) {
     if (!it) return null;
     const out = {
@@ -60,8 +34,7 @@
     return out;
   }
 
-  // ההגנות נשמרות פוזיציונלית לפי mountIndex (4 חריצים, null בחריץ ריק) —
-  // בניגוד לסורק הישן שדחס אותן לפי הסדר. כך סדר החריצים האמיתי נשמר.
+  // הגנות נשמרות פוזיציונלית לפי mountIndex, כדי לשמר את סדר החריצים
   function pickProtections(list) {
     const slots = [null, null, null, null];
     let any = false;
@@ -72,7 +45,7 @@
         any = true;
       }
     }
-    // אין אף הגנה -> null, כמו שהסורק הישן החזיר (הכרטיס מציג "NO PROTECTIONS")
+    // אין אף הגנה -> null, והכרטיס מציג "NO PROTECTIONS"
     return any ? slots : null;
   }
 
@@ -93,8 +66,7 @@
   }
 
   window.TankiQoL.InstantSaver = {
-    // שמירת הקומבו הנוכחי ממצב המשחק. מחזירה Promise עם {ok, combo|error};
-    // הקורא (view_renderer) מרענן את התצוגה על ok.
+    // מחזירה {ok, combo|error}; הקורא מרענן את התצוגה על ok
     async saveCurrentCombo() {
       const bridge = window.TankiQoL.GarageBridge;
       if (!bridge) {
@@ -108,14 +80,13 @@
         return { ok: false, error: String(e) };
       }
       if (!read || !read.ok) {
-        // המצב הנפוץ: ה-state עוד לא נתפס (למשל לפני כניסה ראשונה למוסך)
+        // הנפוץ: ה-state עוד לא נתפס (לפני כניסה ראשונה למוסך)
         return { ok: false, error: (read && read.error) || 'no response from game hook' };
       }
 
       const data = buildComboData(read);
 
-      // הגנה מרשומות זבל: לא שומרים קומבו שאין בו אף פריט עיקרי
-      // (state ריק/ישן). ההגנות לבדן לא מספיקות כי בלי טנק אין קומבו.
+      // בלי אף פריט עיקרי אין קומבו — הגנה מרשומות זבל
       if (!data.turret && !data.hull && !data.grenade && !data.drone) {
         return { ok: false, error: 'read returned no mounted core items — not saving' };
       }
@@ -124,7 +95,7 @@
         chrome.storage.local.get(['savedCombos'], (result) => {
           const combos = result.savedCombos || [];
 
-          // קומבו חדש ראשון ברשימה — כל השאר יורדים מקום (כמו במסלול הישן)
+          // קומבו חדש נכנס ראשון, וכל השאר יורדים מקום
           combos.forEach((combo) => {
             if (combo.order !== undefined) combo.order += 1;
           });

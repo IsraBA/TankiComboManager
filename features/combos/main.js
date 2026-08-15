@@ -1,10 +1,8 @@
 // features/combos/main.js
 
-// המנצח על התזמורת - מוודא שהמשחק נטען ואז מפעיל הכל
+// המנצח על התזמורת: ממתין לטעינת המשחק ואז מפעיל הכל.
 (function () {
   "use strict";
-
-  console.log("[ComboManager] combos feature loaded");
 
   function waitForGameLoad() {
     function initIntegration() {
@@ -76,9 +74,7 @@
 
       // ה-observer שמקשיב לשינויים במוסך/לובי
       observer = new MutationObserver(() => {
-        // בלי debounce – רצים מייד על כל שינוי,
-        // אבל רק אם isRelevantScreen() מחזיר true
-        runInitLogic();
+        runInitLogic();   // בלי debounce; runInitLogic בודק רלוונטיות בעצמו
       });
 
       // פונקציה שמחליטה אם לחבר/לנתק את ה-observer

@@ -1,17 +1,7 @@
 // features/translator/main/translate.js  [MAIN world]
 
-// Translation client (MAIN world).
-//
-// Exposes `window.__CT.translate.request(text, targetLang) -> Promise<{text,lang}>`.
-// The actual network call happens in the background service worker (the only
-// place that can read cross-origin translation responses in MV3 — see
-// background.js). This module just:
-//   - de-dupes with a per-session cache keyed by targetLang + text (so spammed
-//     "gg" / repeated phrases and re-translations after a rebuild are free);
-//   - forwards misses to ISOLATED over the postMessage bridge and correlates
-//     the async reply by a request id;
-//   - guards every request with a hard timeout so a hung backend can never
-//     leave a message stuck on its spinner forever.
+// request(text, lang) -> Promise<{text, lang}>. Per-session cache, hard
+// timeout, and the fetch itself runs in the service worker.
 
 (function () {
   const NS = (window.__CT = window.__CT || {});

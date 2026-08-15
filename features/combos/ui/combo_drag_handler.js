@@ -19,13 +19,11 @@
     init(viewRenderer) {
       this.viewRenderer = viewRenderer;
       this.createDropIndicator();
-      // console.log('[ComboDragHandler] Initialized');
     },
 
     // יצירת האינדיקטור שיראה איפה הכרטיס ישוחרר
     createDropIndicator() {
       if (this.dropIndicator) {
-        // console.log('[ComboDragHandler] Drop indicator already exists');
         return;
       }
 
@@ -44,7 +42,6 @@
 
       indicatorWrapper.appendChild(indicator);
       this.dropIndicator = indicatorWrapper;
-      // console.log('[ComboDragHandler] Drop indicator created');
     },
 
     // הוספת drag events לכרטיס קומבו
@@ -52,7 +49,6 @@
       card.setAttribute("draggable", "true");
       card.setAttribute("data-combo-id", comboId);
 
-      // console.log('[ComboDragHandler] Made card draggable:', comboId);
 
       // dragstart - התחלת הגרירה
       card.addEventListener("dragstart", (e) =>
@@ -124,7 +120,6 @@
         return;
       }
 
-      // console.log('[ComboDragHandler] Drag started for combo:', comboId);
       this.isDragging = true;
       this.hasMoved = false;
       this.dragStartX = e.clientX;
@@ -154,7 +149,6 @@
       if (container && this.dropIndicator) {
         if (!container.contains(this.dropIndicator)) {
           container.appendChild(this.dropIndicator);
-          // console.log('[ComboDragHandler] Indicator added to container');
         }
       }
 
@@ -163,7 +157,6 @@
     },
 
     handleDragEnd(e, card) {
-      // console.log('[ComboDragHandler] Drag ended');
 
       // נשתמש ב-setTimeout כדי לתת ל-drop event להתבצע לפני שמאפסים
       setTimeout(() => {
@@ -181,7 +174,6 @@
         // הסתרת האינדיקטור (אבל לא הסרה מה-DOM)
         if (this.dropIndicator) {
           this.dropIndicator.style.display = "none";
-          // console.log('[ComboDragHandler] Indicator hidden');
         }
 
         // עצירת הגלילה האוטומטית
@@ -205,7 +197,6 @@
 
       // לוג רק פעם אחת לכל כמה קריאות כדי לא לספאם
       if (!this._lastLogTime || Date.now() - this._lastLogTime > 500) {
-        // console.log('[ComboDragHandler] DragOver event');
         this._lastLogTime = Date.now();
       }
 
@@ -230,17 +221,12 @@
     handleDrop(e, container) {
       e.preventDefault();
       e.stopPropagation();
-      // console.log('[ComboDragHandler] Drop event fired!');
-      // console.log('[ComboDragHandler] Has dragged card:', !!this.draggedCard);
-      // console.log('[ComboDragHandler] Has moved:', this.hasMoved);
 
       if (!this.draggedCard) {
-        console.warn("[ComboDragHandler] No dragged card");
         return;
       }
 
       if (!this.hasMoved) {
-        // console.log('[ComboDragHandler] Card did not move enough, ignoring drop');
         return;
       }
 
@@ -255,15 +241,12 @@
 
       const afterElement = this.getDragAfterElement(container, e.clientX);
 
-      // console.log('[ComboDragHandler] Moving column to new position');
 
       // הזזת ה-column ב-DOM (לא רק הכרטיס)
       if (afterElement == null) {
         container.appendChild(draggedColumn);
-        // console.log('[ComboDragHandler] Moved to end');
       } else {
         container.insertBefore(draggedColumn, afterElement);
-        // console.log('[ComboDragHandler] Moved before element');
       }
 
       // עדכון הסדר ב-storage
@@ -306,13 +289,11 @@
     // הצגת האינדיקטור
     showDropIndicator(container, beforeElement) {
       if (!this.dropIndicator) {
-        console.warn("[ComboDragHandler] No drop indicator available");
         return;
       }
 
       // אם האינדיקטור לא בתוך הקונטיינר, נוסיף אותו
       if (!container.contains(this.dropIndicator)) {
-        // console.log('[ComboDragHandler] Adding indicator to container');
         if (beforeElement) {
           container.insertBefore(this.dropIndicator, beforeElement);
         } else {
@@ -362,7 +343,6 @@
         combos.sort((a, b) => (a.order || 0) - (b.order || 0));
 
         chrome.storage.local.set({ savedCombos: combos }, () => {
-          // console.log('[ComboManager] Combo order updated');
 
           // מחיקה אוטומטית של קומבואים ריקים
           const ComboCleaner = window.TankiQoL.ComboCleaner;

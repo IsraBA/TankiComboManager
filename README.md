@@ -22,7 +22,6 @@
 - [Architecture](#-architecture)
 - [Project structure](#-project-structure)
 - [Development](#-development)
-- [Contributing](#-contributing)
 
 ---
 
@@ -241,14 +240,16 @@ listed in both worlds' content-script blocks; each world gets its own copy on
 
 ```
 .
-├── manifest.json              # 4 content-script blocks (CSS / translator ×2 / combos)
+├── manifest.json              # 6 content-script blocks (CSS / translator ×2 / combos ×3)
 ├── background.js              # service worker — translation fetch
 ├── shared/components/         # switch, select, drawer (used by both features)
 ├── features/
 │   ├── combos/
 │   │   ├── main.js            # orchestrator
+│   │   ├── isolated/          # bundle discovery + the bridge to the MAIN world
+│   │   ├── main/garage/       # [MAIN] reads and writes the game's own garage state
 │   │   ├── lib/               # constants (DOM selectors), utils, language_manager
-│   │   ├── core/              # saver, loader, navigators, scanners/, equippers/, randomizer/
+│   │   ├── core/              # savers, loaders, migrator, navigators, scanners/, equippers/, randomizer/
 │   │   └── ui/                # menu + lobby injectors, renderers, drag, modals, drawers
 │   └── translator/
 │       ├── isolated/          # bridge.js, detect.js
@@ -258,10 +259,11 @@ listed in both worlds' content-script blocks; each world gets its own copy on
 ├── docs/                      # PRIVACY.md, STORE.md, PACKAGING.md
 ├── build/make-zip.ps1         # builds the Chrome Web Store zip
 ├── HTML-examples/             # captured game HTML/CSS, used as styling reference
-└── CLAUDE.md                  # full developer/agent guide — start here
+├── CLAUDE.md                  # developer/agent guide — start here
+└── CLAUDE.mds/                # the detailed docs, one file per area
 ```
 
-**Design rules** (the long version lives in [CLAUDE.md](CLAUDE.md)):
+**Design rules** (the long version lives in [CLAUDE.mds/](CLAUDE.mds/README.md)):
 
 - Scanners only read, equippers only write, navigators only move.
 - All game DOM selectors live in one file (`features/combos/lib/constants.js`).
@@ -286,15 +288,15 @@ build step — edit a file, hit the reload icon on the extension card in
 `[ComboManager]` lines. The translator runs in the page world and exposes
 `__CT_STATE()`, `__CT_DEBUG` and `__CT_MSGS` in the page console. Full debugging
 and recovery notes — including what to do when a Tanki update breaks chat
-detection — are in [CLAUDE.md](CLAUDE.md).
+detection — are in [CLAUDE.mds/debugging.md](CLAUDE.mds/debugging.md).
 
 **Packaging for the store.** Run `build/make-zip.ps1`. It packs only what should
 ship and refuses to build if internal docs slip in; see
 [docs/PACKAGING.md](docs/PACKAGING.md).
 
 **Testing** is manual. Before submitting a change, walk the checklist in
-CLAUDE.md → "Testing": both features, and at least one non-English game locale if
-you touched UI or selectors.
+[CLAUDE.mds/store.md](CLAUDE.mds/store.md) → "Testing": both features, and at
+least one non-English game locale if you touched UI or selectors.
 
 ### Common issues
 
@@ -303,15 +305,7 @@ you touched UI or selectors.
 | COMBOS tab missing | game UI changed — update selectors in `features/combos/lib/constants.js` |
 | Items not equipping | name cleaning in `utils.js`, or ownership detection |
 | Clicks not registering | timing — adjust the waits in the equippers/navigators |
-| Chat not translating | bundle detection broke after a game update — see CLAUDE.md → "When a Tanki build breaks the translator" |
-
----
-
-## 🤝 Contributing
-
-Fork, branch, make your change, run the manual test pass, then open a PR. Match
-the existing code style: IIFE modules on the `window.TankiQoL` namespace, Hebrew
-comments, no external dependencies.
+| Chat not translating | bundle detection broke after a game update — see CLAUDE.mds/translator.md → "When a Tanki build breaks the translator" |
 
 ---
 
