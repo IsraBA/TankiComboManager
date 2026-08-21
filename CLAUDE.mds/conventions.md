@@ -31,19 +31,22 @@ change makes a comment wrong, the comment is the bug.
 ## Files
 
 - Every file starts with **its own path**, then one short line saying what it is:
+
   ```javascript
   // features/combos/dom/scanners/protection_scanner.js
 
   // סורק את מודולי ההגנה המורכבים כרגע
   ```
+
   For a file that runs in a specific JS world, note it on the path line:
   `// features/translator/main/chat.js  [MAIN world]`.
+
 - **One file, one responsibility. Target ≤150 lines.** A little over is fine; a
   file that keeps growing is telling you it holds two things.
 - Scanners only read, equippers only write, navigators only move, UI modules
   render and bind. A folder is one stage of the flow — see `architecture.md`.
 - A new feature is a new folder under `features/`. Only genuinely cross-feature
-  code goes in `shared/`, and nothing in `shared/` may *require* a feature.
+  code goes in `shared/`, and nothing in `shared/` may _require_ a feature.
   (Known soft spot: `drawer.js` reads its close-button label from
   `TankiQoL.LanguageManager` and falls back to `"Close"`. Safe today because the
   drawer is only loaded in the combos block; if another feature needs it, pass
@@ -61,7 +64,7 @@ Two patterns are already in use; prefer them over inventing a third.
 - **Shared internals object** (the MAIN-world garage hook): every file does
   `const I = (NS.internals = NS.internals || {})` and hangs its state and
   functions there, reading `I.x` at call time so load order only has to satisfy
-  *runtime* dependencies. See any `game/` folder.
+  _runtime_ dependencies. See any `game/` folder.
 
 ## JavaScript
 
@@ -71,10 +74,10 @@ Two patterns are already in use; prefer them over inventing a third.
 - Every module is an IIFE singleton:
   ```javascript
   (function () {
-      'use strict';
-      window.TankiQoL = window.TankiQoL || {};
-      // ... private ...
-      window.TankiQoL.ModuleName = { publicMethod };
+    "use strict";
+    window.TankiQoL = window.TankiQoL || {};
+    // ... private ...
+    window.TankiQoL.ModuleName = { publicMethod };
   })();
   ```
 - Core operations (save, load, equip) use **async/await**; `chrome.storage` calls
@@ -114,9 +117,29 @@ Preserve the file's existing line endings, and check afterwards: a file
 containing `×` followed by another high byte is corrupted. Prefer the editing
 tools over scripted rewrites whenever the change is small enough.
 
+## Finishing a round of edits
+
+Three steps, every time — **not only before a release** (rule 8 in
+`../CLAUDE.md`). A one-line change counts as a round.
+
+1. **Update the harnesses in `build/harnesses/`.** They are part of the code, not
+   scaffolding, and they are the only automated check this project has:
+   - moved or split a source file → fix the file list at the top of every harness
+     that loads it, or it silently stops testing anything;
+   - fixed a bug → add the check that would have caught it;
+   - new behaviour → new checks.
+
+   A harness that no longer matches the code is worse than no harness: it reports
+   PASS for code it isn't running.
+
+2. **Run all 8**: `node build/harnesses/<file>.js`. 177 checks, a few seconds,
+   no dependencies. What each one covers is in `debugging.md`.
+3. **Run `build/make-zip.ps1`** — manually, never from a hook. Beyond building the
+   zip it cross-checks `manifest.json` against the disk in both directions, so it
+   catches a file you added but never registered (which would simply never load)
+   even when nothing is being released.
+
 ## Git
 
 - Commit messages in English, descriptive body, and:
   `Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>`
-- Run `build/make-zip.ps1` at the end of a round of edits (manually — not from a
-  hook).

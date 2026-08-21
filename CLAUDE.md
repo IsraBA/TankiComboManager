@@ -4,9 +4,9 @@ A Chrome extension (Manifest V3) of quality-of-life tools for
 [Tanki Online](https://tankionline.com). Published on the Chrome Web Store with
 500+ users.
 
-| Feature | What it does | Where it lives |
-|---|---|---|
-| **Combos** | Save full equipment setups and equip them in one click | `features/combos/` |
+| Feature        | What it does                                               | Where it lives         |
+| -------------- | ---------------------------------------------------------- | ---------------------- |
+| **Combos**     | Save full equipment setups and equip them in one click     | `features/combos/`     |
 | **Translator** | Translates foreign battle chat in place on the game canvas | `features/translator/` |
 
 The two features are almost completely independent: different screens, different
@@ -29,7 +29,7 @@ says exactly which one that is. Do not load them all.
    build and must never be used; semantic classes
    (`GameSettingsStyle-gameSettingsBlock`) are stable and may anchor.
 2. **Comments are short.** Up to **10 words** per comment, up to **20 words** in
-   a file header. A comment says *why*, never *what the next line does*. Long
+   a file header. A comment says _why_, never _what the next line does_. Long
    explanations belong in `CLAUDE.mds/`, not in the code — see
    `CLAUDE.mds/conventions.md`.
 3. **Comments in Hebrew**, file starts with its own path, one file = one
@@ -46,6 +46,10 @@ says exactly which one that is. Do not load them all.
 7. **Keep the docs current.** Structure changes go into
    `CLAUDE.mds/architecture.md`; anything a future agent would otherwise have to
    re-derive goes into the matching `CLAUDE.mds/` file.
+8. **Every round of edits ends the same way**, release or not: update the
+   harnesses in `build/harnesses/`, run all 8, then run `build/make-zip.ps1`.
+   The full checklist is in `CLAUDE.mds/conventions.md` — do not skip it because
+   the change looked small.
 
 ## Quick facts
 
