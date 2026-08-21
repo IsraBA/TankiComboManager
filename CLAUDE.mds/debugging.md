@@ -53,6 +53,8 @@ own console context instead.
 | an augment reports `unavailable` right after a refresh | its catalog hadn't loaded; `device_catalog.js` should have requested it — check `debug.catalogRequests` |
 | equipping does nothing at all, no error | an action was probably built with `Object.create` somewhere, or a ctor lookup returned a shell — every action must come from `new proto.constructor(...)` |
 | the combo count looks short / an owned item "missing" | the graph scan may have truncated: check `__CMB.debug.depthCut` and `.truncated` |
+| the paints tab (or any tab's content) shows through under the combos view | the game rendered it after `show()` did its one-off hiding — the guard (`ui/view/hide_guard.js`) is off: check `ViewRenderer.hideGuardObserver`, and that the file is in `manifest.json` |
+| the 3D tank is blank / won't drag while the combos view is open | a preview host ended up `display:none` — look for an inline `display:none` on `PREVIEW_HOSTS` **without** `data-cme-preview-hidden`, which means something outside `keepTankPreviewAlive` hid it |
 | `__CT_DEBUG.discovered === false` after a few seconds | `detect.js` couldn't parse the bundle — see the recovery procedure in `translator.md` |
 | `__CT_HUD === null` after entering a battle | the trap never validated: the offset field name is wrong |
 | translations missing but `intercepts` climbing | check `__CT_DEBUG.lastError` — likely the service-worker fetch failed |

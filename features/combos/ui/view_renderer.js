@@ -111,12 +111,19 @@
         this.loadAndRenderCombos();
       }
 
+      this.hideGameContent();
+      this.startHideGuard();
+    },
+
+    // המשחק מרנדר מחדש ומאבד את ההסתרה, ולכן זה נקרא גם מהשומר
+    hideGameContent() {
       const elementsToHide = document.querySelectorAll(DOM.ELEMENTS_TO_HIDE);
       elementsToHide.forEach((el) => (el.style.display = "none"));
       this.keepTankPreviewAlive(true);
     },
 
     hide() {
+      this.stopHideGuard();
       if (this.viewElement) this.viewElement.style.display = "none";
 
       this.removeTemporaryCard();

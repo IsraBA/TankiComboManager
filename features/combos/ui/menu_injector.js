@@ -207,22 +207,8 @@
       }
 
       // אחר כך נפעיל את טאב הקומבואים
+      // תוכן Paints שמגיע באיחור מטופל ב-view/hide_guard.js
       this.activateComboTab(myTab, container, myUnderline);
-
-      // וידוא נוסף שהסתרת אלמנטי Paints (רק אם יש המתנה ארוכה, כלומר אחרי equipCombo)
-      if (paintsDelay > 1 && Utils && Utils.sleep) {
-        await Utils.sleep(50);
-        // הסתרה מפורשת של אלמנטי Paints
-        const paintsElements = document.querySelectorAll(`
-                    .PaintsCollectionComponentStyle-containerPaints,
-                    .PaintsCollectionComponentStyle-blockPaints
-                `);
-        paintsElements.forEach((el) => {
-          if (el) {
-            el.style.display = "none";
-          }
-        });
-      }
     },
 
     activateComboTab(myTab, container, myUnderline) {

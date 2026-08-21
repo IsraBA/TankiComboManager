@@ -17,10 +17,11 @@
     keepTankPreviewAlive(active) {
       const wrapper = document.querySelector(DOM.GARAGE_WRAPPER);
       if (!wrapper) return;
-      const hosts = document.querySelectorAll(DOM.PREVIEW_HOSTS);
+      // מחפשים בתוך המוסך: השומר קורא לכאן על כל שינוי DOM
+      const hosts = wrapper.querySelectorAll(DOM.PREVIEW_HOSTS);
 
       // כל מה שהסתרנו מסומן, ולכן אין צורך לזכור רשימות
-      document.querySelectorAll("[data-cme-preview-hidden]").forEach((el) => {
+      wrapper.querySelectorAll("[data-cme-preview-hidden]").forEach((el) => {
         el.style.removeProperty("display");
         delete el.dataset.cmePreviewHidden;
       });

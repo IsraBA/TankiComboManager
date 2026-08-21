@@ -51,6 +51,11 @@
         // אתחול ה-View
         ViewRenderer.init();
 
+        // התצוגה גלויה בלי שומר — למשל אחרי חזרה מקרב
+        if (ViewRenderer.isViewVisible() && !ViewRenderer.hideGuardObserver) {
+          ViewRenderer.startHideGuard();
+        }
+
         const menuContainer = document.querySelector(DOM.MENU_CONTAINER);
         if (menuContainer) {
           // הפונקציות בפנים כבר מגנות מפני כפילויות
@@ -95,6 +100,9 @@
         if (!shouldObserve && observing) {
           observer.disconnect();
           observing = false;
+
+          // שלא יישאר שומר הסתרה פעיל בקרב
+          ViewRenderer.stopHideGuard();
 
           // לנתק גם את ההאזנה למקש C
           if (LobbyShortcutHandler) {

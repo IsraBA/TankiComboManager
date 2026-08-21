@@ -153,6 +153,7 @@
         "features/combos/ui/view/combo_actions.js",
         "features/combos/ui/view/delete_animation.js",
         "features/combos/ui/view/tank_preview.js",
+        "features/combos/ui/view/hide_guard.js",
         "features/combos/main.js"
       ],
       "run_at": "document_idle"

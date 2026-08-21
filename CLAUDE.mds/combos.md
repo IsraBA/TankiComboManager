@@ -157,6 +157,49 @@ layer) and hides only the **siblings along the path** from the preview up to the
 host — generically, without naming per-tab classes. Each tab type has a different
 host (`PREVIEW_HOSTS` in `constants.js`).
 
+## Hiding the game's content, and keeping it hidden
+
+`ViewRenderer.show()` hides the game's tab content — `hideGameContent()`:
+`ELEMENTS_TO_HIDE` plus `keepTankPreviewAlive(true)` — with **inline styles on the
+elements that exist at that moment**. That is not enough on its own, because the
+game's content is React-rendered and arrives, or comes back, later:
+
+- `safeActivateComboTab` clicks **Paints** and waits 1 ms before activating our
+  tab, so the paints screen mounts *after* `show()` already ran. Nothing hid it,
+  and it stayed visible under the combos view (the whole paints tab — description,
+  Equip button, the paint list). Symptom: entering the garage with
+  auto-open on, intermittently.
+- Any later re-render (equipping a combo, changing a paint) throws the hidden
+  nodes away and builds new ones, which come back without our `display:none`.
+
+So `ui/view/hide_guard.js` keeps a `MutationObserver` alive for exactly as long as
+the view is visible and re-applies `hideGameContent()` to whatever appeared. Four
+things make it cheap and safe:
+
+- **It observes `GARAGE_WRAPPER`, not `document.body`** — the wrapper doesn't
+  exist in battle, and `main.js` also calls `stopHideGuard()` when it detects we
+  left the garage/lobby. There is no observer outside the combos view.
+- **`childList` only.** Our own hiding is a `style`/`dataset` change, so it can
+  never re-trigger the observer. No loop, and no wasted callbacks.
+- **The re-apply is synchronous inside the callback**, which runs before the
+  browser paints — the late content is never drawn for even one frame, so there is
+  no flash. Do not wrap it in `setTimeout`.
+- **Mutations that are entirely inside our own view are skipped** (`isOwnMutation`)
+  — rendering the combo list is the noisiest source of mutations and needs no
+  re-hiding.
+
+`keepTankPreviewAlive` is idempotent by design (everything it hides is marked
+`data-cme-preview-hidden` and unmarked on the next run) and both its queries are
+scoped to the wrapper, which is what makes calling it on every mutation batch
+affordable.
+
+Historical note: `safeActivateComboTab` used to work around the same race by
+setting `display:none` directly on `.PaintsCollectionComponentStyle-containerPaints`
+after a 150 ms delay. That is a **preview host** — see above for why hiding it
+blanks the 3D model and kills drag-to-rotate — and it was set *without* the
+`data-cme-preview-hidden` mark, so nothing ever cleaned it up. The guard replaces
+it; don't bring it back.
+
 ## Languages
 
 `LanguageManager` auto-detects the game language from UI text (11 languages). Use

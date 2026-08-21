@@ -144,7 +144,8 @@ features/combos/
     ├── menu_injector.js       # injects the COMBOS tab
     ├── view_renderer.js       # the view object: init, show/hide
     ├── view/                  #   template, events, scroll, drag, combo_list,
-    │                          #   combo_actions, delete_animation, tank_preview
+    │                          #   combo_actions, delete_animation, tank_preview,
+    │                          #   hide_guard
     ├── combo_card_renderer.js # the card object
     ├── card/                  #   rows, events, title_edit
     ├── combo_drag_handler.js  # drag-and-drop reordering
