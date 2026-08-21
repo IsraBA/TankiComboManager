@@ -93,6 +93,10 @@ for (const b of fs
   REQUIRED_STATE.forEach((k) => {
     if (!r.stateFields[k]) problems.push("state." + k);
   });
+  // ה-cooldown קיים במשחק שנים; בלעדיו נצייד בזמן חסימה והשרת ידחה
+  ["delayMountTimeMs", "unlockedProtectionSlots"].forEach((k) => {
+    if (!r.stateFields[k]) problems.push("state." + k);
+  });
   REQUIRED_ITEM.forEach((k) => {
     if (!r.itemFields[k]) problems.push("item." + k);
   });

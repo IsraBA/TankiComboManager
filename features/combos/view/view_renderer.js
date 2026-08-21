@@ -113,6 +113,7 @@
 
       this.hideGameContent();
       this.startHideGuard();
+      this.startCooldownGuard();
     },
 
     // המשחק מרנדר מחדש ומאבד את ההסתרה, ולכן זה נקרא גם מהשומר
@@ -124,6 +125,7 @@
 
     hide() {
       this.stopHideGuard();
+      this.stopCooldownGuard();
       if (this.viewElement) this.viewElement.style.display = "none";
 
       this.removeTemporaryCard();

@@ -51,6 +51,9 @@
     // נקודת הכניסה היחידה להצטיידות — גם מהכרטיס וגם מהלובי.
     // המסלול המיידי נופל ל-DOM בעצמו, ברמת הפריט הבודד.
     async equipCombo(combo) {
+      // המשחק חוסם החלפת ציוד; השרת ידחה כל מסלול, כולל ה-DOM
+      if (this.cooldownActive) return;
+
       const InstantLoader = window.TankiQoL.InstantLoader;
       if (InstantLoader) {
         await InstantLoader.equipCombo(combo);

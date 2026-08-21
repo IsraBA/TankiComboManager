@@ -3,9 +3,7 @@
   "name": "Tanki Online — Combos & QoL",
   "version": "3.1",
   "description": "Quality-of-life tools for Tanki Online: save and switch full equipment combos in one click, and translate battle chat in real time.",
-  "permissions": [
-    "storage"
-  ],
+  "permissions": ["storage"],
   "host_permissions": [
     "*://*.tankionline.com/*",
     "https://translate.googleapis.com/*",
@@ -17,15 +15,14 @@
   },
   "content_scripts": [
     {
-      "matches": [
-        "*://*.tankionline.com/*"
-      ],
+      "matches": ["*://*.tankionline.com/*"],
       "css": [
         "shared/components/drawer.css",
         "shared/components/switch.css",
         "shared/components/select.css",
         "features/combos/styles.css",
         "features/combos/view/card/combo_card.css",
+        "features/combos/view/cooldown.css",
         "features/combos/view/lobby/lobby_button.css",
         "features/combos/view/panels/delete_combo_modal.css",
         "features/combos/view/panels/randomizer_settings.css",
@@ -35,9 +32,7 @@
       "run_at": "document_start"
     },
     {
-      "matches": [
-        "*://*.tankionline.com/*"
-      ],
+      "matches": ["*://*.tankionline.com/*"],
       "js": [
         "features/translator/isolated/bridge.js",
         "features/translator/isolated/detect.js"
@@ -46,9 +41,7 @@
       "world": "ISOLATED"
     },
     {
-      "matches": [
-        "*://*.tankionline.com/*"
-      ],
+      "matches": ["*://*.tankionline.com/*"],
       "js": [
         "features/combos/discovery/parse.js",
         "features/combos/discovery/state.js",
@@ -62,9 +55,7 @@
       "world": "ISOLATED"
     },
     {
-      "matches": [
-        "*://*.tankionline.com/*"
-      ],
+      "matches": ["*://*.tankionline.com/*"],
       "js": [
         "features/combos/discovery/game/names.js",
         "features/combos/capture/game/kotlin.js",
@@ -76,6 +67,7 @@
         "features/combos/equip/game/devices.js",
         "features/combos/equip/game/device_catalog.js",
         "features/combos/equip/game/skins.js",
+        "features/combos/equip/game/cooldown.js",
         "features/combos/save/game/read.js",
         "features/combos/equip/game/apply.js",
         "features/combos/bridge/game/bridge_main.js",
@@ -85,9 +77,7 @@
       "world": "MAIN"
     },
     {
-      "matches": [
-        "*://*.tankionline.com/*"
-      ],
+      "matches": ["*://*.tankionline.com/*"],
       "js": [
         "shared/components/switch.js",
         "shared/components/select.js",
@@ -103,9 +93,7 @@
       "world": "MAIN"
     },
     {
-      "matches": [
-        "*://*.tankionline.com/*"
-      ],
+      "matches": ["*://*.tankionline.com/*"],
       "js": [
         "shared/components/drawer.js",
         "shared/components/switch.js",
@@ -154,6 +142,7 @@
         "features/combos/view/delete_animation.js",
         "features/combos/view/tank_preview.js",
         "features/combos/view/hide_guard.js",
+        "features/combos/view/cooldown_guard.js",
         "features/combos/main.js"
       ],
       "run_at": "document_idle"
@@ -161,12 +150,8 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": [
-        "features/translator/assets/flags/*.svg"
-      ],
-      "matches": [
-        "*://*.tankionline.com/*"
-      ]
+      "resources": ["features/translator/assets/flags/*.svg"],
+      "matches": ["*://*.tankionline.com/*"]
     }
   ],
   "action": {

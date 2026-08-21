@@ -40,10 +40,12 @@ carries a running id and its own timeout, so several can be in flight at once.
 | `i2m` | `garageConstants` | discovered name-set | from `discovery/detect.js` |
 | `i2m` | `readCombo` | `{id}` | read the mounted loadout |
 | `i2m` | `readIndex` | `{id}` | flat index of the garage (for the migrator) |
+| `i2m` | `cooldown` | `{id}` | is equipping currently restricted? |
 | `i2m` | `applyCombo` | `{id, desired, opts}` | apply a combo |
 | `m2i` | `ready` | — | MAIN's listeners are up; ISOLATED re-sends the constants |
 | `m2i` | `comboResult` | `{id, ok, combo, mounted, stats}` | reply |
 | `m2i` | `indexResult` | `{id, ok, items[], devices[]}` | reply |
+| `m2i` | `cooldownResult` | `{id, known, active, msLeft}` | reply — polled once a second while the view is open |
 | `m2i` | `applyResult` | `{id, ok, results[], failed[], unavailable[], ms}` | reply |
 
 Timeouts: 4 s for reads, 20 s for apply (it deliberately pauses between items).
@@ -127,6 +129,56 @@ Rules that are easy to get wrong:
   argument-less garage command (`hcn`) hoping it meant "refresh". It is the
   "garage loaded" response, and sending it out of context loaded another
   player's garage data. If you can't name a command, don't send it.
+
+## The equip cooldown
+
+After changing equipment the game refuses further changes for a few minutes —
+client *and* server. Because we dispatch the **low-level** action we skip the
+thunk that enforces it, so an equip during the cooldown used to look like it
+worked and then quietly vanish: the server rejected it, and the loadout was back
+to the old one on the next refresh.
+
+The state field is **`delayMountTimeMs`**, and the name is misleading — it is not
+a duration. The reducer stores
+
+```
+delayMountTimeMs = delayMs > 0 ? now + delayMs : 0
+```
+
+so it is an **absolute epoch-ms deadline**, `0` meaning "no restriction". That is
+provable in the bundle rather than assumed: the reducer branch for
+`SetRestrictionMount(delayMs)` computes `Gg(Md(), delayMs)`, and `Md()` is *now*
+(elsewhere it seeds future timestamps that are later differenced against
+`Md()` again, and is used to filter "deadlines still in the future"). `Gg` is
+Long addition.
+
+The game's own mount thunk gates on it:
+
+```
+(delayMountTimeMs <= now || category === <one exempt category>)
+    && dispatch(<low-level mount action>)
+```
+
+`equip/game/cooldown.js` reimplements the first half — `deadline - Date.now() > 0`
+— and `apply.js` refuses the **whole combo** before dispatching anything, with
+`{ok:false, cooldown:true, msLeft}`. Notes:
+
+- The check is `> now`, not `> 0`. The augment thunk and the button props builder
+  use the laxer `> 0`, which stays true between expiry and the moment the
+  scheduled clear fires. `> now` is the test that decides whether the server will
+  accept, so it is the one we copy.
+- **Refusing is not a failure.** `instant_loader.js` must not fall back to the DOM
+  path: the server rejects that too, and it would visibly walk the UI for nothing.
+- **We are stricter than the game by one category.** The thunk exempts a single
+  category (`Hy()` in `main.1327298e.js`) whose identity we did not pin down — it
+  is an alias into another module's export table, not a local accessor. A combo
+  is applied as a set, so refusing all of it is the right call anyway; if that
+  ever needs revisiting, resolve the alias first.
+- `delayMountTimeMs` is in the Garage `toString`, so discovery picks it up with
+  every other field. `verify_shipped.js` asserts it on all 8 bundles — it has
+  been in the game for years, and losing it silently would bring the bug back.
+- The value is a Kotlin **Long**, so read it through `toString`, never as a
+  number.
 
 ## Protections
 
@@ -257,6 +309,8 @@ The state class has had exactly 29 fields in every build checked. Re-verify afte
   equip path requests what's missing.
 - Equipping resolves items by `baseItemId` → highest owned Mk *at equip time*.
 - The DOM fallback can't equip the decorative slots.
+- The equip cooldown is checked **before** anything is dispatched, and a refusal
+  never falls back to the DOM.
 
 ## The send path that was removed
 

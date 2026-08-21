@@ -31,6 +31,8 @@
       );
       if (surpriseMeBtn) {
         surpriseMeBtn.onclick = async () => {
+          // הכפתור מוסתר ב-cooldown; זו הגנה גם למסלול ה-DOM של רנדום מלא
+          if (this.cooldownActive) return;
           if (window.TankiQoL.Randomizer) {
             await window.TankiQoL.Randomizer.run();
           }

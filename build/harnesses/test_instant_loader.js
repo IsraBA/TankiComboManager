@@ -221,6 +221,12 @@ async function run(combo, result, opts) {
     [],
   );
 
+  // 12. cooldown: השרת דוחה כל מסלול, ולכן אסור ליפול ל-DOM
+  o = await run(COMBO, { ok: false, cooldown: true, msLeft: 90000, results: [] });
+  check("a cooldown does not drag the combo through the DOM", o.domCalls, []);
+  check("  … and is reported as a cooldown, not a failure", o.r.cooldown, true);
+  check("  … and does not claim success", o.r.ok, false);
+
   console.log(
     failures ? `\n${failures} check(s) FAILED` : "\nall checks passed",
   );

@@ -17,6 +17,7 @@ __CMB.index(); // the flat garage index (what the migrator consumes)
 __CMB.state(); // the captured raw game state object (for poking around)
 __CMB.names(); // the minified name-set in use for this build
 __CMB.debug; // counters: captures, reads, dispatch counts, lastError, …
+__CMB.internals.mountCooldown(); // {known, active, msLeft} — the equip cooldown
 
 // combos — DOM side (ISOLATED)
 chrome.storage.local.get(["savedCombos"], (r) => console.log(r.savedCombos));
@@ -52,6 +53,8 @@ own console context instead.
 | a slot equips as `unavailable` although the user owns it                  | the item didn't resolve — check `baseItemId` on the stored combo (run the migrator) and `owned` in `__CMB.index()`                                                                               |
 | an augment reports `unavailable` right after a refresh                    | its catalog hadn't loaded; `equip/game/device_catalog.js` should have requested it — check `debug.catalogRequests`                                                                               |
 | equipping does nothing at all, no error                                   | an action was probably built with `Object.create` somewhere, or a ctor lookup returned a shell — every action must come from `new proto.constructor(...)`                                        |
+| clicking a combo does nothing and the cards look dim                      | the equip cooldown is running — `__CMB.internals.mountCooldown()` reports `active`. Correct behaviour: the server would reject the change                                          |
+| a combo equips but the old loadout is back after a refresh                | the cooldown was active and we dispatched anyway — check `__CMB.names().stateFields.delayMountTimeMs` survived discovery, and that `__CMB.debug.cooldownBlocks` moves              |
 | the combo count looks short / an owned item "missing"                     | the graph scan may have truncated: check `__CMB.debug.depthCut` and `.truncated`                                                                                                                 |
 | the paints tab (or any tab's content) shows through under the combos view | the game rendered it after `show()` did its one-off hiding — the guard (`view/hide_guard.js`) is off: check `ViewRenderer.hideGuardObserver`, and that the file is in `manifest.json`            |
 | the 3D tank is blank / won't drag while the combos view is open           | a preview host ended up `display:none` — look for an inline `display:none` on `PREVIEW_HOSTS` **without** `data-cme-preview-hidden`, which means something outside `keepTankPreviewAlive` hid it |

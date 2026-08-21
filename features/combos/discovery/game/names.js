@@ -19,6 +19,8 @@
       devices: 'ypz_1',
       isLoaded: 'aq0_1',
       currentCategory: 'bq0_1',
+      // חותמת סיום מוחלטת ל-cooldown ההצטיידות (0 = אין הגבלה)
+      delayMountTimeMs: 'iq0_1',
       unlockedProtectionSlots: 'pq0_1',
     },
     itemFields: {
@@ -125,6 +127,7 @@
     catalogRequests: 0,
     skinMountResolved: false,
     skinsApplied: 0,
+    cooldownBlocks: 0,
     captures: 0,
     reads: 0,
     lastReadMs: 0,

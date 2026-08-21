@@ -138,6 +138,7 @@ features/combos/
 │   ├── template · events · scroll · drag        #   its mixins
 │   ├── combo_list · combo_actions · delete_animation
 │   ├── tank_preview · hide_guard                #   keep the game's 3D view alive
+│   ├── cooldown_guard.js/.css #   block equipping while the game is cooling down
 │   ├── card/                  #   combo_card_renderer + rows, events, title_edit,
 │   │                          #   combo_drag_handler, combo_card.css
 │   ├── lobby/                 #   button, C shortcut, auto-open, lobby_button.css
@@ -152,7 +153,8 @@ features/combos/
 │   │   ├── protections.js     #     the 4 resistance slots, set-based diff
 │   │   ├── devices.js         #     augments: install / remove, ownership
 │   │   ├── device_catalog.js  #     lazy catalogs: request + wait
-│   │   └── skins.js           #     apply a turret/hull skin
+│   │   ├── skins.js           #     apply a turret/hull skin
+│   │   └── cooldown.js        #     the game's equip cooldown (deadline, not duration)
 │   └── old/                   #   LEGACY (DOM) — per-slot fallback
 │       ├── combo_loader.js
 │       └── equippers/         #     base_item, augment, protection

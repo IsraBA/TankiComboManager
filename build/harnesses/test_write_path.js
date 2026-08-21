@@ -23,6 +23,7 @@ const FILES = [
   "equip/game/devices.js",
   "equip/game/device_catalog.js",
   "equip/game/skins.js",
+  "equip/game/cooldown.js",
   "save/game/read.js",
   "equip/game/apply.js",
   "bridge/game/bridge_main.js",
@@ -418,5 +419,68 @@ check("a hull with no skin yet still applies", s.seen, [
   "skin Neon skin -> Hornet",
 ]);
 
-console.log(failures ? `\n${failures} check(s) FAILED` : "\nall checks passed");
-process.exit(failures ? 1 : 0);
+// ---- ה-cooldown של החלפת ציוד ----
+// המשחק שומר חותמת סיום מוחלטת; 0 או חותמת שפגה = מותר להחליף.
+console.log("");
+
+function setCooldown(expr) {
+  vm.runInContext(
+    "(function(){ const I = __CMB.internals;" +
+      " I.latestState[I.D.stateFields.delayMountTimeMs] = " + expr + "; })()",
+    ctx,
+  );
+  return vm.runInContext("__CMB.internals.mountCooldown()", ctx);
+}
+
+let cd = vm.runInContext("__CMB.internals.mountCooldown()", ctx);
+check("no value in state: cooldown unknown, not active", [cd.known, cd.active], [false, false]);
+
+cd = setCooldown("0");
+check("zero means no restriction", [cd.known, cd.active], [true, false]);
+
+cd = setCooldown("Date.now() - 60000");
+check("a deadline that already passed is not active", cd.active, false);
+
+cd = setCooldown("Date.now() + 90000");
+check("a future deadline is active", cd.active, true);
+check("  … and reports the time left", cd.msLeft > 88000 && cd.msLeft <= 90000, true);
+
+// Long מגיע כאובייקט, לא כמספר — בדיוק כמו מזהי הפריטים
+cd = setCooldown("({ toString: function () { return String(Date.now() + 45000); } })");
+check("a Kotlin Long deadline is read through toString", cd.active, true);
+
+cd = setCooldown("({ toString: function () { return 'not a number'; } })");
+check("garbage in the field does not claim a cooldown", [cd.known, cd.active], [false, false]);
+
+// applyCombo אסינכרונית (יש השהיה בין פריט לפריט), ולכן הסיום ממתין לה
+(async () => {
+  // הבדיקה שמונעת את הבאג: לא משגרים כלום בזמן המתנה
+  setCooldown("Date.now() + 120000");
+  vm.runInContext("__dispatched.length = 0", ctx);
+  const blocked = await vm.runInContext(
+    "__CMB.internals.applyCombo({ protection: [null, null, null, null] })",
+    ctx,
+  );
+  check(
+    "applyCombo refuses while the game is cooling down",
+    [blocked.ok, blocked.cooldown],
+    [false, true],
+  );
+  check("  … and dispatches absolutely nothing", vm.runInContext("__dispatched.length", ctx), 0);
+  check("  … and counts the block", vm.runInContext("__CMB.debug.cooldownBlocks", ctx), 1);
+
+  setCooldown("0");
+  vm.runInContext("__dispatched.length = 0", ctx);
+  await vm.runInContext(
+    "__CMB.internals.applyCombo({ protection: ['id1', 'id2', null, null] })",
+    ctx,
+  );
+  check(
+    "once it expires the write path runs again",
+    vm.runInContext("__dispatched.length", ctx) > 0,
+    true,
+  );
+
+  console.log(failures ? `\n${failures} check(s) FAILED` : "\nall checks passed");
+  process.exit(failures ? 1 : 0);
+})();

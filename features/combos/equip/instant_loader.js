@@ -77,6 +77,11 @@
         return this._fallbackWholeCombo(combo, String(e));
       }
 
+      // ה-cooldown חוסם גם בשרת, ולכן גם ה-DOM ייכשל — לא נופלים אליו
+      if (res && res.cooldown) {
+        return { ok: false, cooldown: true, msLeft: res.msLeft, usedFallback: false };
+      }
+
       // שום חריץ לא יצא לדרך -> נפילה על הקומבו כולו
       if (!res || (!res.results && !res.ok)) {
         return this._fallbackWholeCombo(combo, (res && res.error) || "no response");

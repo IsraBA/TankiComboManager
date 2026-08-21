@@ -1,0 +1,93 @@
+/* features/combos/view/cooldown.css */
+/* שכפול הטיימר האדום של המשחק. הערכים מגיעים ממחלקות מג'ונרטות
+   (ksc-565/566/567/568) ולכן מועתקים, לא נשענים עליהן. */
+
+/* .ksc-565 + .-flexCenterAlignCenterColumn + .-whiteSpaceNoWrap.
+   inset+margin:auto ממרכז אותו בכל אזור התיאור, בדיוק כמו במשחק. */
+.cme_cooldown-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  inset: 0px;
+  margin: auto;
+  width: 21%;
+  max-height: 5em;
+  padding: 4px 2px;
+  box-sizing: border-box;
+  overflow: hidden;
+  white-space: nowrap;
+  background-color: rgb(254, 102, 102);
+  border-radius: 0.25em;
+  z-index: 4;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-box-align: center;
+  -webkit-box-pack: center;
+}
+
+/* .ksc-566 + .-medium */
+.cme_cooldown-caption {
+  font-family: BaseFontMedium, FallbackFontMedium;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 0.75em;
+  line-height: 1em;
+  text-transform: uppercase;
+  margin: 0.5em 0px 0px;
+  padding: 0px;
+}
+
+/* .ksc-567 + .SquarePriceButtonComponentStyle-commonBlockButton */
+.cme_cooldown-timer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  min-width: 10.9375em;
+  width: 12.5em;
+  height: 6em;
+  z-index: 2;
+  -webkit-box-align: center;
+  -webkit-box-pack: center;
+}
+
+/* .ksc-568 */
+.cme_cooldown-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  text-align: right;
+  -webkit-box-align: center;
+  -webkit-box-pack: center;
+}
+
+/* .ksc-567 span — גובר על .ksc-517 ועל .-bold בספציפיות */
+.cme_cooldown-time {
+  font-family: BaseFontMedium, FallbackFontMedium;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 2.25em;
+  line-height: 2.5em;
+  height: 2.2em;
+  text-transform: uppercase;
+  color: rgb(255, 255, 255);
+  margin: 0px;
+  padding: 0px;
+}
+
+/* המשחק מעלים את כפתורי ה-EQUIP בזמן ההמתנה; אצלנו זה "הפתע אותי".
+   הכפלת המחלקה נדרשת: הכלל ב-styles.css חזק ממנו בלעדיה. */
+.cme_cooldown #cme_surprise-me-btn.cme_commonBlockButton.cme_commonBlockButton {
+  display: none;
+}
+
+/* הכרטיסים נשארים קריאים אבל מסומנים כלא-לחיצים */
+.cme_cooldown .cme_combo-card {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

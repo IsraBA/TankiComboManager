@@ -47,12 +47,12 @@ data: {
 ```
 
 - **`baseItemId` is the key equipping works from.** Each Mk is a separate item
-  with its own `id` and the user owns *all* of them, so a combo saved at Mk5 must
+  with its own `id` and the user owns _all_ of them, so a combo saved at Mk5 must
   not equip Mk5 after they upgrade. Equipping resolves `baseItemId → the highest
-  owned Mk at that moment`, which is exactly what the game does: it offers no Mk
+owned Mk at that moment`, which is exactly what the game does: it offers no Mk
   choice, it always equips your top grade.
 - **`id`** is the exact item that was mounted at save time — a convenient
-  snapshot for logs, deliberately *not* used to equip.
+  snapshot for logs, deliberately _not_ used to equip.
 - **Augments are the exception**: an augment's `baseItemId` points at the
   turret/hull it belongs to, so it isn't unique. There, `id` is the key.
 - **`name` + `image` are a display snapshot**: what the cards render, and what
@@ -87,16 +87,16 @@ returns immediately, touching neither the bridge nor storage.
 
 Four rules keep it from doing damage:
 
-- **Nothing is deleted.** `id`/`baseItemId` are added *beside* the existing
+- **Nothing is deleted.** `id`/`baseItemId` are added _beside_ the existing
   `name`/`image`. An unresolved slot is left exactly as it was and keeps working
   through the DOM path.
 - **Items that aren't owned are resolved too.** An id is a fact about the game,
   not about the user, and the garage carries unowned items anyway (they're on
   sale). A combo imported from another account resolves fully, and if the item is
   ever bought it just works. Equipping is what refuses unowned items.
-- **Mk levels are a family, not an ambiguity.** The user owns *every* Mk of an
+- **Mk levels are a family, not an ambiguity.** The user owns _every_ Mk of an
   item, each a separate item id, so "THUNDER" legitimately returns seven
-  candidates — all sharing one `baseItemId`. Real ambiguity is two *different*
+  candidates — all sharing one `baseItemId`. Real ambiguity is two _different_
   `baseItemId`s under one name, and that is refused. From a family, the highest
   **owned** Mk is stored as `id` (lowest if none are owned; equipping won't rely
   on it anyway).
@@ -111,12 +111,12 @@ from — that combo stays on the DOM path.
 
 The card has **two modes**, and almost every interaction rule follows from that:
 
-| | normal mode | edit mode (`.cme_editing`) |
-|---|---|---|
-| click anywhere on the card | equips the combo | nothing (clicks are for removal) |
-| click an item | equips (the click bubbles up) | removes that item |
-| item hover | nothing | red tint + × icon |
-| pencil button | enters edit mode | (shows a ✓) leaves edit mode |
+|                            | normal mode                   | edit mode (`.cme_editing`)       |
+| -------------------------- | ----------------------------- | -------------------------------- |
+| click anywhere on the card | equips the combo              | nothing (clicks are for removal) |
+| click an item              | equips (the click bubbles up) | removes that item                |
+| item hover                 | nothing                       | red tint + × icon                |
+| pencil button              | enters edit mode              | (shows a ✓) leaves edit mode     |
 
 - **The top row is not part of the card's click surface** — the name, the pencil
   and the delete button live there, and it is also the one area you cannot drag
@@ -127,7 +127,7 @@ The card has **two modes**, and almost every interaction rule follows from that:
 - There is **no EQUIP button**; the paint square took its place in row 4 and is
   always visible (the button only appeared on hover).
 - **Skins are display-only**: `turretSkin` / `hullSkin` replace the turret/hull
-  *image* on the card. They are not separately removable — removing the turret
+  _image_ on the card. They are not separately removable — removing the turret
   takes its whole area with it, which is why `removeItemFromCombo` cascades
   `turret → turretAugment`.
 - **Edit state lives in `ComboCardRenderer._editingCombos`** (a Set of combo ids),
@@ -166,7 +166,7 @@ attempts because the drag surface is not what it looks like.
 `position:absolute; z-index:1` div, and the React component that renders it
 carries `onPointerDown` / `onPointerMove` / `onPointerUp` with
 `setPointerCapture` — verifiable in the bundle by searching for the literal
-`"tankPreviewContainer"`. The tank you *see* is painted on `#tankPreviewCanvas`,
+`"tankPreviewContainer"`. The tank you _see_ is painted on `#tankPreviewCanvas`,
 a separate full-screen canvas that is the first child of `#app-root` and listens
 to nothing. Rotating is a DOM drag that drives a canvas.
 
@@ -175,11 +175,11 @@ context** — nothing between them creates one (`.wrapper`, `#app-root`,
 `.-container` and `.GarageCommonStyle-garageContainer` are all either static or
 positioned with `z-index:auto`):
 
-| element | z-index | DOM order |
-|---|---|---|
-| `#tankPreviewCanvas` | 1 | first |
-| `#combo-manager-view` | **2** | middle |
-| `#tankPreviewContainer` | 1 | last |
+| element                 | z-index | DOM order |
+| ----------------------- | ------- | --------- |
+| `#tankPreviewCanvas`    | 1       | first     |
+| `#combo-manager-view`   | **2**   | middle    |
+| `#tankPreviewContainer` | 1       | last      |
 
 Equal z-index resolves by DOM order, so the drag box beats the canvas, and our
 view beats both. Two things are needed for the drag to survive, and **missing
@@ -188,7 +188,7 @@ not respond:
 
 1. **The host must not become a stacking context.** `keepTankPreviewAlive` used
    to pin it with `z-index: 0`, which trapped the box's own `z-index: 1` inside
-   the host and flattened it to level 0 — *below the canvas*. The canvas then
+   the host and flattened it to level 0 — _below the canvas_. The canvas then
    took every pointer event and did nothing with it. The host is now pinned with
    `position/top/left/margin` only; `z-index` is still cleared on restore so a
    stale inline value from an older build can't come back.
@@ -208,7 +208,7 @@ Consequences worth knowing:
 - `build/harnesses/test_view_layer.js` guards both halves plus the region rule.
 - The modals are unaffected — the delete modal, import/export and the drawer all
   mount on `document.body`, outside the view.
-- The tank is not draggable *behind* those three regions, which is how the game's
+- The tank is not draggable _behind_ those three regions, which is how the game's
   own tabs behave too: its parameter blocks sit on it in exactly the same way.
 - `#cme_tankPreviewContainer` in our template is a copy of the game's box that we
   never measure or listen on. Inert dead markup — and it must never be given
@@ -225,7 +225,7 @@ elements that exist at that moment**. That is not enough on its own, because the
 game's content is React-rendered and arrives, or comes back, later:
 
 - `safeActivateComboTab` clicks **Paints** and waits 1 ms before activating our
-  tab, so the paints screen mounts *after* `show()` already ran. Nothing hid it,
+  tab, so the paints screen mounts _after_ `show()` already ran. Nothing hid it,
   and it stayed visible under the combos view (the whole paints tab — description,
   Equip button, the paint list). Symptom: entering the garage with
   auto-open on, intermittently.
@@ -256,9 +256,51 @@ affordable.
 Historical note: `safeActivateComboTab` used to work around the same race by
 setting `display:none` directly on `.PaintsCollectionComponentStyle-containerPaints`
 after a 150 ms delay. That is a **preview host** — see above for why hiding it
-blanks the 3D model and kills drag-to-rotate — and it was set *without* the
+blanks the 3D model and kills drag-to-rotate — and it was set _without_ the
 `data-cme-preview-hidden` mark, so nothing ever cleaned it up. The guard replaces
 it; don't bring it back.
+
+## The equip cooldown in the combos view
+
+The detection and the refusal are in `garage-native.md`; this is the UI half.
+
+`view/cooldown_guard.js` polls `GarageBridge.readCooldown()` once a second **only
+while the view is visible**, in a self-rescheduling loop (not `setInterval`, so a
+slow reply can't stack requests). It is started by `show()` and stopped by
+`hide()`, exactly like the hide guard. While a cooldown is running it puts
+`cme_cooldown` on the view root, and that class does the visible work:
+
+- **The red timer block appears centred over the tank**, and SURPRISE ME is
+  hidden — the same move the game makes with the EQUIP button. Saving a combo and
+  import/export stay live; they don't touch the server's equipment.
+- **Cards dim and get `cursor: not-allowed`.**
+
+Its placement is not obvious and is easy to get wrong: the game's block is
+`position:absolute; inset:0; margin:auto; width:21%; max-height:5em`, and its
+containing block is **`GarageMainScreenStyle-blockParameters`**, not the button
+column it sits inside — `TanksPartComponentStyle-tankPartUpgrades` is `static`,
+so it never anchors anything. That is what centres the block mid-screen over the
+tank. Our equivalent anchor is `.cme_commonBlockForDescriptionAndButton`, which is
+already `position: relative`, so the block mounts there and lands in the same
+place. Mounting it in the button column instead puts it in the wrong half of the
+screen at the wrong size.
+
+Three things are worth knowing before changing any of it:
+
+- **The block is rebuilt, not borrowed.** The game's own timer lives in
+  `TanksPartBaseComponentStyle`, i.e. the turret/hull/drone/grenade screens. Our
+  view sits on the _paints_ host, which never renders one, so there is no node to
+  reveal — `view/cooldown.css` reproduces it. The red `rgb(254,102,102)` and the
+  sizing come from a rotating class (`ksc-565` at the time of writing) and so are
+  copied, per rule 1; only values, never the hashed class.
+- **The click gate is not the CSS.** `ViewRenderer.equipCombo()` returns early on
+  `cooldownActive`, and that is the single entry point for the card, the lobby
+  shortcut and random-from-saved. SURPRISE ME has its own early return so the
+  DOM-based full randomiser is covered too. Dimming is feedback, not enforcement.
+- **`cooldownCaption` in the 11 languages is our wording, not the game's.** The
+  game fetches that string from a locale service at runtime, so it is not in the
+  bundle and could not be extracted. If the exact phrasing matters, read it off
+  the game in each language and correct `lib/language_manager.js`.
 
 ## Languages
 

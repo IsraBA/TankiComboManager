@@ -35,6 +35,14 @@
       return;
     }
 
+    if (m.action === 'cooldown') {
+      const id = (m.payload || {}).id;
+      let res;
+      try { res = I.mountCooldown(); } catch (err) { res = { known: false, active: false, msLeft: 0 }; }
+      reply('cooldownResult', Object.assign({ id, ok: true }, res));
+      return;
+    }
+
     if (m.action === 'readIndex') {
       const id = (m.payload || {}).id;
       let res;

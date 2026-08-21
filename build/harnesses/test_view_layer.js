@@ -97,5 +97,50 @@ ok(
   pointerEvents(".cme_tankPreview") !== "auto",
 );
 
+// ---- ה-cooldown ----
+// styles.css מדרג כפתורים ב-#id.class.class כדי לגבור על המשחק. כלל
+// שמסתיר אותם חייב להיות חזק לפחות כמותו, אחרת הוא פשוט לא נכנס.
+// הערות מכילות נקודות ("styles.css") ומזייפות את ספירת המחלקות
+const strip = (s) => s.replace(/\/\*[\s\S]*?\*\//g, "");
+const cooldownCss = strip(
+  fs.readFileSync(path.join(EXT, "features/combos/view/cooldown.css"), "utf8"),
+);
+const mainCss = strip(css);
+
+// כל הכללים שהסלקטור שלהם נוגע בכפתור ומגדירים לו display
+function displayRules(src) {
+  const out = [];
+  for (const m of src.matchAll(/([^{}]*#cme_surprise-me-btn[^{}]*)\{([^}]*)\}/g)) {
+    const d = /(?:^|;)\s*display:\s*([a-z-]+)/.exec(m[2]);
+    if (d) out.push({ classes: (m[1].match(/\./g) || []).length, display: d[1] });
+  }
+  return out;
+}
+
+const shows = displayRules(mainCss);
+const hides = displayRules(cooldownCss).filter((r) => r.display === "none");
+ok("SURPRISE ME has a cooldown rule that hides it", hides.length > 0);
+ok("…and styles.css really does set it visible", shows.length > 0);
+
+const strongestShow = Math.max(0, ...shows.map((r) => r.classes));
+const strongestHide = Math.max(0, ...hides.map((r) => r.classes));
+ok(
+  "…and the hide outweighs it (" + strongestHide + " vs " + strongestShow + " classes)",
+  strongestHide >= strongestShow,
+);
+
+// הבלוק ממורכז ב-inset+margin, ולכן חייב מארח relative
+ok(
+  "the cooldown block is centred, not stacked in a column",
+  /\.cme_cooldown-block\s*\{[^}]*inset:\s*0/.test(cooldownCss) &&
+    /\.cme_cooldown-block\s*\{[^}]*margin:\s*auto/.test(cooldownCss),
+);
+ok(
+  "…and its host is the relative block, not the button column",
+  /cme_commonBlockForDescriptionAndButton/.test(
+    fs.readFileSync(path.join(EXT, "features/combos/view/cooldown_guard.js"), "utf8"),
+  ),
+);
+
 console.log(failed ? "\n" + failed + " FAILED" : "\nall checks passed");
 process.exit(failed ? 1 : 0);

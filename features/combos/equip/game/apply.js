@@ -42,6 +42,14 @@
     if (!I.latestState) return { ok: false, error: 'garage state not captured' };
     if (!desired || typeof desired !== 'object') return { ok: false, error: 'no combo given' };
 
+    // אנחנו משגרים את הפעולה הנמוכה ובכך עוקפים את בדיקת ה-thunk.
+    // בלי זה ההחלה "מצליחה" מקומית והשרת דוחה אותה בשקט.
+    const cd = I.mountCooldown();
+    if (cd.active) {
+      NS.debug.cooldownBlocks++;
+      return { ok: false, cooldown: true, msLeft: cd.msLeft, results: [] };
+    }
+
     const o = opts || {};
     const baseDelay = typeof o.delayMs === 'number' ? o.delayMs : DEFAULT_DELAY_MS;
     const jitter = typeof o.delayMs === 'number' ? 0 : DELAY_JITTER_MS;

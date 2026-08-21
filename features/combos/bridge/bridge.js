@@ -9,7 +9,10 @@
 
   const TIMEOUT_MS = 4000;         // תקרה קשיחה, כדי ש-Promise לא ייתקע לעולם
   const APPLY_TIMEOUT_MS = 20000;  // החלה משהה בין פריט לפריט, ולכן ארוכה יותר
-  const REPLIES = { comboResult: true, indexResult: true, applyResult: true };
+  const COOLDOWN_TIMEOUT_MS = 1500;  // נסקר בלולאה; עדיף לוותר מהר מלהצטבר
+  const REPLIES = {
+    comboResult: true, indexResult: true, applyResult: true, cooldownResult: true,
+  };
 
   let nextId = 1;
   const pending = new Map();   // id -> {resolve, timer}
@@ -50,6 +53,9 @@
 
     // {ok, items[], devices[]} — אינדקס שטוח למיגרציה (שם -> מזהה)
     readIndex() { return request('readIndex'); },
+
+    // {known, active, msLeft} — האם המשחק חוסם כרגע החלפת ציוד
+    readCooldown() { return request('cooldown', null, COOLDOWN_TIMEOUT_MS); },
 
     // {ok, results[], failed[], unavailable[], ms} — דוח לפי חריץ
     applyCombo(desired, opts) {
