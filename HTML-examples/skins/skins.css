@@ -5479,6 +5479,10 @@ html {
   margin-right: 0.75em;
 }
 
+.ksc-89 {
+  color: rgb(191, 213, 255);
+}
+
 .SquarePriceButtonComponentStyle-commonBlockButton {
   position: relative;
   min-width: 10.9375em;
@@ -5904,6 +5908,10 @@ html {
   -webkit-box-pack: end;
 }
 
+.ksc-155 {
+  height: 100%;
+}
+
 .GarageCommonStyle-positionContentAlteration {
   height: 100%;
   width: 100%;
@@ -5952,8 +5960,42 @@ html {
   border-radius: 0.75rem;
 }
 
+.ksc-156 {
+  height: calc(100% - 4em);
+}
+
+.ksc-157 {
+  background: radial-gradient(191.67% 100% at 100% 100%, rgba(191, 212, 255, 0.25) 0%, rgba(191, 212, 255, 0) 100%);
+  border-right: 1px solid rgba(255, 255, 255, 0.25);
+  height: calc(100% - 4em);
+  left: 0px;
+  padding: 2em;
+  width: 18.5em;
+  max-width: 18.5em;
+  min-width: 18.5em;
+}
+
 .GarageTurretsAlterationsComponentStyle-styleDescriptionBlock {
   width: 18.5em;
+}
+
+.ksc-160.ksc-160 {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  height: auto;
+  cursor: pointer;
+  width: 18.5em;
+  padding-top: 0px;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-box-align: start;
+  -webkit-box-pack: start;
+}
+
+.ksc-160.ksc-160 h4 {
+  margin-top: 0.625em;
 }
 
 @-webkit-keyframes ksc-keyframe-161 {
@@ -6010,6 +6052,57 @@ html {
   -webkit-box-pack: center;
 }
 
+.ksc-162.ksc-162 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  box-sizing: border-box;
+  cursor: pointer;
+  position: relative;
+  background-color: rgba(191, 213, 255, 0.25);
+  height: 6em;
+  width: 18.5em;
+  -webkit-box-align: center;
+  -webkit-box-pack: center;
+}
+
+.ksc-162.ksc-162 span {
+  color: rgb(191, 213, 255);
+}
+
+.ksc-162.ksc-162:hover {
+  box-shadow: rgb(255, 255, 255) 0em 0em 0em 2px;
+}
+
+.ksc-162.ksc-162:active {
+  animation: 0.5s linear 0s 1 normal none running ksc-keyframe-161;
+}
+
+.ksc-162.ksc-162.ksc-162 {
+  height: 6em;
+  min-width: 18.5em;
+  width: 18.5em;
+  border-radius: 0.75rem;
+}
+
+.ksc-163 {
+  background-image: url("https://s.eu.tankionline.com/static/images/ic_unmount.01e4da15.svg");
+  background-size: contain;
+  width: 4em;
+  height: 4em;
+}
+
+.ksc-164 {
+  height: 100%;
+  position: absolute;
+  width: 100%;
+}
+
+.ksc-165 {
+  padding: 0.125em 0.375em 0px;
+}
+
 .SkinsAndAlterationsStyle-SkinsVerticalComponent {
   width: 100%;
   display: grid;
@@ -6047,6 +6140,12 @@ html {
 
 .-scrollBarVisible::-webkit-scrollbar-thumb:hover {
   background-color: rgba(255, 255, 255, 0.2);
+}
+
+.ksc-166 {
+  margin-left: 0px;
+  height: auto;
+  max-height: calc(100% - 3.5em);
 }
 
 .SkinCellComponentStyle-gradientCategoryDevices-COMMON {
@@ -6111,6 +6210,74 @@ html {
   -webkit-box-pack: end;
 }
 
+.ksc-167 {
+  box-sizing: border-box;
+  background: rgba(191, 213, 255, 0.15);
+  border-radius: 0.5rem;
+  position: relative;
+  text-align: center;
+  overflow: hidden;
+  cursor: pointer;
+  opacity: 1;
+  width: clamp(180px, 16vw, 240px);
+  height: clamp(180px, 16vw, 240px);
+  box-shadow: rgba(191, 213, 255, 0.3) 0em 0em 0em 0.063em;
+}
+
+.ksc-167 h3 {
+  font-family: BaseFontMedium, FallbackFontMedium;
+  font-style: normal;
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 1.125em;
+}
+
+.ksc-167 h3 {
+  color: rgb(191, 213, 255);
+}
+
+.ksc-167:hover {
+  box-shadow: rgb(191, 213, 255) 0em 0em 0em 0.125em;
+}
+
+.ksc-167:nth-child(2n) {
+  margin-bottom: 0px;
+}
+
+.ksc-168 {
+  box-sizing: border-box;
+  background: rgba(191, 213, 255, 0.15);
+  border-radius: 0.5rem;
+  position: relative;
+  text-align: center;
+  overflow: hidden;
+  cursor: pointer;
+  opacity: 0.75;
+  width: clamp(180px, 16vw, 240px);
+  height: clamp(180px, 16vw, 240px);
+  box-shadow: rgba(191, 213, 255, 0.3) 0em 0em 0em 0.063em;
+}
+
+.ksc-168 h3 {
+  font-family: BaseFontMedium, FallbackFontMedium;
+  font-style: normal;
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 1.125em;
+}
+
+.ksc-168 h3 {
+  color: rgb(191, 213, 255);
+}
+
+.ksc-168:hover {
+  box-shadow: rgb(191, 213, 255) 0em 0em 0em 0.125em;
+}
+
+.ksc-168:nth-child(2n) {
+  margin-bottom: 0px;
+}
+
 .SkinCellComponentStyle-gradientCategoryDevices-LEGENDARY {
   background-image: radial-gradient(100% 100% at 0% 0%, rgb(255, 238, 0) 0%, rgba(255, 238, 0, 0) 100%);
   background-repeat: no-repeat;
@@ -6144,6 +6311,44 @@ html {
   right: 0px;
   width: 3em;
   z-index: 2;
+}
+
+.ksc-169 {
+  box-sizing: border-box;
+  background: rgba(118, 255, 51, 0.15);
+  border-radius: 0.5rem;
+  position: relative;
+  text-align: center;
+  overflow: hidden;
+  cursor: auto;
+  opacity: 1;
+  width: clamp(180px, 16vw, 240px);
+  height: clamp(180px, 16vw, 240px);
+  box-shadow: rgb(255, 255, 255) 0em 0em 0em 0.125em;
+}
+
+.ksc-169 h3 {
+  font-family: BaseFontMedium, FallbackFontMedium;
+  font-style: normal;
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 1.125em;
+}
+
+.ksc-169 h3 {
+  color: rgb(118, 255, 51);
+}
+
+.ksc-169:hover {
+  box-shadow: rgb(191, 213, 255) 0em 0em 0em 0.125em;
+}
+
+.ksc-169:hover {
+  box-shadow: rgb(118, 255, 51) 0em 0em 0em 0.125em;
+}
+
+.ksc-169:nth-child(2n) {
+  margin-bottom: 0px;
 }
 
 .SkinCellComponentStyle-gradientCategoryDevices-EPIC {
@@ -6198,1042 +6403,23 @@ html {
   z-index: 2;
 }
 
-.ksc-172 {
-  flex-grow: 1;
-  margin-top: -1.5em;
-  margin-bottom: -0.75em;
-  -webkit-box-flex: 1;
+.ksc-170 {
+  width: 18.5em;
 }
 
-@media screen and (min-width: 1280px),
-(min-height: 950px) {
-  .ksc-172 {
-    margin-top: -4em;
-  }
-}
-
-.ksc-173 {
-  touch-action: none;
-}
-
-.ksc-173.ksc-173 {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-}
-
-.ksc-174.ksc-174 {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: space-around;
-  backdrop-filter: blur(3.125em);
-  box-shadow: rgba(191, 213, 255, 0.25) 0em 0em 0em 1px;
-  background: radial-gradient(100% 100% at 100% 100%, rgba(191, 213, 255, 0.15) 0%, rgba(191, 213, 255, 0) 100%);
-  border-radius: 0.5em;
-  cursor: pointer;
-  height: 7.5em;
-  padding: 0.5625em 0.75em 0.75em;
-  width: 20.875em;
-  margin-top: 0.75em;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-  -webkit-box-align: stretch;
-  -webkit-box-pack: justify;
-}
-
-.ksc-174.ksc-174:hover {
-  box-shadow: rgb(191, 213, 255) 0em 0em 0em 2px;
-}
-
-.ksc-181 {
-  width: 22.5em;
-}
-
-.ksc-182 {
-  height: 1.75em;
-  width: auto;
-}
-
-.ksc-183 {
-  color: rgb(118, 255, 51);
-  margin-left: 0.25em;
-}
-
-.ksc-184 {
-  height: 0.25em;
-  width: 22.5em;
-  margin-top: 0.5em;
-}
-
-.ksc-186 {
-  height: 0.25em;
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  border-radius: 6.25em;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
-}
-
-.ksc-187 {
-  height: 0.25em;
-  width: 100%;
-  background-color: rgb(255, 255, 255);
-  border-radius: 6.25em;
-}
-
-.ksc-188 {
-  margin-top: 0.75em;
-  margin-bottom: 1.5em;
-}
-
-.ksc-189 {
-  max-width: 22.5em;
-  margin-top: 0.5em;
-}
-
-.ksc-189 span {
-  font-family: BaseFontRegular, FallbackFontRegular;
-  font-style: normal;
-  font-weight: normal;
-  font-size: 1em;
-}
-
-.ksc-190 {
-  overflow: hidden;
-  display: flex;
-  min-width: 13.875em;
-  max-width: 13.875em;
-  width: 13.875em;
-  text-overflow: ellipsis;
-}
-
-.ksc-191 {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  min-width: 13.875em;
-  max-width: 13.875em;
-  width: 13.875em;
-}
-
-.ksc-192 {
-  color: rgb(255, 255, 255);
-  font-weight: 500;
-  margin-left: 0.313em;
-  max-width: 3.875em;
-  min-width: 3.875em;
-  width: 3.875em;
-}
-
-.ksc-193.ksc-193 {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 0.75rem;
-  box-sizing: border-box;
-  cursor: default;
-  position: relative;
-  background: radial-gradient(50% 100% at 50% 100%, rgba(118, 255, 51, 0.25) 0%, rgba(118, 255, 51, 0) 100%) transparent;
-  box-shadow: rgba(118, 255, 51, 0.25) 0em 0em 0em 0.063em;
-  height: 6em;
-  -webkit-box-align: center;
-  -webkit-box-pack: center;
-}
-
-.ksc-193.ksc-193 span {
-  font-family: BaseFontMedium, FallbackFontMedium;
-  font-style: normal;
-  font-weight: 500;
-  text-transform: uppercase;
-  font-size: 1em;
-  color: rgb(118, 255, 51);
-}
-
-.ksc-193.ksc-193:hover {
-  box-shadow: rgba(118, 255, 51, 0.25) 0em 0em 0em 0.063em;
-}
-
-.ksc-194 {
-  background-image: url("https://s.eu.tankionline.com/static/images/max_level.e31e0825.svg");
-  background-size: contain;
-  width: 4em;
-  height: 4em;
-}
-
-.ksc-197 {
-  align-items: center;
-  min-height: 12.375em;
-  -webkit-box-align: center;
-}
-
-.ksc-198 {
-  align-self: flex-start;
-  bottom: 0px;
-  cursor: pointer;
-  min-height: 12.375em;
-  position: absolute;
-  width: 3em;
-  z-index: 4;
-  height: 12.375em;
-  background: linear-gradient(90deg, rgb(0, 25, 38) 0%, rgba(0, 26, 39, 0) 100%);
-  left: 0px;
-}
-
-.ksc-198 img {
-  opacity: 0.75;
-  width: 1.3125em;
-  height: 2.6875em;
-}
-
-.ksc-198 img {
-  transform: rotate(180deg);
-}
-
-.ksc-198:hover img {
-  opacity: 1;
-}
-
-.ksc-199 {
-  align-self: flex-start;
-  bottom: 0px;
-  cursor: pointer;
-  min-height: 12.375em;
-  position: absolute;
-  width: 3em;
-  z-index: 4;
-  height: 12.375em;
-  background: linear-gradient(-90deg, rgb(0, 25, 38) 0%, rgba(0, 26, 39, 0) 100%);
-  right: 0px;
-}
-
-.ksc-199 img {
-  opacity: 0.75;
-  width: 1.3125em;
-  height: 2.6875em;
-}
-
-.ksc-199:hover img {
-  opacity: 1;
-}
-
-.ksc-200 {
-  align-items: center;
-  min-height: 9.375em;
-  -webkit-box-align: center;
-}
-
-.ksc-201 {
-  width: 12.5em;
-  margin-right: 0.625em;
-  height: 9.375em;
-}
-
-.ksc-201:last-child {
-  margin-right: 0px;
-}
-
-.ksc-202 {
-  cursor: pointer;
-  background-color: rgba(191, 213, 255, 0.15);
-  box-shadow: rgba(191, 213, 255, 0.3) 0em 0em 0em 0.063em;
-}
-
-@media (any-hover: hover) {
-  .ksc-202:hover {
-    box-shadow: rgb(191, 213, 255) 0em 0em 0em 0.125em;
-  }
-}
-
-.ksc-205 {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  color: rgb(191, 213, 255);
-  font-size: 1em;
-  margin: 0px;
-  text-transform: uppercase;
-}
-
-.ksc-206 {
-  margin: 0px 0px 0px 0.25em;
-  font-size: 1em;
-  text-transform: uppercase;
-  color: rgb(118, 255, 51);
-  text-shadow: rgb(118, 255, 51) 0px 0px 0.375em;
-}
-
-.ksc-207 {
-  position: relative;
-  width: inherit;
-  margin-bottom: 0.625em;
-}
-
-.ksc-208 {
-  cursor: pointer;
-  background-color: rgba(118, 255, 51, 0.15);
-  box-shadow: rgb(255, 255, 255) 0em 0em 0em 0.125em;
-  width: 12.5em;
-  height: 9.375em;
-  border: 0px transparent;
-}
-
-@media (any-hover: hover) {
-  .ksc-208:hover {
-    box-shadow: rgb(118, 255, 51) 0em 0em 0em 0.125em;
-  }
-}
-
-@media (any-hover: hover) {
-  .ksc-208:hover {
-    box-shadow: rgb(191, 213, 255) 0em 0em 0em 0.125em;
-  }
-}
-
-@media (any-hover: hover) {
-  .ksc-208:hover {
-    box-shadow: rgb(118, 255, 51) 0em 0em 0em 0.125em;
-  }
-}
-
-.ksc-210 {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  color: rgb(118, 255, 51);
-  font-size: 1em;
-  margin: 0px;
-  text-transform: uppercase;
-}
-
-.GarageItemComponentStyle-amountItemsScroll {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: BaseFontMedium, FallbackFontMedium;
-  font-style: normal;
-  font-weight: 500;
-  text-transform: uppercase;
-  font-size: 1em;
-  color: rgb(0, 25, 38);
-  background-color: rgb(191, 213, 255);
-  border-radius: 6.25rem;
-  height: auto;
-  min-width: 1em;
-  padding-left: 0.375em;
-  padding-right: 0.375em;
-  width: auto;
-  -webkit-box-align: center;
-  -webkit-box-pack: center;
-}
-
-.GarageItemComponentStyle-itemPriceInCrystals {
-  display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
-  margin-right: 0.75em;
-  -webkit-box-align: start;
-  -webkit-box-pack: start;
-}
-
-.GarageItemComponentStyle-itemPriceInCrystals span {
-  color: rgb(0, 215, 255);
-  font-family: BaseFontRegular, FallbackFontRegular;
-  font-style: normal;
-  font-weight: 500;
-  font-size: 1em;
-}
-
-.GarageItemComponentStyle-itemPriceInCrystals img {
-  width: 1em;
-  height: 1em;
-  margin-right: 0.313em;
-}
-
-.GarageItemComponentStyle-unavailable {
-  height: 3em;
-  width: 3em;
-  top: 50%;
-  margin-top: -1.5em;
-}
-
-.GarageGrenadePreviewComponentStyle-view {
-  position: absolute;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-size: contain;
-  width: calc(100% - 51em);
-  height: calc(100% - 30em);
-  top: 13em;
-  -webkit-box-align: start;
-  -webkit-box-pack: center;
-}
-
-@media screen and (min-width: 1280px),
-(min-height: 950px) {
-  .GarageGrenadePreviewComponentStyle-view {
-    width: calc(100% - 70em);
-    height: calc(100% - 31em);
-    top: 15em;
-  }
-}
-
-.GarageSuppliesComponentStyle-containerButtons {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  width: 22.3em;
-  height: 9.75em;
-  margin-top: 1.25em;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-  -webkit-box-align: center;
-  -webkit-box-pack: start;
+.ksc-171 {
+  background-image: url("https://s.eu.tankionline.com/607/136170/201/132/30367436101741/image.webp");
+  width: 19.5em;
+  height: 12em;
+  margin-bottom: 2em;
 }
 
 @media screen and (max-width: 640px),
 (max-height: 480px) {
-  .GarageSuppliesComponentStyle-containerButtons {
-    height: 6em;
+  .ksc-171 {
+    height: 9em;
+    width: 9em;
   }
-}
-
-.TanksPartComponentStyle-amountItems {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 1.5em;
-  background-color: rgb(118, 255, 51);
-  border-radius: 6.25rem;
-  box-shadow: rgba(118, 255, 51, 0.99) 0px 0px 1.25rem 0px;
-  min-width: 2em;
-  width: auto;
-  margin-top: 1.5em;
-  -webkit-box-align: center;
-  -webkit-box-pack: center;
-}
-
-.TanksPartComponentStyle-amountItems span {
-  font-size: 1em;
-  font-family: BaseFontMedium, FallbackFontMedium;
-  font-style: normal;
-  font-weight: 500;
-  text-transform: uppercase;
-  padding: 0.625rem;
-}
-
-@media screen and (min-width: 1280px),
-(min-height: 950px) {
-  .TanksPartComponentStyle-amountItems {
-    margin-top: 4em;
-  }
-}
-
-@-webkit-keyframes ksc-keyframe-227 {
-  0% {
-    background-color: rgb(0, 212, 255);
-  }
-
-  50% {
-    background-color: rgba(0, 212, 255, 0.8);
-  }
-
-  100% {
-    background-color: rgb(0, 212, 255);
-  }
-}
-
-@keyframes ksc-keyframe-227 {
-  0% {
-    background-color: rgb(0, 212, 255);
-  }
-
-  50% {
-    background-color: rgba(0, 212, 255, 0.8);
-  }
-
-  100% {
-    background-color: rgb(0, 212, 255);
-  }
-}
-
-.SquarePriceButtonComponentStyle-paddingPriceStyleButton {
-  padding: 0.5em;
-}
-
-.GarageCommonStyle-iconCoinSmall {
-  width: 1em;
-  height: 1em;
-}
-
-@-webkit-keyframes ksc-keyframe-238 {
-  0% {
-    background-color: rgb(118, 255, 51);
-  }
-
-  50% {
-    background-color: rgba(118, 255, 51, 0.7);
-  }
-
-  100% {
-    background-color: rgb(118, 255, 51);
-  }
-}
-
-@keyframes ksc-keyframe-238 {
-  0% {
-    background-color: rgb(118, 255, 51);
-  }
-
-  50% {
-    background-color: rgba(118, 255, 51, 0.7);
-  }
-
-  100% {
-    background-color: rgb(118, 255, 51);
-  }
-}
-
-.ksc-241 {
-  width: 10.9375em;
-}
-
-.ksc-242 {
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.ksc-242.ksc-242 {
-  color: rgb(191, 213, 255);
-}
-
-.ksc-243 {
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.ksc-243.ksc-243 {
-  color: rgb(118, 255, 51);
-}
-
-.ksc-244.ksc-244 {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 0.75rem;
-  box-sizing: border-box;
-  cursor: default;
-  position: relative;
-  background: radial-gradient(50% 100% at 50% 0%, rgba(118, 255, 51, 0.25) 0%, rgba(118, 255, 51, 0) 100%) transparent;
-  box-shadow: rgba(118, 255, 51, 0.25) 0em 0em 0em 0.063em;
-  height: 6em;
-  margin-top: 0.5em;
-  -webkit-box-align: center;
-  -webkit-box-pack: center;
-}
-
-.ksc-244.ksc-244 span {
-  font-family: BaseFontMedium, FallbackFontMedium;
-  font-style: normal;
-  font-weight: 500;
-  text-transform: uppercase;
-  font-size: 1em;
-  color: rgb(118, 255, 51);
-}
-
-.ksc-244.ksc-244:hover {
-  box-shadow: rgba(118, 255, 51, 0.25) 0em 0em 0em 0.063em;
-}
-
-@media screen and (max-width: 640px),
-(max-height: 480px) {
-  .ksc-244.ksc-244 {
-    height: 6em;
-    margin-right: 0.5em;
-    margin-top: 0px;
-    width: 6em;
-  }
-
-  .ksc-244.ksc-244 span {
-    display: none;
-  }
-}
-
-.ksc-245 {
-  background-image: url("https://s.eu.tankionline.com/static/images/ic_mount.4175dc0c.svg");
-  background-size: contain;
-  width: 4em;
-  height: 4em;
-}
-
-.GarageItemComponentStyle-itemResistanceIcon {
-  position: absolute;
-  width: 3em;
-  height: 3em;
-  margin-top: 1.125em;
-  z-index: 2;
-}
-
-.ksc-248 {
-  cursor: pointer;
-  background-color: rgba(191, 213, 255, 0.25);
-  box-shadow: rgb(255, 255, 255) 0em 0em 0em 0.125em;
-  width: 12.5em;
-  height: 9.375em;
-}
-
-@media (any-hover: hover) {
-  .ksc-248:hover {
-    box-shadow: rgb(191, 213, 255) 0em 0em 0em 0.125em;
-  }
-}
-
-.ksc-249 {
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.ksc-249.ksc-249 {
-  color: rgb(255, 255, 255);
-}
-
-.ksc-250 {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  color: rgb(255, 255, 255);
-  font-size: 1em;
-  margin: 0px;
-  text-transform: uppercase;
-}
-
-.ksc-251 {
-  margin-top: 0.1875em;
-}
-
-.ksc-252 {
-  height: 5.25em;
-  width: 7em;
-  z-index: 1;
-}
-
-.ksc-253 {
-  cursor: pointer;
-  background-color: rgba(118, 255, 51, 0.15);
-  box-shadow: rgba(118, 255, 51, 0.5) 0em 0em 0em 0.063em;
-}
-
-@media (any-hover: hover) {
-  .ksc-253:hover {
-    box-shadow: rgb(118, 255, 51) 0em 0em 0em 0.125em;
-  }
-}
-
-.-flexSpaceBetweenAlignStretchColumn {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: space-between;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-  -webkit-box-align: stretch;
-  -webkit-box-pack: justify;
-}
-
-.GarageProtectionsComponentStyle-blockParametersProtection {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: space-between;
-  margin-left: 0px;
-  width: 21.875em;
-  z-index: 2;
-  margin-top: 1.5em;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-  -webkit-box-align: stretch;
-  -webkit-box-pack: justify;
-}
-
-.GarageProtectionsComponentStyle-blockParametersProtection h1 {
-  font-family: BaseFontMedium, FallbackFontMedium;
-  font-style: normal;
-  font-weight: 500;
-  text-transform: uppercase;
-  font-size: 1.5em;
-  margin-top: 0px;
-}
-
-.GarageProtectionsComponentStyle-blockParametersProtection h2 {
-  font-family: BaseFontRegular, FallbackFontRegular;
-  font-style: normal;
-  font-weight: 500;
-  font-size: 1em;
-  margin-top: 0px;
-}
-
-.GarageProtectionsComponentStyle-blockParametersProtection h3 {
-  font-family: BaseFontRegular, FallbackFontRegular;
-  font-style: normal;
-  font-weight: normal;
-  font-size: 1em;
-}
-
-@media screen and (min-width: 1280px),
-(min-height: 950px) {
-  .GarageProtectionsComponentStyle-blockParametersProtection {
-    margin-top: 4em;
-  }
-}
-
-.GarageProtectionsComponentStyle-aboutDefence span {
-  font-size: 1em;
-}
-
-.GarageProtectionsComponentStyle-containerEquipmentCannon {
-  background-color: transparent;
-  display: flex;
-  align-items: stretch;
-  justify-content: flex-start;
-  position: relative;
-  width: 18.25em;
-  height: auto;
-  margin-left: 0px;
-  -webkit-box-align: stretch;
-  -webkit-box-pack: start;
-}
-
-.GarageProtectionsComponentStyle-blockParameterEquip {
-  display: flex;
-  align-items: stretch;
-  justify-content: space-between;
-  width: 18.25em;
-  height: 5em;
-  margin-left: 0px;
-  margin-top: 0px;
-  -webkit-box-align: stretch;
-  -webkit-box-pack: justify;
-}
-
-.GarageProtectionsComponentStyle-unequip {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  width: auto;
-  height: 1.563em;
-  -webkit-box-align: center;
-  -webkit-box-pack: start;
-}
-
-.-borderRadius4px {
-  border-radius: 0.25em;
-  box-sizing: border-box;
-}
-
-.-boxShadowForButton {
-  box-shadow: rgba(191, 213, 255, 0.5) 0px 0px 0px 0.063em;
-}
-
-.ksc-254 {
-  min-width: 31.25em;
-  width: auto;
-  position: absolute;
-  bottom: 2.4375em;
-}
-
-.ksc-255 {
-  display: flex;
-  flex-direction: column;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-}
-
-.GarageProtectionsComponentStyle-equipmentResistance {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 4em;
-  height: 5em;
-  margin-left: 0px;
-  position: relative;
-  cursor: pointer;
-  -webkit-box-align: center;
-  -webkit-box-pack: center;
-}
-
-.GarageProtectionsComponentStyle-mountedResist {
-  background-image: url("https://s.eu.tankionline.com/static/images/protectionSlotEquip.5f03fffe.svg");
-  background-repeat: no-repeat;
-  background-size: 100%;
-  background-position: center center;
-}
-
-.GarageProtectionsComponentStyle-mountedResist:hover {
-  background-image: url("https://s.eu.tankionline.com/static/images/hoverProtectionEquipSlot.53a400d5.svg");
-  background-repeat: no-repeat;
-  background-size: 100%;
-  background-position: center center;
-}
-
-.GarageProtectionsComponentStyle-resistanceIcon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 2em;
-  height: 2em;
-  position: relative;
-  -webkit-box-align: center;
-  -webkit-box-pack: center;
-}
-
-.GarageProtectionsComponentStyle-resistanceIconContainer {
-  width: 4.688em;
-  height: 3.563em;
-}
-
-.GarageProtectionsComponentStyle-resistanceIconContainer img {
-  width: 3.75em;
-  height: auto;
-}
-
-.-buttonNeutralHover {
-  background-color: rgba(191, 213, 255, 0.05);
-  box-shadow: rgb(191, 213, 255) 0em 0em 0em 0.125em;
-}
-
-.ksc-256 {
-  z-index: 2;
-}
-
-.ksc-256.ksc-256 {
-  width: 4.688em;
-  height: 3.563em;
-}
-
-.ksc-256.ksc-256 img {
-  width: 3.75em;
-  height: auto;
-}
-
-.ksc-257 {
-  width: 12.375em;
-  height: 3em;
-  position: relative;
-  margin-top: 0px;
-  margin-right: 0px;
-  text-align: center;
-  border-radius: 0.75rem;
-  cursor: pointer;
-  background-color: rgba(255, 255, 255, 0.15);
-  transition: background 0.3s;
-}
-
-.ksc-257 span {
-  font-family: BaseFontBold, FallbackFontBold;
-  font-style: normal;
-  font-weight: 500;
-  font-size: 1em;
-  line-height: normal;
-  text-transform: uppercase;
-  text-wrap: nowrap;
-}
-
-.ksc-257 img {
-  margin-left: 0.625em;
-  margin-right: 0.625em;
-}
-
-.ksc-257 span {
-  color: rgb(255, 255, 255);
-}
-
-.ksc-257:hover {
-  background-color: rgba(255, 255, 255, 0.15);
-  box-shadow: rgb(255, 255, 255) 0em 0em 0em 2px;
-}
-
-.ksc-257.ksc-257 {
-  border-radius: 0.25em;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: rgba(191, 213, 255, 0.5) 0px 0px 0px 0.063em;
-  height: 2.5em;
-  margin-right: 0.5em;
-  width: 2.5em;
-  cursor: pointer;
-  position: absolute;
-  margin-left: 0.4375em;
-  margin-top: -9.125em;
-  -webkit-box-align: center;
-  -webkit-box-pack: center;
-}
-
-.ksc-257.ksc-257 img {
-  width: 1.5em;
-  height: 1.5em;
-  opacity: 0.8;
-}
-
-.ksc-257.ksc-257:hover {
-  background-color: rgba(191, 213, 255, 0.05);
-  box-shadow: rgb(191, 213, 255) 0em 0em 0em 0.125em;
-}
-
-.ksc-257.ksc-257:hover img {
-  opacity: 1;
-}
-
-.ksc-258 {
-  white-space: nowrap;
-}
-
-.ksc-259 {
-  margin-left: 0.75em;
-  margin-top: 1.6875em;
-}
-
-.ksc-260 {
-  width: 12.375em;
-  height: 3em;
-  position: relative;
-  margin-top: 0px;
-  margin-right: 0px;
-  text-align: center;
-  border-radius: 0.75rem;
-  cursor: pointer;
-  background-color: rgba(255, 255, 255, 0.15);
-  transition: background 0.3s;
-}
-
-.ksc-260 span {
-  font-family: BaseFontBold, FallbackFontBold;
-  font-style: normal;
-  font-weight: 500;
-  font-size: 1em;
-  line-height: normal;
-  text-transform: uppercase;
-  text-wrap: nowrap;
-}
-
-.ksc-260 img {
-  margin-left: 0.625em;
-  margin-right: 0.625em;
-}
-
-.ksc-260 span {
-  color: rgb(255, 255, 255);
-}
-
-.ksc-260:hover {
-  background-color: rgba(255, 255, 255, 0.15);
-  box-shadow: rgb(255, 255, 255) 0em 0em 0em 2px;
-}
-
-.ksc-260.ksc-260 {
-  border-radius: 0.25em;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: rgba(191, 213, 255, 0.5) 0px 0px 0px 0.063em;
-  height: 2.5em;
-  margin-right: 0.5em;
-  width: 2.5em;
-  cursor: pointer;
-  -webkit-box-align: center;
-  -webkit-box-pack: center;
-}
-
-.ksc-260.ksc-260 img {
-  width: 1.5em;
-  height: 1.5em;
-}
-
-.ksc-260.ksc-260:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-.ksc-260.ksc-260:hover {
-  background-color: rgba(191, 213, 255, 0.25);
-  box-shadow: rgb(191, 213, 255) 0em 0em 0em 0.125em;
-}
-
-.ksc-261 {
-  color: rgb(191, 213, 255);
-  cursor: pointer;
-  font-size: 1.125em;
-  margin-left: 0.625em;
-}
-
-.ksc-261:hover {
-  color: rgb(255, 255, 255);
-}
-
-.ksc-262.ksc-262 {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 0.75rem;
-  box-sizing: border-box;
-  cursor: pointer;
-  position: relative;
-  background-color: rgb(118, 255, 51);
-  height: 6em;
-  margin-top: 0.5em;
-  -webkit-box-align: center;
-  -webkit-box-pack: center;
-}
-
-.ksc-262.ksc-262 span {
-  color: rgb(0, 25, 38);
-}
-
-.ksc-262.ksc-262 h2 {
-  color: rgb(0, 25, 38);
-}
-
-.ksc-262.ksc-262:hover {
-  background-color: rgb(118, 255, 51);
-  box-shadow: rgb(255, 255, 255) 0em 0em 0em 2px;
-}
-
-.ksc-262.ksc-262:active {
-  animation: 0.5s linear 0s 1 normal none running ksc-keyframe-238;
-}
-
-@media screen and (max-width: 640px),
-(max-height: 480px) {
-  .ksc-262.ksc-262 {
-    height: 6em;
-    margin-right: 0.5em;
-    margin-top: 0px;
-    width: 6em;
-  }
-
-  .ksc-262.ksc-262 span {
-    display: none;
-  }
-}
-
-.ksc-263 {
-  background-image: url("https://s.eu.tankionline.com/static/images/ic_mountBlack.101d5e3f.svg");
-  background-size: contain;
-  width: 4em;
-  height: 4em;
-}
-
-.ksc-264 {
-  height: 100%;
-  position: absolute;
-  width: 100%;
-}
-
-.ksc-265 {
-  padding: 0.125em 0.375em 0px;
 }
 
 @font-face {
