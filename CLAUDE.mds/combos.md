@@ -157,6 +157,66 @@ layer) and hides only the **siblings along the path** from the preview up to the
 host — generically, without naming per-tab classes. Each tab type has a different
 host (`PREVIEW_HOSTS` in `constants.js`).
 
+### …and letting the mouse reach it
+
+Keeping the box measurable is only half of it, and the other half took two
+attempts because the drag surface is not what it looks like.
+
+**`#tankPreviewContainer` is the drag surface.** It is an empty
+`position:absolute; z-index:1` div, and the React component that renders it
+carries `onPointerDown` / `onPointerMove` / `onPointerUp` with
+`setPointerCapture` — verifiable in the bundle by searching for the literal
+`"tankPreviewContainer"`. The tank you *see* is painted on `#tankPreviewCanvas`,
+a separate full-screen canvas that is the first child of `#app-root` and listens
+to nothing. Rotating is a DOM drag that drives a canvas.
+
+Three elements therefore matter, and **all three live in the root stacking
+context** — nothing between them creates one (`.wrapper`, `#app-root`,
+`.-container` and `.GarageCommonStyle-garageContainer` are all either static or
+positioned with `z-index:auto`):
+
+| element | z-index | DOM order |
+|---|---|---|
+| `#tankPreviewCanvas` | 1 | first |
+| `#combo-manager-view` | **2** | middle |
+| `#tankPreviewContainer` | 1 | last |
+
+Equal z-index resolves by DOM order, so the drag box beats the canvas, and our
+view beats both. Two things are needed for the drag to survive, and **missing
+either one looks identical from the outside** — the tank renders and simply does
+not respond:
+
+1. **The host must not become a stacking context.** `keepTankPreviewAlive` used
+   to pin it with `z-index: 0`, which trapped the box's own `z-index: 1` inside
+   the host and flattened it to level 0 — *below the canvas*. The canvas then
+   took every pointer event and did nothing with it. The host is now pinned with
+   `position/top/left/margin` only; `z-index` is still cleared on restore so a
+   stale inline value from an older build can't come back.
+2. **Our view must be transparent to the mouse.** `pointer-events: none` on
+   `#combo-manager-view`, with `auto` given back to exactly three regions:
+   `.cme_descriptionBlockCollection` (the switches),
+   `.cme_TanksPartComponentStyle-tankPartUpgrades` (the buttons) and
+   `.cme_itemsListContainer` (the cards). `pointer-events` inherits, so one
+   declaration brings a whole subtree back.
+
+Consequences worth knowing:
+
+- **Anything interactive must live inside one of those three regions.** Put a
+  button anywhere else in the view and it renders perfectly and never responds.
+- **The view's `z-index: 2` and the host's missing `z-index` are one decision.**
+  Raise the host or lower the view and the tank covers the combos UI instead.
+- `build/harnesses/test_view_layer.js` guards both halves plus the region rule.
+- The modals are unaffected — the delete modal, import/export and the drawer all
+  mount on `document.body`, outside the view.
+- The tank is not draggable *behind* those three regions, which is how the game's
+  own tabs behave too: its parameter blocks sit on it in exactly the same way.
+- `#cme_tankPreviewContainer` in our template is a copy of the game's box that we
+  never measure or listen on. Inert dead markup — and it must never be given
+  `pointer-events: auto`, since it covers the whole upper block.
+- The game's own UI is only clickable where it outranks the canvas: the garage
+  menu is `z-index: 3`, the item lists `3`, the parameter blocks `3`. Anything
+  the game leaves at `z-index: auto` is unclickable by design.
+
 ## Hiding the game's content, and keeping it hidden
 
 `ViewRenderer.show()` hides the game's tab content — `hideGameContent()`:

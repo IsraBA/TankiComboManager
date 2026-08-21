@@ -64,7 +64,7 @@ own console context instead.
 There is no test framework here. What exists is **`build/harnesses/`** — plain
 `node <file>` scripts, no dependencies, that run the _shipped_ code offline
 against the bundles in `../../../research/`. They live under `build/`, so they
-never reach the store zip. 177 checks across 8 files:
+never reach the store zip. 193 checks across 9 files:
 
 - **`verify_shipped.js`** — loads `discovery/*.js` as shipped, runs
   `discover()` against every bundle in `research/`, and diffs the result for the
@@ -80,6 +80,14 @@ never reach the store zip. 177 checks across 8 files:
   **`test_card_render.js`**, **`test_protection_equal.js`** — same idea for the
   ISOLATED-side modules (Mk families, imported combos, the fallback split, the
   card HTML for both data generations).
+- **`test_view_layer.js`** — the odd one out: it reads `styles.css`,
+  `template.js` and `tank_preview.js` as **text**, because what it guards is a
+  stacking/hit-testing contract, not logic. The view must stay
+  `pointer-events: none` and outrank the game's drag box, the preview host must
+  not be given a `z-index`, and every interactive element must sit inside a
+  region that takes pointer events back (see the tank-preview section of
+  `combos.md`). It cannot tell you whether the layer actually behaves — only a
+  browser can.
 
 They hold **absolute paths** to this repo and to `research/`, so they run from
 anywhere but break if either moves. When you split or move a source file, update

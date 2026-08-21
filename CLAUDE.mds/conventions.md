@@ -132,7 +132,7 @@ Three steps, every time — **not only before a release** (rule 8 in
    A harness that no longer matches the code is worse than no harness: it reports
    PASS for code it isn't running.
 
-2. **Run all 8**: `node build/harnesses/<file>.js`. 177 checks, a few seconds,
+2. **Run every one of them**: `node build/harnesses/<file>.js`. A few seconds,
    no dependencies. What each one covers is in `debugging.md`.
 3. **Run `build/make-zip.ps1`** — manually, never from a hook. Beyond building the
    zip it cross-checks `manifest.json` against the disk in both directions, so it

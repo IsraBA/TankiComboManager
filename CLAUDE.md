@@ -47,7 +47,7 @@ says exactly which one that is. Do not load them all.
    `CLAUDE.mds/architecture.md`; anything a future agent would otherwise have to
    re-derive goes into the matching `CLAUDE.mds/` file.
 8. **Every round of edits ends the same way**, release or not: update the
-   harnesses in `build/harnesses/`, run all 8, then run `build/make-zip.ps1`.
+   harnesses in `build/harnesses/`, run them all, then run `build/make-zip.ps1`.
    The full checklist is in `CLAUDE.mds/conventions.md` — do not skip it because
    the change looked small.
 

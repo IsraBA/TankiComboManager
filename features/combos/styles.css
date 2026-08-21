@@ -2,15 +2,15 @@
 /* העתקת העיצוב המדויק מכרטיסיית הצבעים */
 
 /* === Main Container === */
-/* תצוגת הטנק של המשחק נשארת חיה מתחתינו (ראה keepTankPreviewAlive), ולכן
-   צריך שכבה משלנו מעליה — אחרת היא תבלע את הלחיצות על הכרטיסים. הטנק
-   נשאר ניתן לגרירה בכל השטח שהתוכן שלנו לא מכסה. */
+/* z-index 2 מדרג אותנו מעל תיבת הגרירה של הטנק (1), ו-pointer-events
+   פותח לה מעבר. שני אלו כרוכים ב-tank_preview.js — ראה combos.md. */
 #combo-manager-view {
   width: 100%;
   display: none;
   color: white;
   position: relative;
-  z-index: 1;
+  z-index: 2;
+  pointer-events: none;
 }
 
 .cme_main {
@@ -71,6 +71,7 @@
   width: 22.5em;
   height: auto;
   z-index: 1;
+  pointer-events: auto;
   margin-top: 1.5em;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
@@ -291,6 +292,7 @@
   width: 22.5em;
   height: max-content;
   z-index: 2;
+  pointer-events: auto;
   margin-top: 1.5em;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
@@ -506,6 +508,7 @@
   height: auto;
   background: linear-gradient(rgba(0, 25, 38, 0) 0%, rgb(0, 25, 38) 100%);
   z-index: 1;
+  pointer-events: auto;
   height: 22.375em;
   -webkit-box-align: center;
   -webkit-box-pack: start;
