@@ -38,8 +38,8 @@ says exactly which one that is. Do not load them all.
 4. **Load order in `manifest.json` is sacred.** Scripts load in the listed order;
    a file that isn't listed never loads. See `CLAUDE.mds/architecture.md`.
 5. **Never delete working code to replace it.** Build the new path beside the old
-   one, rewire to it, and leave the old one in the tree (`combo_saver.js`,
-   `combo_loader.js` are exactly this).
+   one, rewire to it, and move the old one into an `old/` folder next to it
+   (`save/old/`, `equip/old/` are exactly this).
 6. **Ship only what runs.** `CLAUDE.md`, `CLAUDE.mds/`, `docs/`, `HTML-examples/`
    and `build/` never go into the store zip — `docs/PACKAGING.md` is the source
    of truth and `build/make-zip.ps1` enforces it.
@@ -49,10 +49,14 @@ says exactly which one that is. Do not load them all.
 
 ## Quick facts
 
-- **Three execution contexts**: ISOLATED world (all of combos + the translator's
+- **Three execution contexts**: ISOLATED world (most of combos + the translator's
   bridge/detect, has `chrome.*`), MAIN world (the game hooks, shares the page
   `window`), and the service worker (`background.js`, the only place allowed to
   read cross-origin responses).
+- **Combos folders follow the flow**, not the file type: `discovery/`, `bridge/`,
+  `capture/`, `save/`, `view/`, `equip/`, `migration/`, `randomizer/`, `dom/`.
+  One rule keeps the worlds straight: **anything under a `game/` folder runs in
+  MAIN**, everything else in ISOLATED.
 - **Namespaces**: `window.TankiQoL` (ISOLATED, and the shared components in
   MAIN), `window.__CT` (translator internals, MAIN), `window.__CMB` (garage hook,
   MAIN).
@@ -73,7 +77,7 @@ says exactly which one that is. Do not load them all.
 ├── docs/                  # PACKAGING.md, PRIVACY.md, STORE.md
 ├── build/make-zip.ps1     # builds the store zip
 ├── shared/components/     # drawer / switch / select, used by both features
-├── features/combos/       # the combos feature
+├── features/combos/       # the combos feature — one folder per flow stage
 ├── features/translator/   # the translator feature
 ├── assets/                # icons
 └── HTML-examples/         # real game HTML & CSS samples (reference, never shipped)

@@ -213,10 +213,11 @@ matches the current one (a combo with no `language` is assumed English).
 
 ## The legacy DOM path
 
-`save/old/` (save) and `equip/old/` + `dom/scanners/`
-(equip) work by **simulating the user**: navigate a tab, find the item by its
-displayed name, click it, click Equip, wait. That is why they are slow and
-visibly walk the UI.
+`save/old/combo_saver.js` and `equip/old/` (plus `dom/scanners/` and
+`dom/tab_navigator.js`) work by **simulating the user**: navigate a tab, find the
+item by its displayed name, click it, click Equip, wait. That is why they are
+slow and visibly walk the UI. Each `old/` folder sits beside the path that
+replaced it.
 
 - The **saver** is wired to nothing. Kept deliberately.
 - The **loader** is still used, as the per-slot fallback when a native dispatch
