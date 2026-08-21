@@ -244,13 +244,18 @@ listed in both worlds' content-script blocks; each world gets its own copy on
 ├── background.js              # service worker — translation fetch
 ├── shared/components/         # switch, select, drawer (used by both features)
 ├── features/
-│   ├── combos/
+│   ├── combos/                # folders follow the flow; any game/ folder = MAIN world
 │   │   ├── main.js            # orchestrator
-│   │   ├── isolated/          # bundle discovery + the bridge to the MAIN world
-│   │   ├── main/garage/       # [MAIN] reads and writes the game's own garage state
-│   │   ├── lib/               # constants (DOM selectors), utils, language_manager
-│   │   ├── core/              # savers, loaders, migrator, navigators, scanners/, equippers/, randomizer/
-│   │   └── ui/                # menu + lobby injectors, renderers, drag, modals, drawers
+│   │   ├── lib/               # constants (DOM selectors), utils, language, cleaner
+│   │   ├── discovery/         # find this build's minified names, arm the hook
+│   │   ├── bridge/            # the pipe between the two JS worlds
+│   │   ├── capture/           # hold the game's live garage state
+│   │   ├── save/              # read the mounted loadout and store it
+│   │   ├── view/              # the combos UI: cards, lobby entry, panels
+│   │   ├── equip/             # apply a combo through the game's own actions
+│   │   ├── migration/         # backfill ids on old combos
+│   │   ├── randomizer/        # random combo / random full setup
+│   │   └── dom/               # the DOM toolbox the legacy paths use
 │   └── translator/
 │       ├── isolated/          # bridge.js, detect.js
 │       ├── main/              # chat.js, translate.js, settings.js, skiplist.js, toggle.js, gamesettings.js

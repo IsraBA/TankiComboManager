@@ -16,7 +16,7 @@ for DOM work, but two things need more:
 | Context | Who runs there | Has |
 |---|---|---|
 | ISOLATED | all of combos (DOM + discovery + bridge), translator `isolated/` | `chrome.storage`, `chrome.runtime`; no access to page JS |
-| MAIN | `features/combos/main/garage/*`, `features/translator/main/*` | the page `window`; no `chrome.*` |
+| MAIN | `features/combos/**/game/*`, `features/translator/main/*` | the page `window`; no `chrome.*` |
 | Service worker | `background.js` | `fetch` with `host_permissions` |
 
 The two worlds talk over `window.postMessage`, every message tagged (`__cmb` for
@@ -33,7 +33,7 @@ Content scripts can't use ES modules, so modules share namespace objects on
 |---|---|---|
 | `window.TankiQoL` | ISOLATED (combos) + MAIN (translator) | the shared components (`.Switch`, `.Select`, `.Drawer`), and in ISOLATED every combos module (`.DOM`, `.ViewRenderer`, `.GarageBridge`, `.GarageDiscover`, …) |
 | `window.__CT` | MAIN | translator internals: `.settings`, `.translate`, `.skip`, `.bidi`, `.rebuild()` |
-| `window.__CMB` | MAIN | garage hook: `.read()`, `.index()`, `.log()`, `.names()`, `.state()`, `.debug`, and `.internals` (shared by the `main/garage/` files) |
+| `window.__CMB` | MAIN | garage hook: `.read()`, `.index()`, `.names()`, `.state()`, `.debug`, and `.internals` (shared by every `game/` file) |
 | `__CT_*` | MAIN | translator console helpers — see `debugging.md` |
 
 ## manifest.json — 6 content-script blocks
@@ -44,8 +44,8 @@ JSON has no comments, so the reasoning lives here. **Do not merge these blocks.*
 |---|---|---|---|---|
 | 0 | **all CSS** | `document_start` | n/a | CSS is not world-scoped, so one block serves both features. Early injection avoids a flash of unstyled injected UI. Array order = cascade order. |
 | 1 | translator `isolated/` | `document_start` | ISOLATED | The only place with `chrome.*`. Must start early so bundle discovery finishes before the user enters a battle. |
-| 2 | combos `isolated/` (discovery + bridge) | `document_start` | ISOLATED | Same reason for the garage hook: discovery must finish before the garage opens. Also defines `TankiQoL.GarageBridge`, which block 5 uses. |
-| 3 | combos `main/garage/` | `document_start` | MAIN | Needs the page's own `window` for the `Object.prototype` traps. Must be `document_start` — the state is built later, but the trap has to be armed first. |
+| 2 | combos `discovery/` + `bridge/bridge.js` | `document_start` | ISOLATED | Same reason for the garage hook: discovery must finish before the garage opens. Also defines `TankiQoL.GarageBridge`, which block 5 uses. |
+| 3 | every combos `game/` file | `document_start` | MAIN | Needs the page's own `window` for the `Object.prototype` traps. Must be `document_start` — the state is built later, but the trap has to be armed first. |
 | 4 | translator `main/` | `document_start` | MAIN | Same, for the chat HUD. |
 | 5 | combos (DOM side) | `document_idle` | ISOLATED (default) | Pure DOM work that only makes sense once the page exists. Its internal order is the dependency chain below. |
 
@@ -63,15 +63,14 @@ Scripts load in the exact order listed. **A file that isn't in the manifest neve
 loads.** Within block 5 the order is:
 
 1. `shared/components/` — no dependencies
-2. `features/combos/lib/` (constants, utils, language) — no dependencies
-3. `features/combos/core/` (cleaner, migrator, navigator, scanners, equippers,
-   savers, loaders, helpers, randomizer) — depend on lib
-4. `features/combos/ui/` — base file first, then its mixins (`ui/card/*` after
-   `combo_card_renderer.js`, `ui/view/*` after `view_renderer.js`)
+2. `features/combos/lib/` (constants, utils, language, cleaner) — no dependencies
+3. `migration/`, `dom/`, `save/`, `equip/`, `randomizer/` — depend on lib
+4. `features/combos/view/` — base file first, then its mixins (`view/card/*`
+   after `combo_card_renderer.js`, `view/*.js` after `view_renderer.js`)
 5. `features/combos/main.js` — always last, orchestrates everything
 
-Block 3 (`main/garage/`) ends with `boot.js`, which arms the traps once every
-other file has defined its half of `__CMB.internals`.
+Block 3 (the MAIN-world files) ends with `discovery/game/boot.js`, which arms the
+traps once every other file has defined its half of `__CMB.internals`.
 
 ## Storage layout
 
@@ -94,65 +93,81 @@ names, so no collision.
 
 ## Source tree
 
+**The folders follow the flow, not the JS world.** One rule keeps the worlds
+straight: **anything under a `game/` folder runs in MAIN**, everything else in
+ISOLATED.
+
 ```
 features/combos/
 ├── main.js                    # MutationObserver orchestrator, always last
-├── styles.css, combo_card.css
-├── isolated/                  # [ISOLATED] the link to the MAIN-world hook
-│   ├── discover/              #   bundle parsing, split by concern
-│   │   ├── parse.js           #     toString -> {semantic: minified} maps
-│   │   ├── state.js           #     state/item classes, trap field, read extras
-│   │   ├── send.js            #     proxy, space, context, mount + select actions
-│   │   ├── actions.js         #     resistance / device / skin write actions
-│   │   └── index.js           #     discover() = compose the above
-│   ├── detect.js              #   fetch the bundle, cache, send to MAIN
-│   └── bridge.js              #   TankiQoL.GarageBridge — request/reply to MAIN
-├── main/garage/               # [MAIN] the game hook (see garage-native.md)
-│   ├── names.js               #   seed names + debug counters + applyNames
-│   ├── kotlin.js              #   enum / Long / image / Mk / upgrade readers
-│   ├── collect.js             #   structural scan of the state graph
-│   ├── capture.js             #   the Object.prototype traps
-│   ├── store.js               #   find the store, build actions, resolve ctors
-│   ├── mount.js               #   mount an item + select it (3D model)
-│   ├── protections.js         #   the 4 resistance slots, set-based diff
-│   ├── devices.js             #   augments: install / remove, ownership
-│   ├── device_catalog.js      #   lazy catalogs: request + wait
-│   ├── skins.js               #   apply a turret/hull skin
-│   ├── read.js                #   readCombo / readIndex
-│   ├── apply.js               #   applyCombo — the whole-combo orchestrator
-│   ├── bridge_main.js         #   MAIN side of the bridge
-│   └── boot.js                #   arm the traps, announce ready
-├── lib/
-│   ├── constants.js           # every game DOM selector, in one place
+├── styles.css
+├── lib/                       # no dependencies of their own
+│   ├── constants.js           #   every game DOM selector, in one place
 │   ├── utils.js
-│   └── language_manager.js    # 11 languages, auto-detected from the UI
-├── core/
-│   ├── instant_saver.js       # THE save path (game state)
-│   ├── combo_saver.js         # LEGACY save path (DOM) — kept, wired to nothing
-│   ├── instant_loader.js      # THE equip path (game actions)
-│   ├── combo_loader.js        # LEGACY equip path (DOM) — per-slot fallback
-│   ├── combo_migrator.js      # backfills ids on old combos, in the background
-│   ├── migrator_match.js      #   its matching core (name → item, Mk families)
-│   ├── combo_cleaner.js       # removes stale/empty combos
-│   ├── tab_navigator.js       # navigates between garage tabs
-│   ├── navigation_helpers.js  # MutationObserver-based waiting
-│   ├── auto_navigator.js      # auto-opens the combos tab
-│   ├── scanners/              # base_item, augment, protection — READ only
-│   ├── equippers/             # base_item, augment, protection — WRITE only
-│   └── randomizer/            # randomizer, random_from_saved, random_full, item_list_scanner
-└── ui/
-    ├── menu_injector.js       # injects the COMBOS tab
-    ├── view_renderer.js       # the view object: init, show/hide
-    ├── view/                  #   template, events, scroll, drag, combo_list,
-    │                          #   combo_actions, delete_animation, tank_preview,
-    │                          #   hide_guard
-    ├── combo_card_renderer.js # the card object
-    ├── card/                  #   rows, events, title_edit
-    ├── combo_drag_handler.js  # drag-and-drop reordering
-    ├── delete_combo_modal.js/.css
-    ├── lobby_button_injector.js, lobby_shortcut_handler.js, lobby_button.css
-    ├── randomizer_settings.js/.css
-    └── import_export.js/.css
+│   ├── language_manager.js    #   11 languages, auto-detected from the UI
+│   └── combo_cleaner.js       #   removes stale/empty combos
+│
+├── discovery/                 # stage 0 — find this build's minified names
+│   ├── parse.js               #   toString -> {semantic: minified} maps
+│   ├── state.js               #   state/item classes, trap field, read extras
+│   ├── send.js                #   the garage proxy, mount + select actions
+│   ├── actions.js             #   resistance / device / skin write actions
+│   ├── index.js               #   discover() = compose the above
+│   ├── detect.js              #   fetch the bundle, cache, send to MAIN
+│   └── game/
+│       ├── names.js           #   seed names + debug counters + applyNames
+│       └── boot.js            #   arm the traps, announce ready (loads last)
+│
+├── bridge/                    # the pipe between the worlds
+│   ├── bridge.js              #   TankiQoL.GarageBridge — request/reply
+│   └── game/bridge_main.js    #   the MAIN side
+│
+├── capture/game/              # stage 1 — hold the game's live state
+│   ├── capture.js             #   the Object.prototype traps
+│   ├── collect.js             #   structural scan of the state graph
+│   └── kotlin.js              #   enum / Long / image / Mk / upgrade readers
+│
+├── save/                      # stage 2 — "save combo"
+│   ├── instant_saver.js       #   THE save path
+│   ├── game/read.js           #   readCombo / readIndex
+│   └── old/combo_saver.js     #   LEGACY (DOM) — kept, wired to nothing
+│
+├── view/                      # stage 3 — the combos UI
+│   ├── menu_injector.js       #   injects the COMBOS tab
+│   ├── view_renderer.js       #   the view object: init, show/hide
+│   ├── template · events · scroll · drag        #   its mixins
+│   ├── combo_list · combo_actions · delete_animation
+│   ├── tank_preview · hide_guard                #   keep the game's 3D view alive
+│   ├── card/                  #   combo_card_renderer + rows, events, title_edit,
+│   │                          #   combo_drag_handler, combo_card.css
+│   ├── lobby/                 #   button, C shortcut, auto-open, lobby_button.css
+│   └── panels/                #   delete modal, randomizer settings, import/export
+│
+├── equip/                     # stage 4 — clicking a combo
+│   ├── instant_loader.js      #   decides WHAT to apply
+│   ├── game/
+│   │   ├── apply.js           #     decides HOW — the whole-combo orchestrator
+│   │   ├── store.js           #     find the store, build actions, resolve ctors
+│   │   ├── mount.js           #     mount an item + select it (3D model)
+│   │   ├── protections.js     #     the 4 resistance slots, set-based diff
+│   │   ├── devices.js         #     augments: install / remove, ownership
+│   │   ├── device_catalog.js  #     lazy catalogs: request + wait
+│   │   └── skins.js           #     apply a turret/hull skin
+│   └── old/                   #   LEGACY (DOM) — per-slot fallback
+│       ├── combo_loader.js
+│       └── equippers/         #     base_item, augment, protection
+│
+├── migration/                 # stage 5 — backfill ids on old combos
+│   ├── combo_migrator.js      #   runs on every combo-list load
+│   └── migrator_match.js      #   name → item, Mk families
+│
+├── randomizer/                # randomizer, random_from_saved,
+│                              # random_full, item_list_scanner
+│
+└── dom/                       # the DOM toolbox the old paths and random_full use
+    ├── scanners/              #   base_item, augment, protection — READ only
+    ├── tab_navigator.js       #   navigates between garage tabs
+    └── navigation_helpers.js  #   MutationObserver-based waiting
 
 features/translator/
 ├── isolated/                  # [ISOLATED] the only chrome.* access

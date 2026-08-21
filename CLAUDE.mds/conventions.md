@@ -32,7 +32,7 @@ change makes a comment wrong, the comment is the bug.
 
 - Every file starts with **its own path**, then one short line saying what it is:
   ```javascript
-  // features/combos/core/scanners/protection_scanner.js
+  // features/combos/dom/scanners/protection_scanner.js
 
   // סורק את מודולי ההגנה המורכבים כרגע
   ```
@@ -41,7 +41,7 @@ change makes a comment wrong, the comment is the bug.
 - **One file, one responsibility. Target ≤150 lines.** A little over is fine; a
   file that keeps growing is telling you it holds two things.
 - Scanners only read, equippers only write, navigators only move, UI modules
-  render and bind, core modules hold logic.
+  render and bind. A folder is one stage of the flow — see `architecture.md`.
 - A new feature is a new folder under `features/`. Only genuinely cross-feature
   code goes in `shared/`, and nothing in `shared/` may *require* a feature.
   (Known soft spot: `drawer.js` reads its close-button label from
@@ -57,11 +57,11 @@ Two patterns are already in use; prefer them over inventing a third.
 
 - **Object mixins** (UI): the base file creates the namespace object, and each
   extra file does `Object.assign(window.TankiQoL.ViewRenderer, { … })`. Call
-  sites and `this` are unchanged. See `ui/view/` and `ui/card/`.
+  sites and `this` are unchanged. See `view/` and `view/card/`.
 - **Shared internals object** (the MAIN-world garage hook): every file does
   `const I = (NS.internals = NS.internals || {})` and hangs its state and
   functions there, reading `I.x` at call time so load order only has to satisfy
-  *runtime* dependencies. See `main/garage/`.
+  *runtime* dependencies. See any `game/` folder.
 
 ## JavaScript
 

@@ -73,7 +73,7 @@ data: {
   decision may still carry a `turretShotFx` key; it is simply ignored, which is
   why nothing migrates it away.
 
-## Backfilling ids on old combos (`core/combo_migrator.js`)
+## Backfilling ids on old combos (`migration/combo_migrator.js`)
 
 Runs on every combo-list load, **after** rendering and without blocking it — the
 migration changes nothing that is displayed. It asks the MAIN world for a flat
@@ -152,7 +152,7 @@ re-enter the tab; a hidden element also gets no mouse events, so drag-to-rotate
 dies with it.
 
 So the combos view never hides the preview's host. `keepTankPreviewAlive()`
-(`ui/view/tank_preview.js`) takes the host out of flow (absolute, under our
+(`view/tank_preview.js`) takes the host out of flow (absolute, under our
 layer) and hides only the **siblings along the path** from the preview up to the
 host — generically, without naming per-tab classes. Each tab type has a different
 host (`PREVIEW_HOSTS` in `constants.js`).
@@ -172,7 +172,7 @@ game's content is React-rendered and arrives, or comes back, later:
 - Any later re-render (equipping a combo, changing a paint) throws the hidden
   nodes away and builds new ones, which come back without our `display:none`.
 
-So `ui/view/hide_guard.js` keeps a `MutationObserver` alive for exactly as long as
+So `view/hide_guard.js` keeps a `MutationObserver` alive for exactly as long as
 the view is visible and re-applies `hideGameContent()` to whatever appeared. Four
 things make it cheap and safe:
 
@@ -213,7 +213,7 @@ matches the current one (a combo with no `language` is assumed English).
 
 ## The legacy DOM path
 
-`combo_saver.js` (save) and `combo_loader.js` + `equippers/` + `scanners/`
+`save/old/` (save) and `equip/old/` + `dom/scanners/`
 (equip) work by **simulating the user**: navigate a tab, find the item by its
 displayed name, click it, click Equip, wait. That is why they are slow and
 visibly walk the UI.

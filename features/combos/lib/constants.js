@@ -25,7 +25,7 @@
     GARAGE_WRAPPER: ".GarageCommonStyle-garageContainer",
     TANK_PREVIEW_CANVAS: "#tankPreviewCanvas",
     // מארחי תצוגת הטנק (אחד לכל סוג טאב).
-    // **אסור display:none** — ראה ui/view/tank_preview.js.
+    // **אסור display:none** — ראה view/tank_preview.js.
     PREVIEW_HOSTS: `
             .GarageCommonStyle-positionContent,
             .PaintsCollectionComponentStyle-containerPaints

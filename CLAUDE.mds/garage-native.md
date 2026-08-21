@@ -4,18 +4,18 @@ Since Aug 2026 both saving and equipping run against the game's own model
 instead of clicking the UI. Zero flicker, server-persisted. The DOM path is the
 fallback only (`combos.md`).
 
-- **Save**: `core/instant_saver.js` → `GarageBridge.readCombo()` → storage. No
+- **Save**: `save/instant_saver.js` → `GarageBridge.readCombo()` → storage. No
   tab navigation; the user never leaves the combos view. Deliberately **no**
   fallback: if the state isn't captured, the save button warns and saves nothing.
-- **Equip**: `core/instant_loader.js` → `GarageBridge.applyCombo()` →
-  `main/garage/apply.js` dispatches the game's own Redux actions. Also used by
+- **Equip**: `equip/instant_loader.js` → `GarageBridge.applyCombo()` →
+  `equip/game/apply.js` dispatches the game's own Redux actions. Also used by
   random-from-saved.
 
 ## Who decides what
 
 `instant_loader.js` (ISOLATED) decides **what** to apply — it strips what the
 user removed on the card and honours `equipProtectionsOnLoad`.
-`main/garage/` (MAIN) decides **how**, because resolving a saved slot to a real
+the `game/` files (MAIN) decide **how**, because resolving a saved slot to a real
 item depends on live state (owned? which Mk? already mounted?) which only exists
 there. One message out, a per-slot report back.
 
@@ -37,7 +37,7 @@ carries a running id and its own timeout, so several can be in flight at once.
 
 | dir | action | payload | meaning |
 |---|---|---|---|
-| `i2m` | `garageConstants` | discovered name-set | from `isolated/detect.js` |
+| `i2m` | `garageConstants` | discovered name-set | from `discovery/detect.js` |
 | `i2m` | `readCombo` | `{id}` | read the mounted loadout |
 | `i2m` | `readIndex` | `{id}` | flat index of the garage (for the migrator) |
 | `i2m` | `applyCombo` | `{id, desired, opts}` | apply a combo |
@@ -74,7 +74,7 @@ Four things are **not** plain fields on the item, and each was a separate find:
 with a method that builds the CDN URL, so the URL has to be *called*.
 
 Items are gathered by a **structural scan** of the state graph
-(`main/garage/collect.js`), collecting every object that carries all the
+(`capture/game/collect.js`), collecting every object that carries all the
 `GarageItem` fields. Kotlin collections compile to internal classes whose
 iterator names rotate per build; matching on the item's own shape sidesteps that.
 The scan traverses `Map`/`Set` too, and counts depth cuts (`debug.depthCut`) —
@@ -179,7 +179,7 @@ anchor is structural: the reducer builds a `GarageItem` copy where only
 own `toString` field order. The VOID marker's minified name rotates per build, so
 the pattern only requires that all leading arguments be the same identifier.
 
-## Discovery (`isolated/discover/`)
+## Discovery (`discovery/`)
 
 Kotlin emits a `toString` for every data class that spells out **the field names
 as literal strings** next to their minified names:
@@ -208,7 +208,7 @@ inferring it from code shape. Anchors:
 - **write actions** are data classes too, so `dataClass()` reads each one's class
   name *and* field map straight out of its `toString`. The class **name** matters
   as much as the fields: the reducer branches on `instanceof`.
-- **the garage proxy and the mount/select actions** (`discover/send.js`) anchor
+- **the garage proxy and the mount/select actions** (`discovery/send.js`) anchor
   on the `mountItem` command hash — derived from the command name, so
   build-stable, and verified to appear exactly once in all 8 bundles.
 
@@ -220,9 +220,9 @@ Cached in `chrome.storage.local` keyed by **schema version + bundle URL**
 (`garageConstants:v<N>:<url>`). The version exists because of a real bug: adding
 fields to `discover()`'s output while an old-schema result was cached meant the
 cache loaded as-is and **overrode the seed** (which did have the new fields), so
-every new column silently read null. **Bump `CACHE_VERSION` in `detect.js`
+every new column silently read null. **Bump `CACHE_VERSION` in `discovery/detect.js`
 whenever `discover()`'s output shape changes** (currently 9). Stale-prefix keys
-are cleaned up on startup. `main/garage/names.js` seeds the latest-known build so
+are cleaned up on startup. `discovery/game/names.js` seeds the latest-known build so
 the hook works during the discovery fetch; discovery overrides it.
 
 **Verified on all 8 bundles in `../../../research/`:**

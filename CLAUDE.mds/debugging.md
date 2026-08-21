@@ -48,12 +48,12 @@ own console context instead.
 | Symptom | Likely cause |
 |---|---|
 | `__CMB.state() === null` after opening the garage | the trap never validated: either discovery failed (`__CMB.debug.discovered === false`) or the game restructured its garage state |
-| a mounted item is missing from `__CMB.read().combo` | its category isn't in `CATEGORY_TO_SLOT` (`main/garage/names.js`) — it will be sitting in `read().other` with its category name |
+| a mounted item is missing from `__CMB.read().combo` | its category isn't in `CATEGORY_TO_SLOT` (`discovery/game/names.js`) — it will be sitting in `read().other` with its category name |
 | a slot equips as `unavailable` although the user owns it | the item didn't resolve — check `baseItemId` on the stored combo (run the migrator) and `owned` in `__CMB.index()` |
-| an augment reports `unavailable` right after a refresh | its catalog hadn't loaded; `device_catalog.js` should have requested it — check `debug.catalogRequests` |
+| an augment reports `unavailable` right after a refresh | its catalog hadn't loaded; `equip/game/device_catalog.js` should have requested it — check `debug.catalogRequests` |
 | equipping does nothing at all, no error | an action was probably built with `Object.create` somewhere, or a ctor lookup returned a shell — every action must come from `new proto.constructor(...)` |
 | the combo count looks short / an owned item "missing" | the graph scan may have truncated: check `__CMB.debug.depthCut` and `.truncated` |
-| the paints tab (or any tab's content) shows through under the combos view | the game rendered it after `show()` did its one-off hiding — the guard (`ui/view/hide_guard.js`) is off: check `ViewRenderer.hideGuardObserver`, and that the file is in `manifest.json` |
+| the paints tab (or any tab's content) shows through under the combos view | the game rendered it after `show()` did its one-off hiding — the guard (`view/hide_guard.js`) is off: check `ViewRenderer.hideGuardObserver`, and that the file is in `manifest.json` |
 | the 3D tank is blank / won't drag while the combos view is open | a preview host ended up `display:none` — look for an inline `display:none` on `PREVIEW_HOSTS` **without** `data-cme-preview-hidden`, which means something outside `keepTankPreviewAlive` hid it |
 | `__CT_DEBUG.discovered === false` after a few seconds | `detect.js` couldn't parse the bundle — see the recovery procedure in `translator.md` |
 | `__CT_HUD === null` after entering a battle | the trap never validated: the offset field name is wrong |
@@ -65,13 +65,13 @@ There are no automated tests in the repo. What exists is a set of **scratchpad
 harnesses** (session-local, recreate them if gone) that run the *shipped* code
 offline against the bundles in `../../../research/`:
 
-- **`verify_shipped.js`** — loads `isolated/discover/*.js` as shipped, runs
+- **`verify_shipped.js`** — loads `discovery/*.js` as shipped, runs
   `discover()` against every bundle in `research/`, and diffs the result for the
-  current build against the seed in `main/garage/names.js`. A stale seed or a
+  current build against the seed in `discovery/game/names.js`. A stale seed or a
   broken regex fails loudly instead of silently degrading in-game. **Run it after
   any change to discovery, and bump `CACHE_VERSION` when the output shape
   changes.**
-- **`test_write_path.js`** — loads all of `main/garage/*.js` into a `vm` sandbox
+- **`test_write_path.js`** — loads every MAIN-world `game/` file into a `vm` sandbox
   with a fake store and state, then asserts which actions each write dispatches:
   the protection set-diff, augment ownership rejection, skins. The write logic is
   tested without touching the game.
