@@ -44,9 +44,17 @@
     if (currentId === want) return { ok: true, changed: false, kept: want };
 
     const skin = I.collect(I.latestState).byId.get(want);
-    if (!skin) return { ok: false, error: 'skin not found in garage state: ' + want };
+    if (!skin) {
+      return { ok: false, notOwned: true, error: 'skin not in garage state: ' + want };
+    }
     if (I.enumName(skin[IF.category]) !== 'SKIN') {
       return { ok: false, error: 'item ' + want + ' is not a skin' };
+    }
+    // המוסך מציג גם סקינים למכירה. בלי הבדיקה הזו ההחלה "מצליחה"
+    // מקומית, השרת דוחה, ואחרי ריענון הסקין חוזר לקודם.
+    if (skin[IF.owned] !== true) {
+      return { ok: false, notOwned: true,
+        error: 'skin ' + skin[IF.name] + ' is not owned on this account' };
     }
 
     try {

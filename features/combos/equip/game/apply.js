@@ -81,7 +81,12 @@
       if (!owner) return;   // בלי הפריט אין למה להחיל — לא שגיאה
       const r = I.applySkin(owner, entry.id);
       if (!r.ok) {
-        results.push({ slot, name: entry.name || null, status: 'failed', error: r.error });
+        // לא בבעלות אינו כשל אלא חוסר — בדיוק כמו באוגמנטים
+        results.push({
+          slot, name: entry.name || null,
+          status: r.notOwned ? 'unavailable' : 'failed',
+          error: r.notOwned ? undefined : r.error,
+        });
         return;
       }
       results.push({ slot, name: entry.name || null, status: r.changed ? 'applied' : 'unchanged' });

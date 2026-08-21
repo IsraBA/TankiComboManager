@@ -179,6 +179,12 @@ anchor is structural: the reducer builds a `GarageItem` copy where only
 own `toString` field order. The VOID marker's minified name rotates per build, so
 the pattern only requires that all leading arguments be the same identifier.
 
+**Ownership is checked before dispatching**, exactly as for augments and for the
+same reason — the garage state carries skins that are only on sale, and applying
+one "succeeds" locally until the server refuses and a refresh undoes it. A skin
+is an ordinary `GarageItem`, so here the plain `owned` field answers it; no
+`infinityLifetimeItem` trick needed.
+
 ## Discovery (`discovery/`)
 
 Kotlin emits a `toString` for every data class that spells out **the field names
