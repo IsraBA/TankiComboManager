@@ -42,7 +42,14 @@
       if (isItem) {   // לא יורדים לתוך פריטים
         items.push(obj);
         const key = I.idToString(obj[IF.id]);
-        if (key != null) byId.set(key, obj);
+        if (key != null) {
+          // אותו פריט מופיע גם במוסך וגם בשוק, והעותקים נבדלים ב-owned.
+          // סדר הסריקה שרירותי, ולכן העותק שבבעלות מנצח במפורש.
+          const prev = byId.get(key);
+          if (prev == null || (obj[IF.owned] === true && prev[IF.owned] !== true)) {
+            byId.set(key, obj);
+          }
+        }
         continue;
       }
 

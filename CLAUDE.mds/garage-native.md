@@ -75,6 +75,18 @@ Four things are **not** plain fields on the item, and each was a separate find:
 **Item images** are not strings: `preview` / `skinPreview` are resource objects
 with a method that builds the CDN URL, so the URL has to be *called*.
 
+**The same item appears in the state more than once.** The garage copy and the
+"on sale" copy are separate objects with the same `id`, differing in `owned` —
+measured live at 349 skin objects for 236 distinct ids, 113 duplicated. The scan
+order is a stack and therefore arbitrary, so `collect()`'s `byId` index resolves
+ties explicitly: **an owned copy always beats an unowned one.** Without that,
+`byId.get(id)` could hand back the shop copy, and the skin ownership check would
+refuse a skin the player actually owns — silently, as `unavailable`. That is
+exactly the bug it caused. `resolveOwnedItem` was never affected because it skips
+`owned !== true` while iterating; only the id index needed the rule. The same
+class of problem is why `stateDevices()` reads the `state.devices` subtree
+instead of scanning the whole graph.
+
 Items are gathered by a **structural scan** of the state graph
 (`capture/game/collect.js`), collecting every object that carries all the
 `GarageItem` fields. Kotlin collections compile to internal classes whose

@@ -50,6 +50,7 @@ own console context instead.
 | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `__CMB.state() === null` after opening the garage                         | the trap never validated: either discovery failed (`__CMB.debug.discovered === false`) or the game restructured its garage state                                                                 |
 | a mounted item is missing from `__CMB.read().combo`                       | its category isn't in `CATEGORY_TO_SLOT` (`discovery/game/names.js`) — it will be sitting in `read().other` with its category name                                                               |
+| a skin never applies and the current one stays                            | the ownership check read a shop duplicate of the same item. Compare `__CMB.internals.collect(__CMB.internals.latestState).byId.get('<skinId>')` against every copy in `.items` — the owned one must win                                                       |
 | a slot equips as `unavailable` although the user owns it                  | the item didn't resolve — check `baseItemId` on the stored combo (run the migrator) and `owned` in `__CMB.index()`                                                                               |
 | an augment reports `unavailable` right after a refresh                    | its catalog hadn't loaded; `equip/game/device_catalog.js` should have requested it — check `debug.catalogRequests`                                                                               |
 | equipping does nothing at all, no error                                   | an action was probably built with `Object.create` somewhere, or a ctor lookup returned a shell — every action must come from `new proto.constructor(...)`                                        |
@@ -67,7 +68,7 @@ own console context instead.
 There is no test framework here. What exists is **`build/harnesses/`** — plain
 `node <file>` scripts, no dependencies, that run the _shipped_ code offline
 against the bundles in `../../../research/`. They live under `build/`, so they
-never reach the store zip. 216 checks across 10 files:
+never reach the store zip. 219 checks across 10 files:
 
 - **`verify_shipped.js`** — loads `discovery/*.js` as shipped, runs
   `discover()` against every bundle in `research/`, and diffs the result for the

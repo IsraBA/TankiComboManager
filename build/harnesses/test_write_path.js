@@ -140,10 +140,22 @@ const setup = `
   ];
 
   // ה-state: חייב לשאת את כל שדות ה-state המוכרים, והשדה האחרון נכתב אחרון
+  // המוסך מחזיק את אותו פריט פעמיים: העותק שבבעלות, ועותק "למכירה"
+  // עם owned=false. נמדד חי — 113 מזהי סקין כפולים. הכפילויות יושבות
+  // בענף שנסרק *אחרי* items, ולכן דריסה תמימה נותנת את הלא-קנוי.
+  const marketDupes = [];
+  for (const src of [items[7], items[8]]) {     // Gold skin, Neon skin
+    const copy = {};
+    for (const k of Object.keys(src)) copy[k] = src[k];
+    copy[IF.owned] = false;
+    marketDupes.push(copy);
+  }
+
   const state = {};
   const order = Object.values(SF);
   for (const f of order) state[f] = null;
   state[SF.items] = items;
+  state[SF.itemsOnDepot] = marketDupes;
   state[SF.devices] = devices;
   delete state[S.trapField];
   state[S.trapField] = true;        // <-- מפעיל את המלכודת של ה-state
@@ -478,6 +490,53 @@ check("garbage in the field does not claim a cooldown", [cd.known, cd.active], [
   check(
     "once it expires the write path runs again",
     vm.runInContext("__dispatched.length", ctx) > 0,
+    true,
+  );
+
+  // ---- קומבו שלם עם סקין: המסלול שהמשתמש באמת מפעיל ----
+  vm.runInContext("__dispatched.length = 0", ctx);
+  const skinCombo = await vm.runInContext(
+    `__CMB.internals.applyCombo({
+       turret:     { id: 'id6', baseItemId: 'id6', name: 'Firebird' },
+       turretSkin: { id: 'id9', name: 'Neon skin' },
+       protection: null
+     })`,
+    ctx,
+  );
+  check(
+    "a combo whose turret is already mounted still applies its skin",
+    skinCombo.results,
+    [
+      { slot: "turret", name: "Firebird", status: "unchanged" },
+      { slot: "turretSkin", name: "Neon skin", status: "applied" },
+    ],
+  );
+
+  // ---- עותקים כפולים של אותו פריט ----
+  // byId חייב להחזיר את העותק שבבעלות. אחרת בדיקת הבעלות קוראת את
+  // עותק השוק ופוסלת סקין שהמשתמש כן מחזיק — הבאג שדווח.
+  check(
+    "the duplicate really is in the fake state",
+    vm.runInContext(
+      `(function () {
+         const I = __CMB.internals, IF = I.D.itemFields;
+         return I.collect(I.latestState).items
+           .filter(function (i) { return I.idToString(i[IF.id]) === 'id9'; })
+           .map(function (i) { return i[IF.owned]; });
+       })()`,
+      ctx,
+    ),
+    [true, false],
+  );
+  check(
+    "byId prefers the owned copy over the market one",
+    vm.runInContext(
+      `(function () {
+         const I = __CMB.internals, IF = I.D.itemFields;
+         return I.collect(I.latestState).byId.get('id9')[IF.owned];
+       })()`,
+      ctx,
+    ),
     true,
   );
 
