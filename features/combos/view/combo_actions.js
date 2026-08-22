@@ -54,11 +54,23 @@
       // המשחק חוסם החלפת ציוד; השרת ידחה כל מסלול, כולל ה-DOM
       if (this.cooldownActive) return;
 
-      const InstantLoader = window.TankiQoL.InstantLoader;
-      if (InstantLoader) {
-        await InstantLoader.equipCombo(combo);
-      } else if (window.TankiQoL.ComboLoader) {
-        await window.TankiQoL.ComboLoader.equipCombo(combo);
+      // הלואדר מסמן שהשיגור רץ, לא שהמודל התלת-ממדי סיים להתעדכן
+      const card = this.viewElement
+        ? this.viewElement.querySelector(
+            '.cme_combo-card[data-combo-id="' + combo.id + '"]',
+          )
+        : null;
+      if (card) card.classList.add("cme_equipping");
+
+      try {
+        const InstantLoader = window.TankiQoL.InstantLoader;
+        if (InstantLoader) {
+          await InstantLoader.equipCombo(combo);
+        } else if (window.TankiQoL.ComboLoader) {
+          await window.TankiQoL.ComboLoader.equipCombo(combo);
+        }
+      } finally {
+        if (card) card.classList.remove("cme_equipping");
       }
 
       // המסלול הישן סיים כאן מאז ומתמיד; המיידי לא זז, ולכן מנווטים כאן
