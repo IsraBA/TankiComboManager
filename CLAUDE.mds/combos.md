@@ -260,6 +260,133 @@ blanks the 3D model and kills drag-to-rotate — and it was set _without_ the
 `data-cme-preview-hidden` mark, so nothing ever cleaned it up. The guard replaces
 it; don't bring it back.
 
+## The randomiser
+
+Both modes run through the native path now. The legacy DOM implementation is in
+`randomizer/old/` (`random_full.js` + `item_list_scanner.js`, exposed as
+`RandomFullLegacy`) and is still the fallback when the bridge is unavailable.
+
+**Both modes follow the same three beats**: choose → show the card in its loading
+state → equip → show it normally. `randomizer.js` owns that sequence and also
+blocks re-entry: SURPRISE ME gets the same `cme_equipping` ring as a card being
+equipped, and the flag clears in a `finally` so a throw can't leave the button
+stuck. The ring itself lives in `styles.css`, shared by both, with its geometry
+passed in through `--cme-busy-inset` / `--cme-busy-radius`. The two mode modules
+only choose and equip. Splitting `RandomFromSaved` into `choose()`
+and `equip()` is what made the loading card possible at all — it used to do both
+in one call, so there was no moment in between to render.
+
+**Full random draws in the MAIN world** (`randomizer/game/draw.js`), because
+every filter is a question about live state. One `drawRandom` bridge call returns
+both `data` (what the card shows) and `desired` (what to apply); ISOLATED then
+calls `applyCombo`. Nothing is scanned from the DOM and no tab is visited.
+
+How each user preference maps onto the state:
+
+| Setting | What it means in the state |
+|---|---|
+| owned only | `owned === true` |
+| **Max equipment only** | Mk7-20 — see below |
+| **Legendary only** | the device's `rarity` enum is `LEGENDARY` **or** `EXOTIC` — a product decision, not what the label says |
+| **Exclude Brutus / Tsar** | name match, from `LanguageManager`'s `itemNames`, exactly as the DOM path did |
+| grenades | there is a supply item for it — see below |
+
+### "Max equipment only" needs two checks, not one
+
+The game **does** own half the answer. `UpgradableItemParams` carries
+
+```js
+hr8 = function () { return this.currentLevel === this.maxLevel() }
+```
+
+and uses it exactly as "nothing left to upgrade" (`!item.upgradeableParams.hr8()`
+= "this can still be upgraded"). Discovery records its name as `isMaxedMethod`
+alongside `maxLevelMethod` — they come out of the same anchor — and the draw
+calls it rather than recomputing the comparison.
+
+**But it only covers the LVL axis.** Nothing in the game exposes "is this the top
+Mk"; the one place that cares reads `modificationIndex` and `modificationCount`
+off the modification object separately. So the draw also checks
+`modificationIndex + 1 === modificationCount`. Without it a Mk3 turret sitting at
+LVL 20 satisfies `hr8()` and would be treated as MAX — the harness proves it:
+drop the Mk check and VULCAN (Mk3-20) and THUNDER leak into the pool.
+
+An item with no `upgradeableParams` counts as level-maxed, and one with no
+`modification` counts as Mk-maxed. That is what makes drones — which have LVL but
+no Mk — come out right with the same code.
+
+### A grenade's ammo is a different item
+
+`count` on the grenade is **0 for every grenade, always**, and `countable` is
+`false` — measured live on a full account. Both are dead ends, and each cost a
+round of "the filter never fires" / "the filter drops everything".
+
+Grenades exist twice, in two categories:
+
+| category | what it is |
+|---|---|
+| `BAZOOKA` | the grenade itself, one item per Mk (7 per family) |
+| `GRENADE` | its **ammo**, one item per family, carrying the real `count` |
+
+They share a name, and the game links them through `bazookaToSupply` — a Kotlin
+map that happens to be the very field the state trap sits on (`vq0_1`, the last
+field in `Garage`). Reading that map means resolving a minified getter through a
+Kotlin `HashMap`, so `draw.js` matches on the name instead: both sides come from
+the game in the same locale, so it holds in every language. A family with no
+`GRENADE` item, or one whose count is 0, is out of the pool.
+
+The "Max equipment only" fallback drops **only** the max preference — stock and
+name exclusions still apply to the widened pool.
+
+### Skins
+
+`availableSkins` on the turret/hull is the **only** link between a skin and the
+item it belongs to — skins carry no owner field. It is a Kotlin collection, not
+an array, so `draw.js` normalises it (`toArray()` → iterator → an internal array
+field) before use.
+
+The standard "no skin" entry is a real item in that list, not a synthetic one
+(shot skins get a synthetic "none" prepended; ordinary skins don't). Two things
+identify it, measured on a live account:
+
+- **It is never `owned`** — verified on a turret the player *does* own, where all
+  three of its skins reported `owned: false`. Filtering to owned skins therefore
+  drops it for free.
+- **Its name is the literal `"<name>"`** — the game's un-substituted placeholder,
+  because the standard skin has no name of its own. Checked as a second belt.
+
+So the rule the user asked for — never draw the standard unless the item has no
+other skins — falls out: draw from owned skins only, and when there are none,
+emit whatever is already on the item, which *is* the standard.
+
+Four things are easy to get wrong here:
+
+- **Draw per family, not per item.** Candidates are grouped by `baseItemId` and
+  represented by the highest owned Mk. Without that, a turret the user owns at
+  seven Mk levels would be seven times likelier than one with none.
+- **A disabled category is not an empty slot.** It falls back to whatever is
+  mounted, so the card describes the tank that will actually exist. Protections
+  have no toggle and are never randomised — `desired.protection` is `null`,
+  meaning "don't touch".
+- **An empty pool under "Max equipment only" drops the preference** for that
+  category rather than leaving the slot alone. Otherwise a player with no maxed
+  drones would press the button and watch nothing happen, with nothing to
+  explain why. Applies per category, so having maxed turrets doesn't force the
+  drone to stand still.
+- **Only what was drawn goes into `desired`.** Paint and skins are omitted
+  entirely when their switch is off, so the apply never re-mounts what is
+  already on the tank.
+- **Augment catalogs are lazy**, so the draw requests the catalog for the turret
+  and hull it just picked and waits (capped at 2 s) before choosing an augment.
+  Drawing before the catalog arrives silently yields no augments.
+- **"Standard settings" is not an augment.** It is the game's way of saying "none
+  installed", and drawing it would read as a bug.
+
+The card shows what was drawn, not a re-read: we only ever draw from owned items
+that satisfy the filters, so the draw *is* the outcome. The one exception is a
+slot the apply reports as `failed` or `unavailable` — that slot is blanked rather
+than shown as equipped.
+
 ## Where you land after equipping
 
 Clicking a card ends on the game's **Protection** tab, and the combos view

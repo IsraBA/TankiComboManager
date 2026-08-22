@@ -20,58 +20,10 @@
 }
 
 /* === מצב הצטיידות === */
-/* זווית מונפשת. בלי @property אי אפשר להנפיש conic-gradient, וסיבוב
-   האלמנט היה מסובב מלבן ולא את הצבע סביבו. */
-@property --cme-equip-angle {
-  syntax: "<angle>";
-  inherits: false;
-  initial-value: 0deg;
-}
-
-.cme_combo-card.cme_equipping {
-  pointer-events: none;
-}
-
-/* הכרטיס דוהה; הטבעת נשארת מלאה כי היא לא בתוכו */
+/* הטבעת המונפשת משותפת עם כפתור הרנדומייזר ויושבת ב-styles.css.
+   כאן רק מה שייחודי לכרטיס: התוכן דוהה, הטבעת נשארת מלאה. */
 .cme_combo-card.cme_equipping .cme_combo-preview-container {
   opacity: 0.7;
-}
-
-/* שתי קשתות רודפות בדיוק על מקום ועובי טבעת ה-hover */
-.cme_combo-card.cme_equipping::after {
-  content: "";
-  position: absolute;
-  inset: -0.125em;
-  border-radius: 0.875em;
-  padding: 0.125em;
-  z-index: 30;
-  /* כל פס עולה מהזנב אל הראש ונחתך שם חד — לא דועך משני הצדדים */
-  background: conic-gradient(
-    from var(--cme-equip-angle),
-    rgba(191, 213, 255, 0) 0deg,
-    rgb(191, 213, 255) 140deg,
-    rgba(191, 213, 255, 0) 140deg,
-    rgba(191, 213, 255, 0) 180deg,
-    rgb(191, 213, 255) 320deg,
-    rgba(191, 213, 255, 0) 320deg,
-    rgba(191, 213, 255, 0) 360deg
-  );
-  /* משאיר רק את טבעת ה-padding: הפנים נגזר החוצה */
-  -webkit-mask:
-    linear-gradient(#fff, #fff) content-box,
-    linear-gradient(#fff, #fff);
-  -webkit-mask-composite: xor;
-  mask:
-    linear-gradient(#fff, #fff) content-box,
-    linear-gradient(#fff, #fff);
-  mask-composite: exclude;
-  animation: cme_equip_trace 2.2s linear infinite;
-}
-
-@keyframes cme_equip_trace {
-  to {
-    --cme-equip-angle: 360deg;
-  }
 }
 
 .cme_combo-preview-container {

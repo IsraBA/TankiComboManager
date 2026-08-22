@@ -109,6 +109,11 @@
           { key: "grenades", labelKey: "randomizerGrenades", default: true },
           { key: "drones", labelKey: "randomizerDrones", default: true },
         ],
+        // דקורטיביים, אחרונים
+        [
+          { key: "paints", labelKey: "randomizerPaints", default: true },
+          { key: "skins", labelKey: "randomizerSkins", default: true },
+        ],
       ];
 
       categoryRows.forEach((rowItems) => {

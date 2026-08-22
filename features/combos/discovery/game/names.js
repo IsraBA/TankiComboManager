@@ -36,15 +36,25 @@
       mountedSkin: 'mr4_1',
       mountedShotSkin: 'nr4_1',
       skinPreview: 'or4_1',
+      // מזהי הסקינים של הפריט — הקישור היחיד בין סקין לתותח/גוף
+      availableSkins: 'kr4_1',
+      // לרנדומייזר: נדירות, ומלאי לרימונים
+      rarity: 'qr4_1',
+      count: 'cr4_1',
+      countable: 'er4_1',
     },
     modificationFields: {
       baseItemId: 'ucd_1',
+      // כמה דרגות Mk קיימות לסוג הזה — קבוע, לא הדרגה הנוכחית
+      modificationCount: 'vcd_1',
       modificationIndex: 'wcd_1',
     },
     upgradeFields: {
       currentLevel: 'dr8_1',
     },
     maxLevelMethod: 'wri',
+    // currentLevel === maxLevel() — המבחן של המשחק ל"אין מה לשדרג"
+    isMaxedMethod: 'hr8',
     deviceFields: {
       id: 'jra_1',
       baseItemId: 'kra_1',
@@ -54,6 +64,7 @@
       previewImage: 'sra_1',
       // דגל הבעלות במשחק: infinityLifetimeItem ? BOUGHT : NOT_OWNED
       infinityLifetimeItem: 'arb_1',
+      rarity: 'jrb_1',
     },
     urlMethod: 'r92',
     // ה-proxy של המוסך — דרכו מגיעים לקונטרולר ול-store

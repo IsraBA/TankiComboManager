@@ -163,8 +163,10 @@ features/combos/
 │   ├── combo_migrator.js      #   runs on every combo-list load
 │   └── migrator_match.js      #   name → item, Mk families
 │
-├── randomizer/                # randomizer, random_from_saved,
-│                              # random_full, item_list_scanner
+├── randomizer/                # randomizer (the sequence), random_from_saved,
+│   ├── random_full.js         #   native full random
+│   ├── game/draw.js           #   [MAIN] the draw itself — every filter needs state
+│   └── old/                   #   LEGACY (DOM): random_full + item_list_scanner
 │
 └── dom/                       # the DOM toolbox the old paths and random_full use
     ├── scanners/              #   base_item, augment, protection — READ only

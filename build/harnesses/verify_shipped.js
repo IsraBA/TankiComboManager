@@ -120,6 +120,15 @@ for (const b of fs
     });
   }
   if (!r.maxLevelMethod) problems.push("maxLevelMethod");
+  if (!r.isMaxedMethod) problems.push("isMaxedMethod");
+  // הרנדומייזר: נדירות, מלאי, וכמה דרגות Mk קיימות לסוג
+  ["rarity", "count", "countable", "availableSkins"].forEach((k) => {
+    if (!r.itemFields[k]) problems.push("item." + k);
+  });
+  if (!r.deviceFields || !r.deviceFields.rarity) problems.push("deviceFields.rarity");
+  if (!r.modificationFields || !r.modificationFields.modificationCount) {
+    problems.push("modificationFields.modificationCount");
+  }
   if (!r.urlMethod) problems.push("urlMethod");
   // מסלול השליחה לשרת
   [

@@ -70,9 +70,10 @@
     if (upgradeFields && upgradeFields.currentLevel) {
       out.upgradeFields = upgradeFields;
       // הרמה המקסימלית מאחורי מתודה; מתודת ה"האם במקסימום" היא עוגן חד-משמעי
-      const mx = new RegExp('\\.[\\w$]+=function\\(\\)\\{return this\\.' +
+      // ושווה לשמור גם אותה — זה המבחן שהמשחק עצמו מריץ
+      const mx = new RegExp('\\.([\\w$]+)=function\\(\\)\\{return this\\.' +
         GD.escapeRe(upgradeFields.currentLevel) + '===this\\.([\\w$]+)\\(\\)\\}').exec(src);
-      if (mx) out.maxLevelMethod = mx[1];
+      if (mx) { out.isMaxedMethod = mx[1]; out.maxLevelMethod = mx[2]; }
     }
 
     // אוגמנטים: במשחק Devices, עם installed ו-baseItemId

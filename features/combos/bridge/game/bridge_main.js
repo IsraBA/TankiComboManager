@@ -51,6 +51,15 @@
       return;
     }
 
+    if (m.action === 'drawRandom') {
+      const p = m.payload || {};
+      // אסינכרוני: ממתין לקטלוג האוגמנטים של מה שהוגרל
+      I.drawRandomCombo(p.settings)
+        .catch((err) => ({ ok: false, error: String(err) }))
+        .then((res) => reply('drawResult', Object.assign({ id: p.id }, res)));
+      return;
+    }
+
     if (m.action === 'applyCombo') {
       const p = m.payload || {};
       // אסינכרוני: יש השהיות בין פריט לפריט

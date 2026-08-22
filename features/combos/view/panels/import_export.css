@@ -74,9 +74,10 @@
   mask-repeat: no-repeat;
   -webkit-mask-position: center;
   mask-position: center;
+  transform: rotate(180deg);
 }
 
-/* Export icon — rotated 180 degrees */
+/* חץ הייצוא — בכיוון המקורי של האייקון */
 .cme_import-export-icon--export {
-  transform: rotate(180deg);
+  transform: none;
 }

@@ -18,6 +18,66 @@
   height: 100%;
 }
 
+/* === מצב טעינה משותף: כרטיס קומבו וכפתור הרנדומייזר === */
+/* זווית מונפשת. בלי @property אי אפשר להנפיש conic-gradient, וסיבוב
+   האלמנט היה מסובב מלבן ולא מזיז צבע סביבו. */
+@property --cme-equip-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+.cme_equipping {
+  pointer-events: none;
+}
+
+/* שתי קשתות רודפות, בצבע ובעובי של טבעת ה-hover של הכרטיס */
+.cme_equipping::after {
+  content: "";
+  position: absolute;
+  inset: var(--cme-busy-inset, -0.125em);
+  border-radius: var(--cme-busy-radius, 0.875em);
+  padding: 0.125em;
+  z-index: 30;
+  /* כל פס עולה מהזנב אל הראש ונחתך שם חד — לא דועך משני הצדדים */
+  background: conic-gradient(
+    from var(--cme-equip-angle),
+    rgba(191, 213, 255, 0) 0deg,
+    rgb(191, 213, 255) 140deg,
+    rgba(191, 213, 255, 0) 140deg,
+    rgba(191, 213, 255, 0) 180deg,
+    rgb(191, 213, 255) 320deg,
+    rgba(191, 213, 255, 0) 320deg,
+    rgba(191, 213, 255, 0) 360deg
+  );
+  /* משאיר רק את טבעת ה-padding: הפנים נגזר החוצה */
+  -webkit-mask:
+    linear-gradient(#fff, #fff) content-box,
+    linear-gradient(#fff, #fff);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#fff, #fff) content-box,
+    linear-gradient(#fff, #fff);
+  mask-composite: exclude;
+  animation: cme_equip_trace 2.2s linear infinite;
+}
+
+@keyframes cme_equip_trace {
+  to {
+    --cme-equip-angle: 360deg;
+  }
+}
+
+/* הכפתור עגול פחות ואין לו טבעת hover, אז הטבעת יושבת על הקצה */
+#cme_surprise-me-btn.cme_equipping {
+  --cme-busy-inset: 0em;
+  --cme-busy-radius: 0.75em;
+}
+
+#cme_surprise-me-btn.cme_equipping > div {
+  opacity: 0.7;
+}
+
 /* === Container Paints (Main Container) === */
 .cme_container {
   display: flex;

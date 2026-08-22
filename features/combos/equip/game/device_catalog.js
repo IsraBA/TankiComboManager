@@ -58,11 +58,28 @@
   };
 
   // ממתין למה שהמשחק טוען ממילא, עם תקרה ובלי לשגר כלום.
-  // בלי זה שמירה מיד אחרי ריענון יוצאת בלי אוגמנטים.
-  I.waitForMountedDeviceCatalogs = async function (maxMs) {
+  I.waitForDeviceCatalogs = async function (bases, maxMs) {
     const DF = I.D.deviceFields;
+    if (!DF || !I.latestState || !bases || !bases.length) return true;
+
+    const deadline = Date.now() + (maxMs || 2500);
+    for (;;) {
+      const have = new Set();
+      for (const d of I.stateDevices()) have.add(I.idToString(d[DF.baseItemId]));
+      if (bases.every((b) => have.has(b))) return true;
+      if (Date.now() >= deadline) {
+        NS.debug.lastError = 'device catalogs not loaded in time for: ' +
+          bases.filter((b) => !have.has(b)).join(', ');
+        return false;
+      }
+      await I.sleep(150);
+    }
+  };
+
+  // בלי זה שמירה מיד אחרי ריענון יוצאת בלי אוגמנטים
+  I.waitForMountedDeviceCatalogs = async function (maxMs) {
     const IF = I.D.itemFields;
-    if (!DF || !I.latestState) return true;
+    if (!I.D.deviceFields || !I.latestState) return true;
 
     // רק לתותח ולגוף המורכבים יש בכלל אוגמנטים
     const wanted = [];
@@ -73,19 +90,6 @@
         if (cat === 'WEAPON' || cat === 'ARMOR') wanted.push(I.baseItemIdOf(it));
       }
     } catch (e) { return true; }
-    if (!wanted.length) return true;
-
-    const deadline = Date.now() + (maxMs || 2500);
-    for (;;) {
-      const have = new Set();
-      for (const d of I.stateDevices()) have.add(I.idToString(d[DF.baseItemId]));
-      if (wanted.every((b) => have.has(b))) return true;
-      if (Date.now() >= deadline) {
-        NS.debug.lastError = 'device catalogs not loaded in time for: ' +
-          wanted.filter((b) => !have.has(b)).join(', ');
-        return false;
-      }
-      await I.sleep(150);
-    }
+    return I.waitForDeviceCatalogs(wanted, maxMs);
   };
 })();

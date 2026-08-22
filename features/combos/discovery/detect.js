@@ -10,7 +10,7 @@
   // גרסת הסכמה של תוצאת הגילוי, וחלק ממפתח המטמון. **חובה להעלות אותה בכל
   // שינוי בפלט של discover()** — אחרת מטמון ישן וחסר נטען, דורס את ה-SEED
   // שדווקא מלא, וכל שדה חדש חוזר null. זה קרה בפועל.
-  const CACHE_VERSION = 9;
+  const CACHE_VERSION = 10;
   const CACHE_PREFIX = 'garageConstants:v' + CACHE_VERSION + ':';
 
   // ניקוי מפתחות מגרסאות סכמה קודמות, שה-storage לא יצבור זבל

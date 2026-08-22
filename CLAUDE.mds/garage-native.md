@@ -41,14 +41,18 @@ carries a running id and its own timeout, so several can be in flight at once.
 | `i2m` | `readCombo` | `{id}` | read the mounted loadout |
 | `i2m` | `readIndex` | `{id}` | flat index of the garage (for the migrator) |
 | `i2m` | `cooldown` | `{id}` | is equipping currently restricted? |
+| `i2m` | `drawRandom` | `{id, settings}` | draw a random combo from owned gear |
 | `i2m` | `applyCombo` | `{id, desired, opts}` | apply a combo |
 | `m2i` | `ready` | — | MAIN's listeners are up; ISOLATED re-sends the constants |
 | `m2i` | `comboResult` | `{id, ok, combo, mounted, stats}` | reply |
 | `m2i` | `indexResult` | `{id, ok, items[], devices[]}` | reply |
 | `m2i` | `cooldownResult` | `{id, known, active, msLeft}` | reply — polled once a second while the view is open |
+| `m2i` | `drawResult` | `{id, ok, data, desired}` | reply — `data` for the card, `desired` to apply |
 | `m2i` | `applyResult` | `{id, ok, results[], failed[], unavailable[], ms}` | reply |
 
-Timeouts: 4 s for reads, 20 s for apply (it deliberately pauses between items).
+Timeouts: 4 s for reads, 1.5 s for the cooldown poll (it repeats, so giving up
+fast beats piling requests up), 5 s for a draw (it waits on device catalogs) and
+20 s for apply (it deliberately pauses between items).
 
 ## The model
 

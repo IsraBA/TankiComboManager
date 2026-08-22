@@ -18,6 +18,8 @@
       hullAugment: false,
       grenades: true,
       drones: true,
+      paints: true,
+      skins: true,
     },
     advanced: {
       legendaryOnly: true,
@@ -31,39 +33,64 @@
   const SHOW_TEMPORARY_CARD = true;
 
   window.TankiQoL.Randomizer = {
-    // הפעלת הרנדומייזר
+    // מגריל, מציג את הכרטיס במצב טעינה, מצייד, ואז מכבה את הטעינה
     async run() {
-      // בדיקה שאנחנו במוסך
       const DOM = window.TankiQoL.DOM;
-      const menuContainer = document.querySelector(DOM.MENU_CONTAINER);
-      if (!menuContainer) {
+      if (!document.querySelector(DOM.MENU_CONTAINER)) return;
+
+      const VR = window.TankiQoL.ViewRenderer;
+      if (VR && VR.randomizing) return;
+      if (VR && VR.setRandomizing) VR.setRandomizing(true);
+      try {
+        await this._run();
+      } finally {
+        if (VR && VR.setRandomizing) VR.setRandomizing(false);
+      }
+    },
+
+    async _run() {
+      const settings = await this.loadSettings();
+      const view = SHOW_TEMPORARY_CARD ? window.TankiQoL.ViewRenderer : null;
+      const show = (data, loading) => {
+        if (view && data && view.showTemporaryCard) {
+          view.showTemporaryCard(data, loading);
+        }
+      };
+
+      if (settings.mode === "from_saved") {
+        const R = window.TankiQoL.RandomFromSaved;
+        if (!R) return;
+        const combo = await R.choose();
+        if (!combo) return;
+        show(combo.data, true);
+        const res = await R.equip(combo);
+        // ה-cooldown חוסם; אין מה להציג כאילו הצטיידנו
+        if (res && res.cooldown) {
+          if (view) view.removeTemporaryCard();
+          return;
+        }
+        show(combo.data, false);
         return;
       }
 
-      // טעינת הגדרות
-      const settings = await this.loadSettings();
-      let resultData = null;
+      const RF = window.TankiQoL.RandomFull;
+      if (!RF) return;
+      const drawn = await RF.execute(settings);
+      if (!drawn || !drawn.ok || !drawn.data) return;
 
-      // הפעלת המצב המתאים
-      if (settings.mode === "from_saved") {
-        const RandomFromSaved = window.TankiQoL.RandomFromSaved;
-        if (RandomFromSaved) {
-          resultData = await RandomFromSaved.execute();
-        }
-      } else {
-        const RandomFull = window.TankiQoL.RandomFull;
-        if (RandomFull) {
-          resultData = await RandomFull.execute(settings);
-        }
+      // המסלול הישן כבר צייד תוך כדי הסריקה
+      if (drawn.alreadyApplied) {
+        show(drawn.data, false);
+        return;
       }
 
-      // הצגת כרטיס זמני עם התוצאה (אם מופעל ויש תוצאה)
-      if (SHOW_TEMPORARY_CARD && resultData) {
-        const ViewRenderer = window.TankiQoL.ViewRenderer;
-        if (ViewRenderer && ViewRenderer.showTemporaryCard) {
-          ViewRenderer.showTemporaryCard(resultData);
-        }
+      show(drawn.data, true);
+      const finalData = await RF.apply(drawn);
+      if (!finalData) {
+        if (view) view.removeTemporaryCard();
+        return;
       }
+      show(finalData, false);
     },
 
     // החזרת הגדרות ברירת מחדל

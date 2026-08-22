@@ -1,4 +1,4 @@
-// features/combos/randomizer/item_list_scanner.js
+// features/combos/randomizer/old/item_list_scanner.js
 
 // סורק את כל הפריטים והאוגמנטים הנרכשים בכרטיסייה הנוכחית
 (function () {

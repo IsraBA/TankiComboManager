@@ -20,6 +20,7 @@ const FILES = [
   "equip/game/device_catalog.js",
   "equip/game/skins.js",
   "equip/game/cooldown.js",
+  "randomizer/game/draw.js",
   "save/game/read.js",
   "equip/game/apply.js",
   "bridge/game/bridge_main.js",

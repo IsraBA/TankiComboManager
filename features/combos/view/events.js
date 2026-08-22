@@ -32,7 +32,7 @@
       if (surpriseMeBtn) {
         surpriseMeBtn.onclick = async () => {
           // הכפתור מוסתר ב-cooldown; זו הגנה גם למסלול ה-DOM של רנדום מלא
-          if (this.cooldownActive) return;
+          if (this.cooldownActive || this.randomizing) return;
           if (window.TankiQoL.Randomizer) {
             await window.TankiQoL.Randomizer.run();
           }
@@ -146,6 +146,15 @@
       };
 
       document.addEventListener("keydown", this.enterKeyHandler);
+    },
+
+    // הרנדומייזר רץ: הכפתור נחסם ומקבל את אותה טבעת טעינה כמו הכרטיס
+    setRandomizing(on) {
+      this.randomizing = !!on;
+      const btn = this.viewElement
+        ? this.viewElement.querySelector("#cme_surprise-me-btn")
+        : null;
+      if (btn) btn.classList.toggle("cme_equipping", !!on);
     },
 
     // עמעום אייקוני ההגנות בכרטיסים כשההתייחסות להגנות כבויה

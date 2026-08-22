@@ -137,11 +137,20 @@
     },
 
     // כרטיס זמני עם תוצאת רנדום, בתחילת הרשימה
-    showTemporaryCard(comboData) {
+    // loading=true מדליק את אפקט ההצטיידות על הכרטיס הזמני.
+    // נתונים זהים -> רק מחליפים קלאס, כדי שלא יהיה ריצוד.
+    showTemporaryCard(comboData, loading) {
       const container = this.viewElement
         ? this.viewElement.querySelector("#combos-grid-container")
         : null;
       if (!container) return;
+
+      const stamp = JSON.stringify(comboData);
+      if (this.temporaryCardColumn && this._temporaryCardStamp === stamp) {
+        const shown = this.temporaryCardColumn.querySelector(".cme_combo-card");
+        if (shown) shown.classList.toggle("cme_equipping", !!loading);
+        return;
+      }
 
       this.removeTemporaryCard();
 
@@ -149,6 +158,8 @@
       if (!CardRenderer || !CardRenderer.createTemporaryCard) return;
 
       const card = CardRenderer.createTemporaryCard(comboData);
+      if (loading) card.classList.add("cme_equipping");
+      this._temporaryCardStamp = stamp;
 
       const column = document.createElement("div");
       column.className =
@@ -166,6 +177,7 @@
         this.temporaryCardColumn.remove();
         this.temporaryCardColumn = null;
       }
+      this._temporaryCardStamp = null;
     },
   });
 })();

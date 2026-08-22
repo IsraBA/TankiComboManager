@@ -10,8 +10,10 @@
   const TIMEOUT_MS = 4000;         // תקרה קשיחה, כדי ש-Promise לא ייתקע לעולם
   const APPLY_TIMEOUT_MS = 20000;  // החלה משהה בין פריט לפריט, ולכן ארוכה יותר
   const COOLDOWN_TIMEOUT_MS = 1500;  // נסקר בלולאה; עדיף לוותר מהר מלהצטבר
+  const DRAW_TIMEOUT_MS = 5000;      // כולל המתנה לקטלוג האוגמנטים
   const REPLIES = {
-    comboResult: true, indexResult: true, applyResult: true, cooldownResult: true,
+    comboResult: true, indexResult: true, applyResult: true,
+    cooldownResult: true, drawResult: true,
   };
 
   let nextId = 1;
@@ -56,6 +58,11 @@
 
     // {known, active, msLeft} — האם המשחק חוסם כרגע החלפת ציוד
     readCooldown() { return request('cooldown', null, COOLDOWN_TIMEOUT_MS); },
+
+    // {ok, data, desired} — קומבו מוגרל מהציוד שבבעלות, לפי ההעדפות
+    drawRandom(settings) {
+      return request('drawRandom', { settings }, DRAW_TIMEOUT_MS);
+    },
 
     // {ok, results[], failed[], unavailable[], ms} — דוח לפי חריץ
     applyCombo(desired, opts) {
