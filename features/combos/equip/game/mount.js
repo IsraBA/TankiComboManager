@@ -73,6 +73,22 @@
     return { ok: true, previewRefreshed: refreshed };
   };
 
+  // המודל מציג את הפריט ה**נבחר**, והמשחק בוחר בעצמו את הצבע הראשון
+  // בקטגוריה אחרי החלפת צבע — וגם מעבר כרטיסייה דורס את הבחירה שלנו.
+  I.selectMountedPaint = function () {
+    if (!I.latestState) return false;
+    const IF = I.D.itemFields;
+    try {
+      const paint = I.collect(I.latestState).items.find(
+        (it) => it[IF.mounted] === true && I.enumName(it[IF.category]) === 'PAINT',
+      );
+      return paint ? I.selectItem(paint) : false;
+    } catch (e) {
+      NS.debug.lastError = String(e);
+      return false;
+    }
+  };
+
   I.selectItem = function (rawItem) {
     if (!I.selectActionProto || !I.D.selectItemIdField) return false;
     const si = I.findStore();

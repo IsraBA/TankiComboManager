@@ -76,6 +76,13 @@
       // המסלול הישן סיים כאן מאז ומתמיד; המיידי לא זז, ולכן מנווטים כאן
       const nav = window.TankiQoL.TabNavigator;
       if (nav) await nav.navigateToTab("Protection");
+
+      // מעבר הכרטיסייה דורס את בחירת הצבע, ואז המודל מציג צבע אחר
+      // מזה שצויד. חייב לרוץ **אחרי** הניווט.
+      const bridge = window.TankiQoL.GarageBridge;
+      if (bridge && bridge.selectMountedPaint) {
+        try { await bridge.selectMountedPaint(); } catch (e) { /* המודל בלבד */ }
+      }
     },
 
     removeItemFromCombo(comboId, itemType) {

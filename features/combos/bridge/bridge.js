@@ -13,7 +13,7 @@
   const DRAW_TIMEOUT_MS = 5000;      // כולל המתנה לקטלוג האוגמנטים
   const REPLIES = {
     comboResult: true, indexResult: true, applyResult: true,
-    cooldownResult: true, drawResult: true,
+    cooldownResult: true, drawResult: true, selectPaintResult: true,
   };
 
   let nextId = 1;
@@ -58,6 +58,9 @@
 
     // {known, active, msLeft} — האם המשחק חוסם כרגע החלפת ציוד
     readCooldown() { return request('cooldown', null, COOLDOWN_TIMEOUT_MS); },
+
+    // בוחר מחדש את הצבע המורכב, כדי שמודל התלת-ממד יציג אותו
+    selectMountedPaint() { return request('selectPaint', null, 1500); },
 
     // {ok, data, desired} — קומבו מוגרל מהציוד שבבעלות, לפי ההעדפות
     drawRandom(settings) {

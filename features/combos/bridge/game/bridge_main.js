@@ -51,6 +51,14 @@
       return;
     }
 
+    if (m.action === 'selectPaint') {
+      const id = (m.payload || {}).id;
+      let ok = false;
+      try { ok = I.selectMountedPaint(); } catch (err) { /* המודל בלבד */ }
+      reply('selectPaintResult', { id, ok });
+      return;
+    }
+
     if (m.action === 'drawRandom') {
       const p = m.payload || {};
       // אסינכרוני: ממתין לקטלוג האוגמנטים של מה שהוגרל

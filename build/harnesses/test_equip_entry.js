@@ -41,6 +41,12 @@ T.TabNavigator = {
     calls.push("nav:" + key);
   },
 };
+T.GarageBridge = {
+  async selectMountedPaint() {
+    calls.push("selectPaint");
+    return { ok: true };
+  },
+};
 
 let failures = 0;
 function check(label, got, want) {
@@ -62,10 +68,12 @@ async function run(setup) {
 }
 
 (async () => {
-  // המסלול הרגיל: מציידים ואז נוחתים בכרטיסיית ההגנות
-  check("equipping ends on the Protection tab", await run(), [
+  // המסלול הרגיל: מציידים, נוחתים בהגנות, ורק אז מחזירים את בחירת
+  // הצבע — הניווט דורס אותה, ולכן הסדר הזה הוא התיקון עצמו
+  check("equipping ends on the Protection tab, then restores the paint", await run(), [
     "instant",
     "nav:Protection",
+    "selectPaint",
   ]);
 
   // ה-cooldown חוסם — וגם לא מנווט, כדי שהמשתמש לא יאבד את הרשימה
@@ -80,7 +88,7 @@ async function run(setup) {
   check(
     "without the instant path the legacy one runs, and we still navigate",
     await run(() => { T.InstantLoader = null; }),
-    ["legacy", "nav:Protection"],
+    ["legacy", "nav:Protection", "selectPaint"],
   );
   T.InstantLoader = saved;
 
@@ -89,9 +97,21 @@ async function run(setup) {
   check(
     "a missing TabNavigator does not break equipping",
     await run(() => { T.TabNavigator = null; }),
-    ["instant"],
+    ["instant", "selectPaint"],
   );
   T.TabNavigator = nav;
+
+  // הבחירה מחדש היא קוסמטיקה בלבד; כשל בה לא אמור להפיל הצטיידות
+  const bridge = T.GarageBridge;
+  T.GarageBridge = {
+    async selectMountedPaint() { throw new Error('bridge is down'); },
+  };
+  check(
+    "a failing paint re-select does not break equipping",
+    await run(),
+    ["instant", "nav:Protection"],
+  );
+  T.GarageBridge = bridge;
 
   console.log(failures ? `\n${failures} check(s) FAILED` : "\nall checks passed");
   process.exit(failures ? 1 : 0);

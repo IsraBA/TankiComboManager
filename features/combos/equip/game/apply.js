@@ -172,13 +172,8 @@
       await doAugment('turretAugment', 'turret', 'WEAPON');
       await doAugment('hullAugment', 'hull', 'ARMOR');
 
-      // המודל מציג את הפריט ה**נבחר**, והמשחק בוחר בעצמו את הצבע
-      // הראשון בקטגוריה אחרי החלפת צבע. בלי הבחירה הזו בסוף רואים
-      // על הטנק צבע אחר מזה שצויד.
-      const mountedPaint = I.collect(I.latestState).items.find(
-        (it) => it[IF.mounted] === true && I.enumName(it[IF.category]) === 'PAINT',
-      );
-      if (mountedPaint) I.selectItem(mountedPaint);
+      // בלי זה רואים על הטנק צבע אחר מזה שצויד
+      I.selectMountedPaint();
     } catch (e) {
       NS.debug.lastError = String(e);
       return { ok: false, error: String(e), results };

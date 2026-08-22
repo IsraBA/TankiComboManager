@@ -42,6 +42,7 @@ carries a running id and its own timeout, so several can be in flight at once.
 | `i2m` | `readIndex` | `{id}` | flat index of the garage (for the migrator) |
 | `i2m` | `cooldown` | `{id}` | is equipping currently restricted? |
 | `i2m` | `drawRandom` | `{id, settings}` | draw a random combo from owned gear |
+| `i2m` | `selectPaint` | `{id}` | re-select the mounted paint (3D model only) |
 | `i2m` | `applyCombo` | `{id, desired, opts}` | apply a combo |
 | `m2i` | `ready` | — | MAIN's listeners are up; ISOLATED re-sends the constants |
 | `m2i` | `comboResult` | `{id, ok, combo, mounted, stats}` | reply |
@@ -319,6 +320,14 @@ The state class has had exactly 29 fields in every build checked. Re-verify afte
 
 - Mounting alone does not move the 3D tank model — **the model follows item
   SELECTION**, so every native mount is followed by a select dispatch.
+- **Paint selection has to be reasserted twice.** After a paint changes, the game
+  selects the first paint of that paint's category, so the tank previews a colour
+  the combo never equipped. `applyCombo` ends by selecting the mounted paint
+  (`selectMountedPaint`), which is enough for the randomiser — but equipping a
+  combo then navigates to the Protection tab, and that navigation overwrites the
+  selection again. So `ViewRenderer.equipCombo` calls the `selectPaint` bridge
+  action *after* the navigation. Order is the whole fix; doing it before is a
+  no-op.
 - Protections are a **set** (above). A reorder-only combo dispatches nothing.
 - Augment ownership is checked **before** anything is dispatched.
 - Device catalogs are lazy: the read path waits (capped, sends nothing), the
