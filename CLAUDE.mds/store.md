@@ -50,16 +50,28 @@ The zip lands in `build/dist/tanki-combos-qol-v<version>.zip`.
 2. "Load unpacked" → select this directory.
 3. Open [Tanki Online](https://tankionline.com) and sign in.
 4. **Combos**: enter the garage; the COMBOS tab appears; save a combo; equip it
-   (should be instant, no tab walking, no flicker); reorder by drag; delete;
-   randomizer; import/export; the `C` shortcut in the lobby. Check that the 3D
-   tank model still renders, survives a window resize, and can be drag-rotated
-   while the combos tab is open.
-5. **Translator**: enter a battle; foreign chat should show original → spinner →
+   (instant, no tab walking, no flicker, and it lands on the Protection tab);
+   reorder by drag; delete; import/export; the `C` shortcut in the lobby. Check
+   that the 3D tank model still renders, survives a window resize, and can be
+   drag-rotated while the combos tab is open.
+5. **Combos, the state-dependent parts** — these only misbehave against a real
+   account, which is exactly what the harnesses cannot cover:
+   - the combo you are wearing is marked green, and the mark moves when you
+     equip another one or change gear in the game's own tabs and come back;
+   - saving a loadout you already have replaces that entry instead of adding a
+     second, keeps its name, and does not flicker;
+   - **randomiser**: both modes; the card shows its loading border and the
+     button is blocked while it runs; a grenade you have no ammo for is never
+     drawn; "Max equipment only" only offers Mk7-20; skins never come out as
+     the standard one;
+   - **equip cooldown**: right after changing gear, the red timer shows over the
+     tank, SURPRISE ME disappears, and clicking a card does nothing.
+6. **Translator**: enter a battle; foreign chat should show original → spinner →
    `[SRC] » translation`. Check the toggle button next to the chat alert button
    and Alt+T. Open the game's Settings screen and confirm the injected toggle +
    language dropdown are there and styled natively. Resize / toggle fullscreen
    and confirm no duplicate chat lines.
-6. After code changes: click the refresh icon on the extension card, then reload
+7. After code changes: click the refresh icon on the extension card, then reload
    the game tab.
 
 Before any release, also run the offline harnesses (`debugging.md`) — they cover

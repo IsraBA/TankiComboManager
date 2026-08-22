@@ -191,13 +191,15 @@ global.chrome = {
   },
 };
 
-// --- טעינת הקובץ האמיתי ---
-eval(
-  fs.readFileSync(
-    path.join(EXT, "features/combos/save/instant_saver.js"),
-    "utf8",
-  ),
-);
+// --- טעינת הקבצים האמיתיים ---
+// ההשוואה לכפילות נשענת על buildDesired של האקוויפר, ולכן שניהם נטענים
+for (const f of [
+  "features/combos/equip/instant_loader.js",
+  "features/combos/equip/combo_identity.js",
+  "features/combos/save/instant_saver.js",
+]) {
+  eval(fs.readFileSync(path.join(EXT, f), "utf8"));
+}
 
 (async () => {
   const res = await global.window.TankiQoL.InstantSaver.saveCurrentCombo();
@@ -270,6 +272,23 @@ eval(
       (k) => typeof d[k].name === "string",
     ),
     "legacy equipper compat: names present",
+  );
+
+  // --- כפילות: שמירה שנייה של אותו ציוד ---
+  // הכפיל נמחק באותה כתיבה, ולכן המספר לא גדל ואין הבהוב ברשימה
+  const before = stored.savedCombos.length;
+  const keptName = stored.savedCombos.find((c) => c.order === 0).name;
+  const again = await global.window.TankiQoL.InstantSaver.saveCurrentCombo();
+  assert(again.ok === true, "saving a duplicate still succeeds");
+  assert(
+    stored.savedCombos.length === before,
+    "…and the list does not grow",
+  );
+  const top = stored.savedCombos.find((c) => c.order === 0);
+  assert(top.name === keptName, "…the older combo's name survives");
+  assert(
+    top.data.turret.baseItemId === "920009630987",
+    "…and the surviving entry holds the saved loadout",
   );
 
   // תרחיש כשל: state לא נתפס

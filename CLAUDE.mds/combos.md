@@ -387,6 +387,41 @@ that satisfy the filters, so the draw *is* the outcome. The one exception is a
 slot the apply reports as `failed` or `unavailable` — that slot is blanked rather
 than shown as equipped.
 
+## No two combos may hold the same loadout
+
+Saving a loadout that already exists **replaces** the existing entry instead of
+adding a second one, and `ComboIdentity.isSameCombo(a, b)` decides that.
+Protections count, as a set, exactly as everywhere else.
+
+**Missing is not the same as removed**, and this comparison is the one place
+that has to tell them apart:
+
+| why the slot is empty | counts as |
+|---|---|
+| the user removed it on the card | a real, deliberate difference |
+| gen-1 never recorded it | no information — ignored |
+
+That is why `isSameCombo` walks the slots itself instead of leaning on
+`buildDesired` the way `isEquipped` does: `buildDesired` collapses both cases
+into a plain absence. The tolerance is deliberately limited to the three slots
+the DOM scan never captured — `paint`, `turretSkin`, `hullSkin`. A missing
+*core* slot still makes two combos different, so a sparse old combo holding only
+a turret can't swallow every new combo that happens to use it.
+
+Two things make it feel like nothing happened:
+
+- **The duplicate is deleted in the same storage write that creates the new
+  combo.** There is no intermediate state and therefore no flicker; from the
+  outside the existing card simply jumps to the top, and if it was already at
+  the top, nothing moves at all.
+- **The older combo's name survives.** A combo you named "Long range" stays
+  "Long range" rather than reverting to "Combo 7".
+
+`ComboCleaner.removeEmptyCombos` also sweeps duplicates on every list load, the
+same way it sweeps empty combos — that is the net for entries that arrive by
+import or predate this rule. It sorts by display order first and keeps the
+first, so the survivor is the one nearest the top.
+
 ## Marking the combo you are already wearing
 
 A card whose combo is fully equipped gets `cme_equipped`, styled after the
@@ -395,7 +430,7 @@ green wash, `rgb(118,255,51)`. The two ring colours are **deliberately swapped**
 relative to the game — green at rest, white on hover, rather than the other way
 round. That is a look preference, not an oversight.
 
-`equip/combo_match.js` decides it, and the important part is that it does not
+`equip/combo_identity.js` decides it, and the important part is that it does not
 reimplement "what would this combo equip". It runs
 `InstantLoader._internals.buildDesired(combo, includeProtections)` — the exact
 call the equip path makes — and compares the result against `readCombo()`. So
@@ -426,6 +461,11 @@ Two consequences worth knowing:
 - The mark is recomputed after every list render, in the background like the
   migrator, from one `readCombo()`. Equipment changed in the game's own tabs is
   picked up on the next render, not live.
+- **The randomiser re-marks without re-rendering.** It changes the loadout while
+  the list is on screen, so the old card would stay green and the new one dark.
+  It calls `markEquippedCombo()` in its `finally` rather than
+  `loadAndRenderCombos()`, because a re-render would destroy the temporary
+  result card it just put up.
 
 ## Where you land after equipping
 

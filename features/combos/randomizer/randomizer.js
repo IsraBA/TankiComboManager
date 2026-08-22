@@ -45,6 +45,9 @@
         await this._run();
       } finally {
         if (VR && VR.setRandomizing) VR.setRandomizing(false);
+        // הציוד השתנה: הסימון הירוק על הרשימה מיושן. מסמנים מחדש ולא
+        // מרנדרים, כדי לא להרוס את הכרטיס הזמני שהרגע הצגנו.
+        if (VR && VR.markEquippedCombo) VR.markEquippedCombo();
       }
     },
 

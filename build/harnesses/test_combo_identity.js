@@ -1,4 +1,4 @@
-// "האם הקומבו כבר מצויד" (equip/combo_match.js). נטען עם instant_loader
+// "האם הקומבו כבר מצויד" (equip/combo_identity.js). נטען עם instant_loader
 // האמיתי, כי ההשוואה נשענת על buildDesired שלו.
 
 const fs = require("fs");
@@ -21,12 +21,12 @@ const ctx = vm.createContext({
   setTimeout,
 });
 vm.runInContext("globalThis.window = globalThis;", ctx);
-for (const f of ["equip/instant_loader.js", "equip/combo_match.js"]) {
+for (const f of ["equip/instant_loader.js", "equip/combo_identity.js"]) {
   vm.runInContext(fs.readFileSync(BASE + f, "utf8"), ctx, {
     filename: f.split("/").pop(),
   });
 }
-const M = ctx.window.TankiQoL.ComboMatch;
+const M = ctx.window.TankiQoL.ComboIdentity;
 
 let failures = 0;
 function check(label, got, want) {
@@ -224,6 +224,127 @@ check(
   "an empty combo is trivially equipped",
   M.isEquipped(combo({}), CURRENT),
   true,
+);
+
+// ---- קומבו מול קומבו: מניעת כפילויות ----
+const same = (a, b) => M.isSameCombo(a, b);
+
+const PAIR = {
+  turret: T("tb", "t7", "THUNDER"),
+  hull: T("hb", "h7", "HORNET"),
+  protection: [P("x", "OWL"), P("y", "DOLPHIN"), null, null],
+};
+const copy = (o) => JSON.parse(JSON.stringify(o));
+
+check("a combo equals itself", same(combo(PAIR), combo(copy(PAIR))), true);
+
+check(
+  "a different hull makes it a different combo",
+  same(combo(PAIR), combo(Object.assign(copy(PAIR), { hull: T("zb", "z1", "VIKING") }))),
+  false,
+);
+
+// הנוסחה המוכרת: אותה קבוצה בסדר אחר היא אותו קומבו
+check(
+  "protections in another order are the same combo",
+  same(
+    combo(PAIR),
+    combo(Object.assign(copy(PAIR), {
+      protection: [null, P("y", "DOLPHIN"), null, P("x", "OWL")],
+    })),
+  ),
+  true,
+);
+check(
+  "…but a different protection set is not",
+  same(
+    combo(PAIR),
+    combo(Object.assign(copy(PAIR), {
+      protection: [P("x", "OWL"), null, null, null],
+    })),
+  ),
+  false,
+);
+check(
+  "…and an extra protection is not",
+  same(
+    combo(PAIR),
+    combo(Object.assign(copy(PAIR), {
+      protection: [P("x", "OWL"), P("y", "DOLPHIN"), P("z", "WOLF"), null],
+    })),
+  ),
+  false,
+);
+
+// חריץ שהוסר משנה את מה שהקומבו מצייד, ולכן אינו כפיל
+check(
+  "a removed slot makes it a different combo",
+  same(combo(PAIR), combo(copy(PAIR), { hull: true })),
+  false,
+);
+
+// אותה משפחה ב-Mk אחר מציידת אותו דבר
+check(
+  "the same family at another Mk is the same combo",
+  same(
+    combo(PAIR),
+    combo(Object.assign(copy(PAIR), {
+      turret: { baseItemId: "tb", id: "t5", name: "THUNDER", mk: 5 },
+    })),
+  ),
+  true,
+);
+
+// חריץ שקיים רק באחד מהם
+check(
+  "an extra drone makes it a different combo",
+  same(combo(PAIR), combo(Object.assign(copy(PAIR), { drone: T("db", "d1", "CRISIS") }))),
+  false,
+);
+
+// ---- דור-1: דקורטיביים שמעולם לא נרשמו ----
+// אותו ציוד, אבל הישן נסרק מה-DOM ולא הכיר צבע וסקינים
+const GEN2 = Object.assign(copy(PAIR), {
+  paint: T("pb", "p1", "Red smoke"),
+  turretSkin: { id: "k1", name: "Thunder Legacy" },
+  hullSkin: null,
+});
+check(
+  "a gen-1 combo with no paint or skins is the same combo",
+  same(combo(copy(PAIR)), combo(GEN2)),
+  true,
+);
+
+// ...אבל חוסר שנובע מהסרה במפורש הוא כן הבדל
+check(
+  "a paint the user removed is a real difference",
+  same(combo(copy(GEN2), { paint: true }), combo(GEN2)),
+  false,
+);
+check(
+  "a skin the user removed is a real difference",
+  same(combo(copy(GEN2), { turretSkin: true }), combo(GEN2)),
+  false,
+);
+
+// הסובלנות היא לדקורטיביים בלבד — פריט ליבה חסר עדיין מבדיל
+check(
+  "a missing core slot is still a difference",
+  same(
+    combo({ turret: T("tb", "t7", "THUNDER") }),
+    combo({ turret: T("tb", "t7", "THUNDER"), hull: T("hb", "h7", "HORNET") }),
+  ),
+  false,
+);
+
+// שני צבעים שונים הם עדיין קומבואים שונים
+check(
+  "two different paints are different combos",
+  same(
+    combo(GEN2),
+    combo(Object.assign(copy(GEN2), { paint: T("qb", "q1", "Blue haze") })),
+  ),
+  false,
 );
 
 console.log(failures ? `\n${failures} check(s) FAILED` : "\nall checks passed");

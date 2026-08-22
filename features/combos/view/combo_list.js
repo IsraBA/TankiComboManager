@@ -53,7 +53,7 @@
     async markEquippedCombo() {
       const view = this.viewElement;
       const bridge = window.TankiQoL.GarageBridge;
-      const Match = window.TankiQoL.ComboMatch;
+      const Match = window.TankiQoL.ComboIdentity;
       if (!view || !bridge || !Match) return;
 
       let read;

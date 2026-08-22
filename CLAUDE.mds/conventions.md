@@ -53,6 +53,12 @@ change makes a comment wrong, the comment is the bug.
   the label in as an option instead of deepening that dependency.)
 - Adding a file means adding it to `manifest.json` in the right position — see
   `architecture.md`.
+- **One name on `window.TankiQoL` per module.** Two files assigning the same
+  name is silent: the later one wins and the earlier module simply stops
+  existing, with no error until something calls a method that vanished. It
+  happened — a new `ComboMatch` killed the migrator's `ComboMatch` and the id
+  backfill died unnoticed. `build/harnesses/test_namespaces.js` now fails on a
+  collision, and on a name that is read but never defined.
 
 ## Splitting a big module
 

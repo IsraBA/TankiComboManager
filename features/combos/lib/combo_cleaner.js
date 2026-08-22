@@ -52,7 +52,20 @@
       );
     },
 
-    // מחיקה אוטומטית של קומבואים ריקים
+    // כפילויות שנוצרו מייבוא או מגרסאות ישנות. השמירה מנקה כפילות
+    // בזמן אמת; זו הרשת שתופסת את השאר. הראשון ברשימה שורד.
+    _dropDuplicates(combos) {
+      const Match = window.TankiQoL.ComboIdentity;
+      if (!Match || !Match.isSameCombo) return combos;
+      const kept = [];
+      for (const combo of combos) {
+        if (kept.some((k) => Match.isSameCombo(k, combo))) continue;
+        kept.push(combo);
+      }
+      return kept;
+    },
+
+    // מחיקה אוטומטית של קומבואים ריקים וכפולים
     // מקבלת callback שייקרא אחרי המחיקה (אופציונלי)
     removeEmptyCombos(callback) {
       chrome.storage.local.get(["savedCombos"], (result) => {
@@ -61,6 +74,10 @@
 
         // סינון קומבואים - הסרת קומבואים ריקים
         combos = combos.filter((combo) => !this.isComboEmpty(combo));
+
+        // הכפילות נבדקת לפי סדר התצוגה, ולכן ממיינים קודם
+        combos.sort((a, b) => (a.order || 0) - (b.order || 0));
+        combos = this._dropDuplicates(combos);
 
         const removedCount = originalLength - combos.length;
 

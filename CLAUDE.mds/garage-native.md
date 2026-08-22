@@ -296,7 +296,7 @@ Cached in `chrome.storage.local` keyed by **schema version + bundle URL**
 fields to `discover()`'s output while an old-schema result was cached meant the
 cache loaded as-is and **overrode the seed** (which did have the new fields), so
 every new column silently read null. **Bump `CACHE_VERSION` in `discovery/detect.js`
-whenever `discover()`'s output shape changes** (currently 9). Stale-prefix keys
+whenever `discover()`'s output shape changes** (currently 10). Stale-prefix keys
 are cleaned up on startup. `discovery/game/names.js` seeds the latest-known build so
 the hook works during the discovery fetch; discovery overrides it.
 

@@ -146,6 +146,7 @@ features/combos/
 │
 ├── equip/                     # stage 4 — clicking a combo
 │   ├── instant_loader.js      #   decides WHAT to apply
+│   ├── combo_identity.js      #   already equipped? same combo twice?
 │   ├── game/
 │   │   ├── apply.js           #     decides HOW — the whole-combo orchestrator
 │   │   ├── store.js           #     find the store, build actions, resolve ctors
@@ -163,7 +164,7 @@ features/combos/
 │   ├── combo_migrator.js      #   runs on every combo-list load
 │   └── migrator_match.js      #   name → item, Mk families
 │
-├── randomizer/                # randomizer (the sequence), random_from_saved,
+├── randomizer/                # randomizer.js = the sequence; random_from_saved
 │   ├── random_full.js         #   native full random
 │   ├── game/draw.js           #   [MAIN] the draw itself — every filter needs state
 │   └── old/                   #   LEGACY (DOM): random_full + item_list_scanner

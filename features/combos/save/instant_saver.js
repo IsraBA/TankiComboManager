@@ -93,7 +93,21 @@
 
       return new Promise((resolve) => {
         chrome.storage.local.get(['savedCombos'], (result) => {
-          const combos = result.savedCombos || [];
+          let combos = result.savedCombos || [];
+
+          // כפיל נמחק **באותה כתיבה** שיוצרת את החדש, אחרת הרשימה
+          // הייתה מהבהבת. מבחוץ זה נראה כמו קפיצה לראש הרשימה.
+          const Match = window.TankiQoL.ComboIdentity;
+          let inheritedName = null;
+          if (Match && Match.isSameCombo) {
+            const dup = combos.find(
+              (c) => Match.isSameCombo(c, { data, removedItems: {} }),
+            );
+            if (dup) {
+              inheritedName = dup.name;   // השם של הישן שורד
+              combos = combos.filter((c) => c !== dup);
+            }
+          }
 
           // קומבו חדש נכנס ראשון, וכל השאר יורדים מקום
           combos.forEach((combo) => {
@@ -103,7 +117,7 @@
           const LanguageManager = window.TankiQoL.LanguageManager;
           const newCombo = {
             id: Date.now(),
-            name: `Combo ${combos.length + 1}`,
+            name: inheritedName || `Combo ${combos.length + 1}`,
             data,
             date: new Date().toLocaleDateString(),
             order: 0,

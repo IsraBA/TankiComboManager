@@ -68,7 +68,7 @@ own console context instead.
 There is no test framework here. What exists is **`build/harnesses/`** — plain
 `node <file>` scripts, no dependencies, that run the _shipped_ code offline
 against the bundles in `../../../research/`. They live under `build/`, so they
-never reach the store zip. 268 checks across 12 files:
+never reach the store zip. 288 checks across 13 files:
 
 - **`verify_shipped.js`** — loads `discovery/*.js` as shipped, runs
   `discover()` against every bundle in `research/`, and diffs the result for the
@@ -83,7 +83,7 @@ never reach the store zip. 268 checks across 12 files:
 - **`test_migrator.js`**, **`test_instant_loader.js`**, **`test_instant_saver.js`**,
   **`test_card_render.js`**, **`test_protection_equal.js`**,
   **`test_equip_entry.js`**, **`test_random_draw.js`**,
-  **`test_combo_match.js`** — same idea for the ISOLATED-side modules, the
+  **`test_combo_identity.js`** — same idea for the ISOLATED-side modules, the
   randomiser's draw filters and the equipped-combo marker (Mk
   families, imported combos, the fallback split, the card HTML for both data
   generations, and what clicking a card does end to end).
@@ -95,6 +95,11 @@ never reach the store zip. 268 checks across 12 files:
   region that takes pointer events back (see the tank-preview section of
   `combos.md`). It cannot tell you whether the layer actually behaves — only a
   browser can.
+
+- **`test_namespaces.js`** — structural, not behavioural: no two modules may
+  claim the same `window.TankiQoL` name, and no name may be read that nothing
+  defines. A collision is otherwise silent — the later file wins and the earlier
+  module quietly ceases to exist.
 
 They hold **absolute paths** to this repo and to `research/`, so they run from
 anywhere but break if either moves. When you split or move a source file, update

@@ -1,4 +1,4 @@
-// features/combos/equip/combo_match.js
+// features/combos/equip/combo_identity.js
 
 // האם קומבו כבר מצויד במלואו. משווה את מה ש-buildDesired היה מצייד
 // מול הציוד הנוכחי, כדי שההשוואה לא תוכל לסטות מההצטיידות.
@@ -13,8 +13,27 @@
   // אוגמנט וסקין: ה-baseItemId שלהם אינו ייחודי, ולכן לפי מזהה
   const BY_ID = ["turretAugment", "hullAugment", "turretSkin", "hullSkin"];
 
+  // דור-1 נסרק מה-DOM ולא רשם דקורטיביים כלל. חוסר שם אינו "אין
+  // צבע" אלא "לא ידוע", ולכן אינו הופך שני קומבואים לשונים.
+  const TOLERATE_UNRECORDED = { paint: true, turretSkin: true, hullSkin: true };
+
   function norm(name) {
     return name == null ? "" : String(name).trim().toUpperCase();
+  }
+
+  // known=false פירושו שהחריץ מעולם לא נרשם; הסרה בעריכה היא כן ידיעה
+  function slotState(combo, slot) {
+    if ((combo.removedItems || {})[slot] === true) return { known: true, entry: null };
+    const entry = (combo.data || {})[slot];
+    return entry ? { known: true, entry } : { known: false, entry: null };
+  }
+
+  // ההגנות שהקומבו באמת יצייד, בלי אלה שהמשתמש הסיר
+  function effectiveProtections(combo) {
+    const list = (combo.data || {}).protection;
+    if (!Array.isArray(list)) return [];
+    const removed = (combo.removedItems || {}).protection || [];
+    return list.filter((p, i) => p && removed.indexOf(i) === -1);
   }
 
   // משווים על הזהות החזקה ביותר ששני הצדדים מחזיקים. דור-1 מחזיק שם
@@ -52,7 +71,7 @@
     return true;
   }
 
-  window.TankiQoL.ComboMatch = {
+  window.TankiQoL.ComboIdentity = {
     // current = combo מתוך GarageBridge.readCombo()
     isEquipped(combo, current, includeProtections) {
       const InstantLoader = window.TankiQoL.InstantLoader;
@@ -79,6 +98,27 @@
         if (!sameProtections(desired.protection, current.protection)) return false;
       }
       return true;
+    },
+
+    // האם שני קומבואים מציידים בדיוק אותו דבר.
+    // כאן אי אפשר להישען על buildDesired כמו ב-isEquipped: הוא מכווץ
+    // "הוסר בעריכה" ו"מעולם לא נרשם" לאותו חוסר, וההבדל ביניהם מהותי.
+    isSameCombo(a, b) {
+      if (!a || !b) return false;
+
+      for (const slot of BY_FAMILY.concat(BY_ID)) {
+        const x = slotState(a, slot);
+        const y = slotState(b, slot);
+        // דור ישן לא רשם דקורטיביים — חוסר מידע אינו הבדל
+        if (TOLERATE_UNRECORDED[slot] && (!x.known || !y.known)) continue;
+        if (!x.entry !== !y.entry) return false;
+        if (!x.entry) continue;
+        const same = BY_ID.indexOf(slot) === -1 ? sameFamily : sameExact;
+        if (!same(x.entry, y.entry)) return false;
+      }
+
+      // הגנות: חלק מהזהות, אבל כקבוצה — בדיוק כמו בכל השאר
+      return sameProtections(effectiveProtections(a), effectiveProtections(b));
     },
 
     // חשוף לבדיקות אופליין
