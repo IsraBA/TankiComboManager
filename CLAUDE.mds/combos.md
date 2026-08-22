@@ -260,6 +260,27 @@ blanks the 3D model and kills drag-to-rotate — and it was set _without_ the
 `data-cme-preview-hidden` mark, so nothing ever cleaned it up. The guard replaces
 it; don't bring it back.
 
+## Where you land after equipping
+
+Clicking a card ends on the game's **Protection** tab, and the combos view
+closes. That is not new — the legacy DOM loader always finished with
+`TabNavigator.navigateToTab("Protection")`, because it had walked through
+Turrets/Hulls/Grenades/Drones and had to land somewhere sensible. The instant
+path never moves, so it stayed in the combos view until the step was added back
+in `ViewRenderer.equipCombo()`.
+
+Two things keep it from spreading where it shouldn't:
+
+- **It lives in `ViewRenderer.equipCombo()`, whose only caller is the card
+  click.** The randomiser calls `InstantLoader` directly and then navigates
+  *back* to COMBOS itself, because it has a temporary result card to show. Moving
+  the navigation down into `InstantLoader` would fight that.
+- **A cooldown returns before it.** Nothing was equipped, so throwing the user
+  out of their combo list would be pure annoyance.
+
+Calling it after the legacy path is harmless: `navigateToTab` returns early when
+the tab is already active.
+
 ## The equip cooldown in the combos view
 
 The detection and the refusal are in `garage-native.md`; this is the UI half.

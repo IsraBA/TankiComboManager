@@ -48,7 +48,7 @@
       });
     },
 
-    // נקודת הכניסה היחידה להצטיידות — גם מהכרטיס וגם מהלובי.
+    // נקודת הכניסה היחידה להצטיידות מהכרטיס.
     // המסלול המיידי נופל ל-DOM בעצמו, ברמת הפריט הבודד.
     async equipCombo(combo) {
       // המשחק חוסם החלפת ציוד; השרת ידחה כל מסלול, כולל ה-DOM
@@ -57,11 +57,13 @@
       const InstantLoader = window.TankiQoL.InstantLoader;
       if (InstantLoader) {
         await InstantLoader.equipCombo(combo);
-        return;
-      }
-      if (window.TankiQoL.ComboLoader) {
+      } else if (window.TankiQoL.ComboLoader) {
         await window.TankiQoL.ComboLoader.equipCombo(combo);
       }
+
+      // המסלול הישן סיים כאן מאז ומתמיד; המיידי לא זז, ולכן מנווטים כאן
+      const nav = window.TankiQoL.TabNavigator;
+      if (nav) await nav.navigateToTab("Protection");
     },
 
     removeItemFromCombo(comboId, itemType) {

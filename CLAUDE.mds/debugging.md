@@ -67,7 +67,7 @@ own console context instead.
 There is no test framework here. What exists is **`build/harnesses/`** — plain
 `node <file>` scripts, no dependencies, that run the _shipped_ code offline
 against the bundles in `../../../research/`. They live under `build/`, so they
-never reach the store zip. 193 checks across 9 files:
+never reach the store zip. 216 checks across 10 files:
 
 - **`verify_shipped.js`** — loads `discovery/*.js` as shipped, runs
   `discover()` against every bundle in `research/`, and diffs the result for the
@@ -80,9 +80,10 @@ never reach the store zip. 193 checks across 9 files:
   the protection set-diff, augment ownership rejection, skins. The write logic is
   tested without touching the game.
 - **`test_migrator.js`**, **`test_instant_loader.js`**, **`test_instant_saver.js`**,
-  **`test_card_render.js`**, **`test_protection_equal.js`** — same idea for the
-  ISOLATED-side modules (Mk families, imported combos, the fallback split, the
-  card HTML for both data generations).
+  **`test_card_render.js`**, **`test_protection_equal.js`**,
+  **`test_equip_entry.js`** — same idea for the ISOLATED-side modules (Mk
+  families, imported combos, the fallback split, the card HTML for both data
+  generations, and what clicking a card does end to end).
 - **`test_view_layer.js`** — the odd one out: it reads `styles.css`,
   `template.js` and `tank_preview.js` as **text**, because what it guards is a
   stacking/hit-testing contract, not logic. The view must stay
