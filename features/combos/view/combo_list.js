@@ -48,6 +48,39 @@
       }
     },
 
+    // מסמן את הקומבו שכבר מצויד במלואו. אחרי הרינדור ובלי לחסום —
+    // קריאה אחת לגשר, וכשל בה משאיר את הרשימה כמו שהיא.
+    async markEquippedCombo() {
+      const view = this.viewElement;
+      const bridge = window.TankiQoL.GarageBridge;
+      const Match = window.TankiQoL.ComboMatch;
+      if (!view || !bridge || !Match) return;
+
+      let read;
+      try { read = await bridge.readCombo(); } catch (e) { return; }
+      if (!read || !read.ok || !read.combo) return;
+
+      const includeProtections = await new Promise((resolve) => {
+        try {
+          chrome.storage.local.get(["equipProtectionsOnLoad"], (r) => {
+            resolve(r.equipProtectionsOnLoad !== false);
+          });
+        } catch (e) { resolve(true); }
+      });
+
+      const combos = this._renderedCombos || [];
+      for (const combo of combos) {
+        const card = view.querySelector(
+          '.cme_combo-card[data-combo-id="' + combo.id + '"]',
+        );
+        if (!card) continue;
+        card.classList.toggle(
+          "cme_equipped",
+          Match.isEquipped(combo, read.combo, includeProtections),
+        );
+      }
+    },
+
     // השלמת מזהים לקומבואים ישנים — אחרי הרינדור ובלי לחסום אותו,
     // כי היא לא משנה כלום ממה שמוצג. best-effort בלבד.
     _backfillIdsInBackground() {
@@ -84,6 +117,7 @@
         });
 
         this.renderCombos(sortedCombos);
+        this.markEquippedCombo();
       });
     },
 
@@ -94,6 +128,8 @@
       if (!container) return;
 
       container.innerHTML = "";
+      // markEquippedCombo רץ אחרי הרינדור וצריך את הרשימה שהוצגה
+      this._renderedCombos = combos;
 
       const arrowLeft = this.viewElement.querySelector(".cme_arrowLeft");
       const arrowRight = this.viewElement.querySelector(".cme_arrowRight");

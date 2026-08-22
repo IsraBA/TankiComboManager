@@ -19,6 +19,19 @@
   -webkit-box-pack: start;
 }
 
+/* === קומבו שכבר מצויד במלואו === */
+/* הרקע הירוק הוא של המשחק (הפריט המצויד ברשימה), אבל הטבעות הפוכות
+   ממנו בכוונה: ירוקה במנוחה ולבנה ב-hover. נראה טוב יותר. */
+.cme_combo-card.cme_equipped .cme_combo-preview-container {
+  background-color: rgba(118, 255, 51, 0.15);
+  border-color: rgba(118, 255, 51, 0.25);
+  box-shadow: rgb(118, 255, 51) 0em 0em 0em 0.125em;
+}
+
+.cme_combo-card.cme_equipped:hover .cme_combo-preview-container {
+  box-shadow: rgb(255, 255, 255) 0em 0em 0em 0.125em;
+}
+
 /* === מצב הצטיידות === */
 /* הטבעת המונפשת משותפת עם כפתור הרנדומייזר ויושבת ב-styles.css.
    כאן רק מה שייחודי לכרטיס: התוכן דוהה, הטבעת נשארת מלאה. */

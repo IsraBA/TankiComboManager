@@ -68,7 +68,7 @@ own console context instead.
 There is no test framework here. What exists is **`build/harnesses/`** — plain
 `node <file>` scripts, no dependencies, that run the _shipped_ code offline
 against the bundles in `../../../research/`. They live under `build/`, so they
-never reach the store zip. 237 checks across 11 files:
+never reach the store zip. 268 checks across 12 files:
 
 - **`verify_shipped.js`** — loads `discovery/*.js` as shipped, runs
   `discover()` against every bundle in `research/`, and diffs the result for the
@@ -82,8 +82,9 @@ never reach the store zip. 237 checks across 11 files:
   tested without touching the game.
 - **`test_migrator.js`**, **`test_instant_loader.js`**, **`test_instant_saver.js`**,
   **`test_card_render.js`**, **`test_protection_equal.js`**,
-  **`test_equip_entry.js`**, **`test_random_draw.js`** — same idea for the
-  ISOLATED-side modules and the randomiser's draw filters (Mk
+  **`test_equip_entry.js`**, **`test_random_draw.js`**,
+  **`test_combo_match.js`** — same idea for the ISOLATED-side modules, the
+  randomiser's draw filters and the equipped-combo marker (Mk
   families, imported combos, the fallback split, the card HTML for both data
   generations, and what clicking a card does end to end).
 - **`test_view_layer.js`** — the odd one out: it reads `styles.css`,

@@ -387,6 +387,46 @@ that satisfy the filters, so the draw *is* the outcome. The one exception is a
 slot the apply reports as `failed` or `unavailable` — that slot is blanked rather
 than shown as equipped.
 
+## Marking the combo you are already wearing
+
+A card whose combo is fully equipped gets `cme_equipped`, styled after the
+game's own "this item is mounted" cell (`ksc-208` in the item lists): a 15%
+green wash, `rgb(118,255,51)`. The two ring colours are **deliberately swapped**
+relative to the game — green at rest, white on hover, rather than the other way
+round. That is a look preference, not an oversight.
+
+`equip/combo_match.js` decides it, and the important part is that it does not
+reimplement "what would this combo equip". It runs
+`InstantLoader._internals.buildDesired(combo, includeProtections)` — the exact
+call the equip path makes — and compares the result against `readCombo()`. So
+`removedItems` and the protections toggle are honoured for free and cannot drift
+apart from the real behaviour.
+
+Identity is picked per pair, from the strongest thing both sides carry:
+
+- base items and paint by **`baseItemId`**, so a combo saved at Mk5 counts as
+  equipped when Mk7 of the same family is on the tank — which is exactly what
+  equipping it would produce;
+- augments and skins by **`id`**, because an augment's `baseItemId` names its
+  turret and identifies nothing;
+- gen-1 entries fall back to the name, upper-cased.
+
+Protections compare **as a set**, the same rule the write path uses: `X Y _ _`
+matches `_ X _ Y`, and the number of empty slots follows from the set size, so
+two modules never match three. A protection the user removed on the card *must*
+be absent now, because equipping would unmount it — removal is not the same as
+"ignore" for protections, though it is for every other slot.
+
+Two consequences worth knowing:
+
+- It is *almost* "clicking this would change nothing", but not quite. A combo
+  containing an item the account no longer owns changes nothing when clicked
+  (the slot reports `unavailable`) and is still **not** marked, by product
+  decision: the marker claims "this is your tank", which would be a lie.
+- The mark is recomputed after every list render, in the background like the
+  migrator, from one `readCombo()`. Equipment changed in the game's own tabs is
+  picked up on the next render, not live.
+
 ## Where you land after equipping
 
 Clicking a card ends on the game's **Protection** tab, and the combos view

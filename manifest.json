@@ -116,6 +116,7 @@
         "features/combos/equip/old/equippers/protection_equipper.js",
         "features/combos/equip/old/combo_loader.js",
         "features/combos/equip/instant_loader.js",
+        "features/combos/equip/combo_match.js",
         "features/combos/dom/navigation_helpers.js",
         "features/combos/view/lobby/auto_navigator.js",
         "features/combos/randomizer/old/item_list_scanner.js",
