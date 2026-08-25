@@ -34,9 +34,10 @@ Content scripts can't use ES modules, so modules share namespace objects on
 | `window.TankiQoL` | ISOLATED (combos) + MAIN (translator) | the shared components (`.Switch`, `.Select`, `.Drawer`), and in ISOLATED every combos module (`.DOM`, `.ViewRenderer`, `.GarageBridge`, `.GarageDiscover`, …) |
 | `window.__CT` | MAIN | translator internals: `.settings`, `.translate`, `.skip`, `.bidi`, `.rebuild()` |
 | `window.__CMB` | MAIN | garage hook: `.read()`, `.index()`, `.names()`, `.state()`, `.debug`, and `.internals` (shared by every `game/` file) |
+| `window.__ADV` | MAIN | advisor battle probe (**POC**): `.debug`, `.raw()` |
 | `__CT_*` | MAIN | translator console helpers — see `debugging.md` |
 
-## manifest.json — 6 content-script blocks
+## manifest.json — 7 content-script blocks
 
 JSON has no comments, so the reasoning lives here. **Do not merge these blocks.**
 
@@ -46,6 +47,7 @@ JSON has no comments, so the reasoning lives here. **Do not merge these blocks.*
 | 1 | translator `isolated/` | `document_start` | ISOLATED | The only place with `chrome.*`. Must start early so bundle discovery finishes before the user enters a battle. |
 | 2 | combos `discovery/` + `bridge/bridge.js` | `document_start` | ISOLATED | Same reason for the garage hook: discovery must finish before the garage opens. Also defines `TankiQoL.GarageBridge`, which block 5 uses. |
 | 3 | every combos `game/` file | `document_start` | MAIN | Needs the page's own `window` for the `Object.prototype` traps. Must be `document_start` — the state is built later, but the trap has to be armed first. |
+| 3b | advisor `recon/game/` (**POC**) | `document_start` | MAIN | Same trap technique for the battle state. Kept out of block 3 — a different feature must stay separately removable. |
 | 4 | translator `main/` | `document_start` | MAIN | Same, for the chat HUD. |
 | 5 | combos (DOM side) | `document_idle` | ISOLATED (default) | Pure DOM work that only makes sense once the page exists. Its internal order is the dependency chain below. |
 
@@ -173,6 +175,11 @@ features/combos/
     ├── scanners/              #   base_item, augment, protection — READ only
     ├── tab_navigator.js       #   navigates between garage tabs
     └── navigation_helpers.js  #   MutationObserver-based waiting
+
+features/advisor/              # (POC) recommendations — exploration stage
+└── recon/game/                # [MAIN] battle-state probe; prints to console, temporary
+    ├── report.js              #   parse captured state -> structured users, print
+    └── probe.js               #   the traps + change detection (loads after report)
 
 features/translator/
 ├── isolated/                  # [ISOLATED] the only chrome.* access

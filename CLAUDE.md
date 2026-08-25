@@ -8,11 +8,14 @@ A Chrome extension (Manifest V3) of quality-of-life tools for
 | -------------- | ---------------------------------------------------------- | ---------------------- |
 | **Combos**     | Save full equipment setups and equip them in one click     | `features/combos/`     |
 | **Translator** | Translates foreign battle chat in place on the game canvas | `features/translator/` |
+| **Advisor**    | Recommends protections mid-battle — **POC stage**          | `features/advisor/`    |
 
-The two features are almost completely independent: different screens, different
-JS worlds, different storage areas. They share only the UI components in
-`shared/`. Keep it that way — a new feature is a new folder under `features/`,
-not additions to an existing one.
+Combos and the translator are almost completely independent: different screens,
+different JS worlds, different storage areas. They share only the UI components
+in `shared/`. Keep it that way — a new feature is a new folder under
+`features/`, not additions to an existing one. The advisor is the one deliberate
+exception: it will equip through combos' own path rather than reimplement it, so
+it depends on combos and **never the reverse**.
 
 ## Read this first
 
@@ -74,7 +77,7 @@ says exactly which one that is. Do not load them all.
 
 ```
 .
-├── manifest.json          # 6 content-script blocks — see architecture.md
+├── manifest.json          # 7 content-script blocks — see architecture.md
 ├── background.js          # service worker: the cross-origin translation fetch
 ├── CLAUDE.md              # this file
 ├── CLAUDE.mds/            # the detailed docs (start at README.md)

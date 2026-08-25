@@ -22,6 +22,11 @@ __CMB.internals.mountCooldown(); // {known, active, msLeft} — the equip cooldo
 // combos — DOM side (ISOLATED)
 chrome.storage.local.get(["savedCombos"], (r) => console.log(r.savedCombos));
 
+// advisor — battle probe (MAIN world, POC). Prints [ADV] lines by design,
+// a temporary sanctioned exception to the no-logging rule.
+__ADV.debug; // {rosterCaptures, battleCaptures, localCaptures, userCaptures, skipped, lastError}
+__ADV.raw(); // {battle, roster, local, selfId, users[]} — captured state + parsed players
+
 // translator (MAIN world)
 __CT_STATE(); // settings + discovered names + debug counters + capture status
 __CT_DEBUG; // {discovered, captured, intercepts, translations, rebuilds,

@@ -80,6 +80,15 @@
     {
       "matches": ["*://*.tankionline.com/*"],
       "js": [
+        "features/advisor/recon/game/report.js",
+        "features/advisor/recon/game/probe.js"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
+      "matches": ["*://*.tankionline.com/*"],
+      "js": [
         "shared/components/switch.js",
         "shared/components/select.js",
         "features/translator/main/settings.js",
