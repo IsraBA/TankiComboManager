@@ -146,6 +146,44 @@ mismatch.
 `TERMINATOR_RESISTANCE` exists and belongs to the juggernaut, which is not a
 garage turret and has no module. `ALL_RESISTANCE` is the unique modules.
 
+## The ranking
+
+**Score turret types, not players.** That one reframing is what makes the whole
+thing work, and it is worth not losing: what you equip is protection against a
+*turret*, so two enemies carrying Smoky both feed the same module. Ranking
+players and taking "the top 3" throws that away and cannot answer the case that
+actually comes up — several enemies on one turret, none of them individually
+top-ranked.
+
+So: **sum kills per turret across every online enemy**, rank, and take the top
+3 (when Armadillo is worn) or 4. Ties break on points, then number of carriers,
+then summed gearScore, then turret id — the last two exist so that a fresh
+battle, where every count is zero, still produces a stable order rather than one
+that reshuffles between renders for no visible reason.
+
+Kills rather than points as the primary signal, because points come from flags
+and control points in objective modes, so a flag runner would outrank a killer.
+Kills measure the thing protections defend against.
+
+Two consequences that look like flaws and are not:
+
+- **Kills follow the player, not the turret.** Someone who switched turret
+  mid-battle carries their earlier kills to the new one. That is the intended
+  reading — the number says "this player is dangerous", which is what matters.
+- **The healer-augment exclusion list turned out unnecessary.** A support player
+  does not get kills, so they never reach the top of the ranking on their own.
+  Kills-based scoring dissolves the problem the list was invented for.
+
+A module below 35% is never recommended, and neither is one the account does not
+own — those turrets are skipped and the ranking simply continues down the list.
+If fewer than three qualify, fewer are recommended. This deliberately targets
+players whose garage is fully upgraded rather than trying to serve everyone.
+
+**Compute on read, never cache.** The recommendation is derived when it is
+displayed, from the freshest captured roster. Confirmed live: `BattleUsers` keeps
+being rebuilt while the player sits in the garage, so the data stays current at
+exactly the moment the recommendation is consumed.
+
 ## Product rules
 
 - **Armadillo protects against critical damage** (`CRITICAL_RESISTANCE`) and is

@@ -1,6 +1,6 @@
 // features/advisor/recon/game/report.js  [MAIN world]
 
-// POC זמני: פירוק מצב הקרב לאובייקטים מסודרים והדפסתם. יוסר בהמשך.
+// POC זמני: פירוק מצב הקרב ודירוג האיום לפי תותח. יוסר בהמשך.
 
 (function () {
   'use strict';
@@ -138,7 +138,7 @@
     return null;
   }
 
-  // ---- בניית השחקנים והדפסה ----
+  // ---- בניית השחקנים ----
 
   I.buildUsers = function () {
     const o = I.roster;
@@ -180,82 +180,86 @@
         rank: ranks[id] != null ? Number(ranks[id]) : null,
         gearScore: gear[id] != null ? Number(gear[id]) : null,
         clan: clans[id] === 'null' ? null : clans[id] || null,
-        weapon: itemName(tok(t, 'weaponId')) || itemName(tok(t, 'weaponBaseId')) || tok(t, 'weaponBaseId'),
+        weaponBase: tok(t, 'weaponBaseId'),
+        weapon:
+          itemName(tok(t, 'weaponId')) ||
+          itemName(tok(t, 'weaponBaseId')) ||
+          tok(t, 'weaponBaseId'),
         weaponAugment: deviceName(tok(t, 'weaponDeviceId')) || tok(t, 'weaponDeviceId'),
         hull: itemName(tok(t, 'hullId')) || itemName(tok(t, 'hullBaseId')) || tok(t, 'hullBaseId'),
         hullAugment: deviceName(tok(t, 'hullDeviceId')) || tok(t, 'hullDeviceId'),
         resistances: resistances(rs),
       });
     }
-    // אויבים קודם, בתוך כל קבוצה לפי ניקוד יורד
-    users.sort(
-      (a, b) =>
-        (b.enemy === true) - (a.enemy === true) ||
-        (b.score || 0) - (a.score || 0),
-    );
     return users;
   };
 
-  I.printRoster = function (why) {
+  // ---- דירוג האיום ----
+
+  // הרוגים לכל תותח, על פני כל האויבים המחוברים.
+  // שוברי שוויון: נקודות, מחזיקים, gearScore, ולבסוף מזהה — לסדר יציב.
+  I.rankTurrets = function () {
     const users = I.buildUsers();
-    if (!users.length) return;
-    // אויבים בלבד; לפני זיהוי עצמי אין חלוקה ומראים הכל
     const known = users.some((u) => u.enemy != null);
-    const rows = users
-      .filter((u) => (known ? u.enemy === true : true) && u.online)
-      .map((u) => ({
-        name: u.name,
-        turret: u.weapon,
-        turretAugment: u.weaponAugment,
-        score: u.score,
-      }));
-    if (!rows.length) return;
-    let head = '[ADV] ' + why;
-    const b = I.battle;
-    const bm = b && I.fieldMap(b);
-    if (bm) {
-      head +=
-        ' @ ' +
-        (I.cell(b[bm.mapNameWithoutMode]) || I.cell(b[bm.mapName])) +
-        ' (' + I.cell(b[bm.mode]) + ')';
+    const agg = new Map();
+    for (const u of users) {
+      if (known && u.enemy !== true) continue;
+      if (!u.online || !u.weaponBase) continue;
+      let a = agg.get(u.weaponBase);
+      if (!a) {
+        a = { base: u.weaponBase, name: u.weapon, kills: 0, score: 0, carriers: 0, gs: 0 };
+        agg.set(u.weaponBase, a);
+      }
+      a.kills += u.kills || 0;
+      a.score += u.score || 0;
+      a.gs += u.gearScore || 0;
+      a.carriers++;
     }
-    if (!known) head += ' [self unknown — all players]';
-    console.log(head);
-    console.table(rows);
+    return Array.from(agg.values()).sort(
+      (x, y) =>
+        y.kills - x.kills ||
+        y.score - x.score ||
+        y.carriers - x.carriers ||
+        y.gs - x.gs ||
+        (x.base < y.base ? -1 : 1),
+    );
   };
 
-  // ---- הדפסה חד-פעמית מהמוסך (ציד הקישור רובה<->הגנה) ----
+  // ---- הדפסה חיה: לכל היותר פעם בשנייה, ורק על שינוי ----
 
-  // דגל ולא clearInterval בלבד: המשחק עוטף טיימרים והביטול לא אמין
-  let propsDone = false;
-  const propsTimer = setInterval(() => {
-    if (propsDone) return;
-    const g = garage();
-    if (!g) return;
-    const C = W.__CMB.internals;
-    const IF = g.D.itemFields;
-    const moduleMap = {};
-    const weapons = {};
-    for (const it of g.col.items) {
-      const cat = I.cell(it[IF.category]);
-      const name = I.cell(it[IF.name]);
-      if (cat === 'RESISTANCE_MODULE') {
-        if (name in moduleMap) continue;
-        // ההגנה שהמודול נותן יושבת על upgradeableParams שלו
-        const x = (I.cell(it) || '').match(/property = ([A-Z_]+_RESISTANCE)/);
-        moduleMap[name] = x ? x[1] : null;
-      } else if (cat === 'WEAPON') {
-        // משפחה אחת לכל baseItemId — ה-Mk-ים חולקים אותו
-        const base = C.baseItemIdOf ? C.baseItemIdOf(it) : null;
-        if (base && !(base in weapons)) weapons[base] = name;
-      }
+  const SLOTS = 4;
+  let lastLine = null;
+  let lastAt = 0;
+  let timer = null;
+
+  function emit() {
+    const top = I.rankTurrets().slice(0, SLOTS);
+    if (!top.length) return;
+    const line = top
+      .map((t) => t.name + '(' + t.kills + ', ' + t.score + ')')
+      .join(', ');
+    if (line === lastLine) return;
+    lastLine = line;
+    console.log('[ADV] #' + NS.debug.rosterCaptures + ' ' + line);
+  }
+
+  // המצערת על החישוב עצמו, לא רק על ההדפסה
+  I.printRecommendation = function () {
+    if (timer) return;
+    const wait = 1000 - (Date.now() - lastAt);
+    if (wait <= 0) {
+      lastAt = Date.now();
+      emit();
+      return;
     }
-    // ה-state ההתחלתי ריק; מחכים למוסך אמיתי
-    if (!Object.keys(moduleMap).length) return;
-    propsDone = true;
-    try { clearInterval(propsTimer); } catch (e) { /* עטוף */ }
-    // מחרוזות ולא אובייקטים — כדי שהעתקה מהקונסול תשמר אותן
-    console.log('[ADV] module -> resistance: ' + JSON.stringify(moduleMap, null, 1));
-    console.log('[ADV] weapon baseId -> name: ' + JSON.stringify(weapons, null, 1));
-  }, 2000);
+    timer = setTimeout(() => {
+      timer = null;
+      lastAt = Date.now();
+      emit();
+    }, wait);
+  };
+
+  I.resetRecommendation = function () {
+    lastLine = null;
+  };
 })();

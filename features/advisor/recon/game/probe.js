@@ -1,6 +1,6 @@
 // features/advisor/recon/game/probe.js  [MAIN world]
 
-// POC זמני: מלכודות מצב הקרב + הדפסה בכל פעולת שינוי. יוסר בהמשך.
+// POC זמני: מלכודות מצב הקרב. ההדפסה היחידה היא ההמלצה החיה.
 
 (function () {
   'use strict';
@@ -21,69 +21,23 @@
   // rq4_1=BattleUsers, ipw_1=BattleStatistics,
   // sq2_1=LocalBattleUserState, fqi_1=User (הפרופיל שלנו)
 
-  // ---- הדפסה מקובצת: פרץ שינויים -> הדפסה אחת ----
-
-  let pending = null;
-  const reasons = new Map();
-  function requestPrint(kind, name) {
-    if (!reasons.has(kind)) reasons.set(kind, []);
-    reasons.get(kind).push(name);
-    if (pending) return;
-    pending = setTimeout(() => {
-      pending = null;
-      // פרץ של 26 הצטרפויות מתכווץ ל-"joined x26"
-      const parts = [];
-      for (const [kind, names] of reasons) {
-        parts.push(
-          names.length > 3
-            ? kind + ' x' + names.length
-            : kind + ': ' + names.join(', '),
-        );
-      }
-      reasons.clear();
-      I.printRoster(parts.join(' | '));
-    }, 300);
-  }
+  I.tankCache = {};
+  I.resCache = {};
+  let battleId = null;
 
   // ---- מטפלי לכידה ----
 
-  let prevOnline = new Set();
-  let battleId = null;
-  I.tankCache = {};
-  I.resCache = {};
-
-  // פעולות השינוי: הצטרפות, עזיבה, החלפת ציוד או הגנות
   function onRoster(o) {
     NS.debug.rosterCaptures++;
     I.roster = o;
     const m = I.fieldMap(o);
     if (!m) return;
-    const uids = I.parseKMap(I.cell(o[m.uids]));
-    const online = new Set(I.parseList(I.cell(o[m.onlineUsers])));
+    // המפות מתרוקנות זמנית (מוות, מוסך); ה-cache מחזיק את האחרון הידוע
     const tank = I.parseKMap(I.cell(o[m.tankInfo]));
     const res = I.parseKMap(I.cell(o[m.tankResistance]));
-    const nameOf = (id) => uids[id] || id;
-
-    for (const id of online) {
-      if (!prevOnline.has(id)) requestPrint('joined', nameOf(id));
-    }
-    for (const id of prevOnline) {
-      if (!online.has(id)) requestPrint('left', nameOf(id));
-    }
-    // השוואה מול ה-cache: התרוקנות זמנית של המפה איננה שינוי
-    for (const id of Object.keys(tank)) {
-      if (prevOnline.has(id) && I.tankCache[id] && I.tankCache[id] !== tank[id]) {
-        requestPrint('equip', nameOf(id));
-      }
-      I.tankCache[id] = tank[id];
-    }
-    for (const id of Object.keys(res)) {
-      if (prevOnline.has(id) && I.resCache[id] != null && I.resCache[id] !== res[id]) {
-        requestPrint('protections', nameOf(id));
-      }
-      I.resCache[id] = res[id];
-    }
-    prevOnline = online;
+    for (const id of Object.keys(tank)) I.tankCache[id] = tank[id];
+    for (const id of Object.keys(res)) I.resCache[id] = res[id];
+    I.printRecommendation();
   }
 
   function onBattle(o) {
@@ -94,42 +48,19 @@
     const loaded = o[m.battleLoaded] === true;
     const id = I.cell(o[m.battleId]);
     // '0' הוא ה-state ההתחלתי, לא קרב
-    if (loaded && id !== '0' && id !== battleId) {
+    if (loaded && id !== '0') {
       battleId = id;
-      console.log('[ADV] entered battle', {
-        battleId: id,
-        map: I.cell(o[m.mapNameWithoutMode]) || I.cell(o[m.mapName]),
-        mode: I.cell(o[m.mode]),
-        format: I.cell(o[m.battleFormat]),
-        reArmorEnabled: I.cell(o[m.isReArmorEnabled]),
-        scoreLimit: I.cell(o[m.scoreLimit]),
-        valuable: I.cell(o[m.valuableBattle]),
-        mm: I.cell(o[m.isMMBattle]),
-      });
     } else if (!loaded && battleId != null) {
       battleId = null;
-      prevOnline = new Set();
       I.tankCache = {};
       I.resCache = {};
-      console.log('[ADV] left battle');
+      I.resetRecommendation();
     }
   }
 
-  let localSig = null;
   function onLocal(o) {
     NS.debug.localCaptures++;
     I.local = o;
-    const m = I.fieldMap(o);
-    if (!m) return;
-    const wrp = I.cell(o[m.weaponResistanceProperty]);
-    const dis = I.cell(o[m.isReArmorTemporaryDisabled]);
-    const sig = wrp + '|' + dis;
-    if (sig === localSig) return;
-    localSig = sig;
-    console.log('[ADV] local re-arm state', {
-      weaponResistanceProperty: wrp,
-      isReArmorTemporaryDisabled: dis,
-    });
   }
 
   // הפרופיל שלנו — מזהה מי "אני" ומכאן מי האויב
@@ -140,14 +71,9 @@
     const id = I.cell(o[m.id]);
     // '0' הוא ה-state ההתחלתי, לפני התחברות
     if (!id || id === '0') return;
-    const name = I.cell(o[m.uid]);
-    const isNew = id !== I.selfId;
     I.selfId = id;
+    const name = I.cell(o[m.uid]);
     if (name) I.selfName = name;
-    if (isNew) {
-      console.log('[ADV] self: ' + (I.selfName || '?') + ' (' + id + ')');
-      if (I.roster) requestPrint('self identified', id);
-    }
   }
 
   // ---- המלכודות ----
@@ -201,6 +127,7 @@
       roster: I.roster,
       local: I.local,
       selfId: I.selfId,
+      turrets: I.rankTurrets(),
       users: I.buildUsers(),
     };
   };
