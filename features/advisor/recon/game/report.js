@@ -1,6 +1,6 @@
 // features/advisor/recon/game/report.js  [MAIN world]
 
-// POC זמני: פירוק מצב הקרב ודירוג האיום לפי תותח. יוסר בהמשך.
+// פירוק מצב הקרב לשחקנים ודירוג האיום לפי תותח.
 
 (function () {
   'use strict';
@@ -103,32 +103,33 @@
     return out.length ? out.join(' ') : null;
   }
 
-  // ---- פתרון שמות דרך ה-state של המוסך ----
+  // ---- ה-state של המוסך: סריקה אחת לכל גרסת state ----
 
-  let gCache = { state: null };
-  function garage() {
+  // הסריקה יקרה; כל הקוראים חולקים אותה דרך ה-cache הזה
+  let gCache = { state: null, col: null, D: null };
+  I.garageCol = function () {
     const C = W.__CMB && W.__CMB.internals;
     if (!C || !C.latestState || !C.collect || !C.D) return null;
     if (gCache.state !== C.latestState) {
       try {
-        const col = C.collect(C.latestState);
-        gCache = { state: C.latestState, col, D: C.D };
+        gCache = { state: C.latestState, col: C.collect(C.latestState), D: C.D };
       } catch (e) {
+        NS.debug.lastError = String(e);
         return null;
       }
     }
     return gCache.col ? gCache : null;
-  }
+  };
 
   function itemName(idStr) {
-    const g = garage();
+    const g = I.garageCol();
     if (!g || !idStr) return null;
     const it = g.col.byId.get(String(idStr));
     return it ? I.cell(it[g.D.itemFields.name]) : null;
   }
 
   function deviceName(idStr) {
-    const g = garage();
+    const g = I.garageCol();
     if (!g || !idStr || !g.D.deviceFields) return null;
     for (const d of g.col.devices) {
       if (I.cell(d[g.D.deviceFields.id]) === String(idStr)) {
@@ -140,9 +141,16 @@
 
   // ---- בניית השחקנים ----
 
+  // ה-roster נבנה מחדש בכל שינוי, ולכן רפרנס זהה = תוכן זהה
+  let uCache = { roster: null, gstate: null, users: null };
+
   I.buildUsers = function () {
     const o = I.roster;
     if (!o) return [];
+    const g = I.garageCol();
+    const gstate = g ? g.state : null;
+    if (uCache.roster === o && uCache.gstate === gstate) return uCache.users;
+
     const m = I.fieldMap(o);
     if (!m) return [];
     const km = (f) => I.parseKMap(I.cell(o[m[f]]));
@@ -191,13 +199,14 @@
         resistances: resistances(rs),
       });
     }
+    uCache = { roster: o, gstate, users };
     return users;
   };
 
   // ---- דירוג האיום ----
 
   // הרוגים לכל תותח, על פני כל האויבים המחוברים.
-  // שוברי שוויון: נקודות, מחזיקים, gearScore, ולבסוף מזהה — לסדר יציב.
+  // שוברי שוויון: נקודות, מחזיקים, gearScore, מזהה — לסדר יציב.
   I.rankTurrets = function () {
     const users = I.buildUsers();
     const known = users.some((u) => u.enemy != null);
@@ -223,43 +232,5 @@
         y.gs - x.gs ||
         (x.base < y.base ? -1 : 1),
     );
-  };
-
-  // ---- הדפסה חיה: לכל היותר פעם בשנייה, ורק על שינוי ----
-
-  const SLOTS = 4;
-  let lastLine = null;
-  let lastAt = 0;
-  let timer = null;
-
-  function emit() {
-    const top = I.rankTurrets().slice(0, SLOTS);
-    if (!top.length) return;
-    const line = top
-      .map((t) => t.name + '(' + t.kills + ', ' + t.score + ')')
-      .join(', ');
-    if (line === lastLine) return;
-    lastLine = line;
-    console.log('[ADV] #' + NS.debug.rosterCaptures + ' ' + line);
-  }
-
-  // המצערת על החישוב עצמו, לא רק על ההדפסה
-  I.printRecommendation = function () {
-    if (timer) return;
-    const wait = 1000 - (Date.now() - lastAt);
-    if (wait <= 0) {
-      lastAt = Date.now();
-      emit();
-      return;
-    }
-    timer = setTimeout(() => {
-      timer = null;
-      lastAt = Date.now();
-      emit();
-    }, wait);
-  };
-
-  I.resetRecommendation = function () {
-    lastLine = null;
   };
 })();

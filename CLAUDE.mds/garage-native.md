@@ -14,7 +14,8 @@ fallback only (`combos.md`).
 ## Who decides what
 
 `instant_loader.js` (ISOLATED) decides **what** to apply — it strips what the
-user removed on the card and honours `equipProtectionsOnLoad`.
+user removed on the card and honours `equipProtectionsOnLoad` (the advisor
+overrides that with `opts.forceProtections`: its panel is protections-only).
 the `game/` files (MAIN) decide **how**, because resolving a saved slot to a real
 item depends on live state (owned? which Mk? already mounted?) which only exists
 there. One message out, a per-slot report back.

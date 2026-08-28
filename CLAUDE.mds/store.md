@@ -66,12 +66,23 @@ The zip lands in `build/dist/tanki-combos-qol-v<version>.zip`.
      the standard one;
    - **equip cooldown**: right after changing gear, the red timer shows over the
      tank, SURPRISE ME disappears, and clicking a card does nothing.
-6. **Translator**: enter a battle; foreign chat should show original → spinner →
+6. **Advisor** — needs a real battle, so nothing offline covers it:
+   - enter a battle, then the garage mid-battle → PROTECTION: the recommended
+     block appears above the game's mounted set, with the full ranking row above
+     it and the enemies' top turrets translated to the right modules;
+   - it updates live while you stand in the garage (kills change the order);
+   - EQUIP ALL equips exactly the shown set and the button then disappears;
+     changing a protection by hand brings it back;
+   - no battle, an equip cooldown, or nothing qualifying (all modules under
+     30%) → the block is absent entirely;
+   - pressing Enter to chat in battle must **not** create a combo (the ghost-save
+     regression).
+7. **Translator**: enter a battle; foreign chat should show original → spinner →
    `[SRC] » translation`. Check the toggle button next to the chat alert button
    and Alt+T. Open the game's Settings screen and confirm the injected toggle +
    language dropdown are there and styled natively. Resize / toggle fullscreen
    and confirm no duplicate chat lines.
-7. After code changes: click the refresh icon on the extension card, then reload
+8. After code changes: click the refresh icon on the extension card, then reload
    the game tab.
 
 Before any release, also run the offline harnesses (`debugging.md`) — they cover

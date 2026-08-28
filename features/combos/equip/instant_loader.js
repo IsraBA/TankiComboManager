@@ -61,13 +61,16 @@
 
   window.TankiQoL.InstantLoader = {
     // מחיל קומבו; מחזירה {ok, results, usedFallback}
-    async equipCombo(combo) {
+    // opts.forceProtections — למי שכל עניינו הגנות, ודורס את ההעדפה הכללית
+    async equipCombo(combo, opts) {
       const bridge = window.TankiQoL.GarageBridge;
       if (!bridge || !bridge.applyCombo) {
         return this._fallbackWholeCombo(combo, "GarageBridge not loaded");
       }
 
-      const includeProtections = await readSetting("equipProtectionsOnLoad", true);
+      const includeProtections =
+        (opts && opts.forceProtections === true) ||
+        (await readSetting("equipProtectionsOnLoad", true));
       const desired = buildDesired(combo, includeProtections);
 
       let res;

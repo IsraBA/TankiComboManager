@@ -1,8 +1,21 @@
-# Feature: Advisor — recommended protections (POC)
+# Feature: Advisor — recommended protections
 
-**Status: reconnaissance.** `features/advisor/recon/game/` captures the battle
-state and prints it; nothing is recommended, no UI, no equipping. The files are
-marked POC and are meant to be deleted or rewritten once the model lands.
+**Status: feature-complete, unreleased.** The recommendation is computed and
+shown in the game's protection tab, updates live, and the button equips it.
+Nothing is printed at runtime; `__ADV.raw()` serves that need on demand.
+
+```
+features/advisor/
+├── recon/game/probe.js      [MAIN] the four traps
+├── recon/game/report.js     [MAIN] parse the roster, rank the turrets
+├── recon/game/inventory.js  [MAIN] the account's protection modules
+├── bridge/bridge.js         [ISOLATED] + bridge/game/bridge_main.js
+├── model/resistance_map.js  turret baseItemId -> resistance, and the 30% bar
+├── model/recommend.js       pure: ranking + inventory -> {ordered, equip, equipped}
+├── view/panel_render.js     builds the DOM, harvests icons
+├── view/protection_panel.js injection, placement, lifecycle, equipping
+└── main.js                  starts the panel while the garage is on screen
+```
 
 ## The problem it solves
 
@@ -174,8 +187,10 @@ Two consequences that look like flaws and are not:
   does not get kills, so they never reach the top of the ranking on their own.
   Kills-based scoring dissolves the problem the list was invented for.
 
-A module below 35% is never recommended, and neither is one the account does not
-own — those turrets are skipped and the ranking simply continues down the list.
+A module below 30% is never recommended (`MIN_PERCENT` in `resistance_map.js`;
+30 exactly still qualifies — the bar started at 35 and the developer settled on
+30), and neither is one the account does not own; the ranking simply continues
+down the list.
 If fewer than three qualify, fewer are recommended. This deliberately targets
 players whose garage is fully upgraded rather than trying to serve everyone.
 
@@ -184,16 +199,95 @@ displayed, from the freshest captured roster. Confirmed live: `BattleUsers` keep
 being rebuilt while the player sits in the garage, so the data stays current at
 exactly the moment the recommendation is consumed.
 
+## The block in the protection tab
+
+Two blocks are injected into `GarageProtectionsComponentStyle-blockParametersProtection`:
+a small non-interactive row holding the **whole** ranking in order (the reasoning
+behind the recommendation), and below it the 3-4 modules to equip in the game's
+own slot styling, with an EQUIP ALL button. Hidden entirely when there is no
+battle, when nothing qualifies, or when equipping is blocked — and "blocked"
+means **exactly what the combos path checks**, `delayMountTimeMs` through
+`mountCooldown()`. The battle also exposes `isReArmorEnabled` and
+`isReArmorTemporaryDisabled`, and gating on those as well was wrong: it is a
+second, invented rule for the same question.
+
+**The game's block is out of flow, so DOM order does not position ours.**
+`ksc-254` (the mounted set) is `position: absolute; bottom: 2.4375em`, and its
+containing block is `GarageMainScreenStyle-blockParameters` — *not* the column it
+is nested in, which has no `position`. Exactly the same trap as the cooldown
+block. Inserting a sibling above it does nothing; our block is absolute too.
+
+**Its top is not where the CSS suggests.** The per-slot delete button carries
+`margin-top: -9.125em` under a doubled-class rule, so it floats far above the
+slots it belongs to, and a block placed just above the slots lands on top of it.
+The offset is therefore a single tuned constant — `bottom: 17.4em` — built from
+the game's own numbers: `2.4375` (its `bottom`) + `5` (slot) − `1.5`
+(`resistanceIcon` centred in the slot) + `9.125` (that negative margin) + `0.25`
+(the 2.5em box overflowing the 2em icon) + the gap. It is the one value to
+adjust if the block ever sits wrong. `bottom` only — the horizontal axis keeps
+its static position, which is what aligns us with the game's block.
+
+**Read the whole cascade, never one rule.** The game's generated CSS overrides
+itself with doubled-class selectors (`.ksc-260.ksc-260`), so the first rule you
+find is routinely a lie: the base says the unequip box is `12.375em × 3em`, while
+the doubled rule makes it `2.5em × 2.5em` with a `0.063em` ring. Our button
+copies those real values. Only values are copied; the hashed class names rotate
+per build and are never referenced.
+
+Anchors and assets (every selector and borrowed class name lives in combos'
+`lib/constants.js`, like the rest of the project):
+
+- The slots wear the game's slot classes (`PROTECTION_SLOT_CLASSES`), so the
+  frame art comes from the game and no hashed SVG URL is hardcoded.
+  `pointer-events: none` suppresses the hover, which would otherwise promise an
+  interaction that is not there.
+- Module icons are harvested from the game's own list cells
+  (`GarageItemComponentStyle-itemResistanceIcon`, keyed by the name in
+  `-descriptionDevice`), with the item's `resistanceBackgroundImg` and then
+  `preview` as fallbacks. The list may be virtualised, so the fallbacks matter.
+- **The button disappears once clicking it would change nothing.** The mounted
+  set is compared against the recommendation as a *set*, the same rule the write
+  path uses — and the sizes must match too, because a fifth module the apply
+  would unmount is a real difference. The blocks themselves stay: they are still
+  telling you what the enemy is bringing.
+- Equipping goes through `InstantLoader.equipCombo(..., {forceProtections:true})`.
+  The flag exists because this panel is about protections only and must not be
+  silenced by `equipProtectionsOnLoad`. Everything else — the set-based diff, the
+  cooldown refusal, the loading state — comes along for free.
+
+## Performance
+
+The game is heavy on its own, so the advisor's standing budget is: **during
+battle, capture and nothing else; in the garage, pay for real changes only.**
+
+- **Battle-time captures dedup by reference.** The game's state is immutable, so
+  a rebuilt `BattleUsers` reuses the same `tankInfo`/`tankResistance` objects
+  when nothing equipment-related changed. `onRoster` compares those references
+  and skips the Kotlin-`toString` stringify+parse entirely — which used to run
+  on *every* kill and score tick. Equipment harvesting still happens the moment
+  the reference changes, so the cache misses nothing.
+- **One graph scan per garage-state version.** `I.garageCol()` is the single
+  cached `collect()` all readers share — name resolution, `readModules`,
+  `mountedProtectionIds` (which passes the collected result into
+  `currentProtectionSlots`). The panel polls every second, but an idle garage
+  state costs nothing: the scan and the 19 huge module `toString` dumps run only
+  when the state object is actually new.
+- **`buildUsers` caches per roster reference** (and garage-state reference, for
+  name resolution), so repeated reads between battle updates are free.
+- The panel's MutationObserver watches the **garage wrapper**, not
+  `document.body` — the hide-guard precedent — and exists only while the panel
+  does; `AdvisorPanel.stop()` disconnects it outside the garage.
+
 ## Product rules
 
 - **Armadillo protects against critical damage** (`CRITICAL_RESISTANCE`) and is
-  the most valuable module in the game. If the player owns it **above 35%**, it
-  is always recommended in the first slot, and the other three go to the enemy's
-  turrets and augments.
+  the most valuable module in the game. If the player owns it **at 30% or
+  more**, it always takes the first slot, and the remaining three follow the
+  turret ranking.
 - **Spider (mine protection) is never recommended.** It guards against mines
   rather than any turret, so it falls outside the model.
 - **Unique modules (Spectrum and friends) are out of scope.** They occupy all
   four slots and almost nobody owns one.
-- Some enemy augments are support/healing, which makes taking a protection
-  against that turret pointless. A short hard-coded list, deliberately left for
-  last.
+- **No healer-augment exclusion list.** It was planned, then made redundant:
+  support players do not get kills, so kills-based ranking never elevates them.
+  Revisit only if some augment kills a lot yet should not be protected against.

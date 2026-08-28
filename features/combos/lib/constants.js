@@ -126,5 +126,15 @@
     // --- רנדומייזר: זיהוי רמת נדירות אוגמנטים ---
     AUGMENT_CATEGORY_LEGENDARY:
       "SkinCellComponentStyle-gradientCategoryDevices-LEGENDARY",
+
+    // --- יועץ ההגנות ---
+    PROTECTION_COLUMN:
+      ".GarageProtectionsComponentStyle-blockParametersProtection", // העמודה שהפאנל מוזרק אליה
+    PROTECTION_EQUIP_BLOCK:
+      ".GarageProtectionsComponentStyle-containerEquipmentCannon", // בלוק ההגנות המורכבות של המשחק
+    // שמות מחלקה (לא סלקטורים) שחריצי ההמלצה והכפתור לובשים
+    PROTECTION_SLOT_CLASSES:
+      "GarageProtectionsComponentStyle-equipmentResistance GarageProtectionsComponentStyle-mountedResist",
+    PROTECTION_UNEQUIP_ROW_CLASS: "GarageProtectionsComponentStyle-unequip",
   };
 })();

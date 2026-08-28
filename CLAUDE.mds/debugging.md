@@ -22,10 +22,9 @@ __CMB.internals.mountCooldown(); // {known, active, msLeft} — the equip cooldo
 // combos — DOM side (ISOLATED)
 chrome.storage.local.get(["savedCombos"], (r) => console.log(r.savedCombos));
 
-// advisor — battle probe (MAIN world, POC). Prints [ADV] lines by design,
-// a temporary sanctioned exception to the no-logging rule.
+// advisor — battle probe (MAIN world). Prints nothing; pull on demand.
 __ADV.debug; // {rosterCaptures, battleCaptures, localCaptures, userCaptures, skipped, lastError}
-__ADV.raw(); // {battle, roster, local, selfId, users[]} — captured state + parsed players
+__ADV.raw(); // {battle, roster, local, selfId, turrets[], users[]} — state + ranking
 
 // translator (MAIN world)
 __CT_STATE(); // settings + discovered names + debug counters + capture status
@@ -64,6 +63,8 @@ own console context instead.
 | the combo count looks short / an owned item "missing"                     | the graph scan may have truncated: check `__CMB.debug.depthCut` and `.truncated`                                                                                                                 |
 | the paints tab (or any tab's content) shows through under the combos view | the game rendered it after `show()` did its one-off hiding — the guard (`view/hide_guard.js`) is off: check `ViewRenderer.hideGuardObserver`, and that the file is in `manifest.json`            |
 | the 3D tank is blank / won't drag while the combos view is open           | a preview host ended up `display:none` — look for an inline `display:none` on `PREVIEW_HOSTS` **without** `data-cme-preview-hidden`, which means something outside `keepTankPreviewAlive` hid it |
+| the advisor block never appears in the protection tab                     | check `__ADV.raw()`: `battle` not loaded (no battle), the equip cooldown is active, or no module passes the 30% bar. `__ADV.debug` counters at 0 mean the traps never fired — a new game build rotated the four field names in `probe.js` |
+| advisor slots show item boxes instead of the small turret icons           | the icon harvest from the game's list found nothing (virtualised list?) and the fallback images are in use — cosmetic, `panel_render.js` `harvestIcons`                                          |
 | `__CT_DEBUG.discovered === false` after a few seconds                     | `detect.js` couldn't parse the bundle — see the recovery procedure in `translator.md`                                                                                                            |
 | `__CT_HUD === null` after entering a battle                               | the trap never validated: the offset field name is wrong                                                                                                                                         |
 | translations missing but `intercepts` climbing                            | check `__CT_DEBUG.lastError` — likely the service-worker fetch failed                                                                                                                            |
@@ -73,7 +74,7 @@ own console context instead.
 There is no test framework here. What exists is **`build/harnesses/`** — plain
 `node <file>` scripts, no dependencies, that run the _shipped_ code offline
 against the bundles in `../../../research/`. They live under `build/`, so they
-never reach the store zip. 288 checks across 13 files:
+never reach the store zip. 334 checks across 14 files:
 
 - **`verify_shipped.js`** — loads `discovery/*.js` as shipped, runs
   `discover()` against every bundle in `research/`, and diffs the result for the
@@ -91,7 +92,11 @@ never reach the store zip. 288 checks across 13 files:
   **`test_combo_identity.js`** — same idea for the ISOLATED-side modules, the
   randomiser's draw filters and the equipped-combo marker (Mk
   families, imported combos, the fallback split, the card HTML for both data
-  generations, and what clicking a card does end to end).
+  generations, what clicking a card does end to end, and the Enter-shortcut
+  guard that once saved ghost combos from battle chat).
+- **`test_advisor_recommend.js`** — the advisor's pure model on invented
+  battles: Armadillo's slot, the 30% bar, ownership, unknown turrets, the
+  already-equipped set comparison, and that ranking order is authoritative.
 - **`test_view_layer.js`** — the odd one out: it reads `styles.css`,
   `template.js` and `tank_preview.js` as **text**, because what it guards is a
   stacking/hit-testing contract, not logic. The view must stay

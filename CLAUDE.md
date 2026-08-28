@@ -8,7 +8,7 @@ A Chrome extension (Manifest V3) of quality-of-life tools for
 | -------------- | ---------------------------------------------------------- | ---------------------- |
 | **Combos**     | Save full equipment setups and equip them in one click     | `features/combos/`     |
 | **Translator** | Translates foreign battle chat in place on the game canvas | `features/translator/` |
-| **Advisor**    | Recommends protections mid-battle — **POC stage**          | `features/advisor/`    |
+| **Advisor**    | Recommends protections mid-battle, from the enemy team      | `features/advisor/`    |
 
 Combos and the translator are almost completely independent: different screens,
 different JS worlds, different storage areas. They share only the UI components
@@ -66,7 +66,7 @@ says exactly which one that is. Do not load them all.
   MAIN**, everything else in ISOLATED.
 - **Namespaces**: `window.TankiQoL` (ISOLATED, and the shared components in
   MAIN), `window.__CT` (translator internals, MAIN), `window.__CMB` (garage hook,
-  MAIN).
+  MAIN), `window.__ADV` (battle probe, MAIN).
 - **CSS prefix**: every class the extension creates starts with `cme_`.
 - **Storage**: one key per feature. `savedCombos` and friends in `local`,
   `translator` in `sync`.

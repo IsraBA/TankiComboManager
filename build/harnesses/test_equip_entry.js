@@ -113,6 +113,46 @@ async function run(setup) {
   );
   T.GarageBridge = bridge;
 
+  // ---- קיצור ה-Enter (view/events.js): שומר הרפאים ----
+  // המאזין חי על document לנצח; בקרב Enter הוא צ'אט, וה-view המנותק
+  // עוד מחזיק display:flex — בלי בדיקת isConnected כל צ'אט שמר קומבו.
+
+  let keyHandler = null;
+  ctx.document = {
+    addEventListener(type, fn) { if (type === "keydown") keyHandler = fn; },
+    activeElement: null,
+  };
+  vm.runInContext(fs.readFileSync(BASE + "view/events.js", "utf8"), ctx, {
+    filename: "events.js",
+  });
+
+  let saves = 0;
+  const saveBtn = { click: () => saves++ };
+  VR.viewElement = {
+    style: { display: "flex" },
+    isConnected: true,
+    querySelector: (sel) => (sel === "#cme_save-combo-btn" ? saveBtn : null),
+  };
+  VR._bindEnterKey();
+  const enter = () => keyHandler({ key: "Enter", preventDefault() {}, stopPropagation() {} });
+
+  enter();
+  check("Enter in the open view saves", saves, 1);
+
+  VR.viewElement.isConnected = false;
+  enter();
+  check("Enter after the garage unmounted the view does NOT save", saves, 1);
+
+  VR.viewElement.isConnected = true;
+  VR.viewElement.style.display = "none";
+  enter();
+  check("Enter while the view is hidden does NOT save", saves, 1);
+
+  VR.viewElement.style.display = "flex";
+  ctx.document.activeElement = { isContentEditable: true };
+  enter();
+  check("Enter while renaming a combo does NOT save", saves, 1);
+
   console.log(failures ? `\n${failures} check(s) FAILED` : "\nall checks passed");
   process.exit(failures ? 1 : 0);
 })();

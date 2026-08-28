@@ -9,6 +9,8 @@ const EXT =
 global.window = {
   TankiQoL: { LanguageManager: { getUIText: (k) => "T:" + k } },
 };
+// הכרטיס מצייר את הוי מ-shared/icons.js
+eval(fs.readFileSync(path.join(EXT, "shared/icons.js"), "utf8"));
 for (const f of [
   "view/card/combo_card_renderer.js",
   "view/card/rows.js",

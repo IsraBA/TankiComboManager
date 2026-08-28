@@ -1,0 +1,138 @@
+/* features/advisor/view/protection_panel.css */
+
+/* ההגנות המומלצות בכרטיסיית ההגנות. הרציונל: CLAUDE.mds/advisor.md */
+
+/* מרוחקים מהזרימה, כמו הבלוק של המשחק. ה-bottom הוא הערך היחיד לכיול:
+   2.4375 (ה-bottom שלו) + 5 (חריץ) - 1.5 (מרכוז) + 9.125 (המרג'ין
+   השלילי של ה-X) + 0.25 (חריגת התיבה) + מרווח. */
+.cme_adv-root {
+  position: absolute;
+  bottom: 12.9em;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: auto;
+}
+
+.cme_adv-headline {
+  font-family: BaseFontMedium, FallbackFontMedium;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 0.875em;
+  text-transform: uppercase;
+  color: rgb(191, 213, 255);
+  opacity: 0.7;
+  margin-bottom: 0.35em;
+}
+
+/* כל הדירוג, מהחשוב לפחות חשוב. תצוגה בלבד. */
+.cme_adv-order {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.25em;
+  margin-bottom: 0.4em;
+  pointer-events: none;
+}
+
+.cme_adv-order-icon {
+  width: 1.25em;
+  height: auto;
+}
+
+/* החריצים והכפתור זה לצד זה, כמו השורה של המשחק */
+.cme_adv-main {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+/* המרווח של המשחק: (18.25 - 4*4) / 3 = 0.75em */
+.cme_adv-slots {
+  display: flex;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 0.75em;
+  height: 5em;
+}
+
+/* מסגרת ומידות באות ממחלקות המשחק; כאן רק מנטרלים hover */
+.cme_adv-slot {
+  pointer-events: none;
+  cursor: default;
+}
+
+/* כמו resistanceIconContainer של המשחק */
+.cme_adv-slot-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 4.688em;
+  height: 3.563em;
+}
+
+.cme_adv-slot-icon img {
+  width: 3.75em;
+  height: auto;
+}
+
+/* מרווחי ksc-259 ושורת unequip: 0.75em, 1.6875em, גובה 1.563em */
+.cme_adv-equip {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: auto;
+  height: 1.563em;
+  margin-left: 0.75em;
+  margin-top: 1.6875em;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+/* הערכים של .ksc-260.ksc-260 — התיבה של unequip all */
+.cme_adv-equip-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5em;
+  height: 2.5em;
+  box-sizing: border-box;
+  border-radius: 0.25em;
+  margin-right: 0.5em;
+  background-color: rgba(255, 255, 255, 0.15);
+  box-shadow: rgba(191, 213, 255, 0.5) 0px 0px 0px 0.063em;
+  transition: background 0.3s;
+}
+
+/* אין opacity: ל-X של unequip all אין, רק לזה של החריץ */
+.cme_adv-equip-mark .cme_adv-check {
+  width: 1.5em;
+  height: 1.5em;
+}
+
+/* הערכים של .ksc-261 — התווית. הגופן מוצהר גם אצלנו, לא נשען על -medium */
+.cme_adv-equip-label {
+  font-family: BaseFontMedium, FallbackFontMedium;
+  font-style: normal;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: rgb(191, 213, 255);
+  font-size: 1.125em;
+  margin-left: 0.625em;
+  cursor: pointer;
+}
+
+/* כל אלמנט מדגיש את עצמו בלבד, כמו ב-unequip all של המשחק */
+.cme_adv-equip-mark:hover {
+  background-color: rgba(191, 213, 255, 0.25);
+  box-shadow: rgb(191, 213, 255) 0em 0em 0em 0.125em;
+}
+
+.cme_adv-equip-label:hover {
+  color: rgb(255, 255, 255);
+}
+
+/* בזמן הצטיידות: לא לחיץ, בלי מסגרת טעינה */
+.cme_adv-root.cme_adv-busy {
+  pointer-events: none;
+}

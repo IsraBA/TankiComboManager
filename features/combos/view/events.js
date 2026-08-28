@@ -125,7 +125,9 @@
 
     _bindEnterKey() {
       this.enterKeyHandler = (e) => {
-        if (!this.viewElement || this.viewElement.style.display === "none") {
+        // מנותק מה-DOM = כבר לא במוסך; Enter שם הוא צ'אט
+        if (!this.viewElement || !this.viewElement.isConnected ||
+            this.viewElement.style.display === "none") {
           return;
         }
 

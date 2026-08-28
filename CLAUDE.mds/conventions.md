@@ -98,6 +98,11 @@ Two patterns are already in use; prefer them over inventing a third.
 
 - **All extension CSS classes are prefixed `cme_`** — collisions with Tanki's own
   classes and with other extensions are real (users do run several).
+- **Every game selector — and every game class name we apply to our own
+  elements — lives in `features/combos/lib/constants.js`** (`TankiQoL.DOM`),
+  whichever feature uses it. When the game updates its HTML, only that file
+  changes; a selector hardcoded elsewhere is a selector nobody will find. The
+  advisor deliberately shares the combos file rather than growing its own.
 - New UI must look native: same colors, fonts, hover effects, transitions,
   spacing. When the existing code doesn't cover it, ask for the game's exact CSS
   (rule 1 in `../CLAUDE.md`).

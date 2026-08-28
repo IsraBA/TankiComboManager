@@ -33,14 +33,13 @@
       // שני האייקונים מוזרקים וה-CSS מציג את הנכון לפי המצב. מכוילים
       // לאייקון ה-X של המשחק: צורה מלאה, קנבס 24×24, ואותו עובי רצועה.
       // ה-V תלול יותר כי ב-45° הוא לא מגיע לגובה מלא — לא להגדיל ב-scale.
+      // החיתוך השטוח בכיפוף מחקה את הצומת המפוסל של ה-X של המשחק.
       const editBtnHTML = `
                 <div class="cme_combo-edit-btn" title="${LM.getUIText(isEditing ? "doneEditing" : "editCombo")}">
                     <svg class="cme_combo-edit-icon cme_combo-edit-icon-pencil" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" clip-rule="evenodd" d="M3.5 16.5L7.5 20.5L0 24L3.5 16.5ZM3.5 16.5L16.5 3.5L20.5 7.5L7.5 20.5L3.5 16.5ZM18 2L20 0L24 4L22 6L18 2Z" fill="white"/>
                     </svg>
-                    <svg class="cme_combo-edit-icon cme_combo-edit-icon-check" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M3 11.96L8.46 17.41L20.51 0L24 2.41L9.05 24L0 14.96Z" fill="white"/>
-                    </svg>
+                    ${window.TankiQoL.Icons.check("cme_combo-edit-icon cme_combo-edit-icon-check")}
                 </div>
             `;
 

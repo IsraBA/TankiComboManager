@@ -31,10 +31,10 @@ Content scripts can't use ES modules, so modules share namespace objects on
 
 | Namespace | World(s) | Holds |
 |---|---|---|
-| `window.TankiQoL` | ISOLATED (combos) + MAIN (translator) | the shared components (`.Switch`, `.Select`, `.Drawer`), and in ISOLATED every combos module (`.DOM`, `.ViewRenderer`, `.GarageBridge`, `.GarageDiscover`, …) |
+| `window.TankiQoL` | ISOLATED (combos + advisor) + MAIN (translator) | the shared components (`.Switch`, `.Select`, `.Drawer`, `.Icons`), and in ISOLATED every combos and advisor module (`.DOM`, `.ViewRenderer`, `.GarageBridge`, `.AdvisorPanel`, …) |
 | `window.__CT` | MAIN | translator internals: `.settings`, `.translate`, `.skip`, `.bidi`, `.rebuild()` |
 | `window.__CMB` | MAIN | garage hook: `.read()`, `.index()`, `.names()`, `.state()`, `.debug`, and `.internals` (shared by every `game/` file) |
-| `window.__ADV` | MAIN | advisor battle probe (**POC**): `.debug`, `.raw()` |
+| `window.__ADV` | MAIN | advisor battle probe: `.debug`, `.raw()`, and `.internals` (shared by its `game/` files) |
 | `__CT_*` | MAIN | translator console helpers — see `debugging.md` |
 
 ## manifest.json — 7 content-script blocks
@@ -47,9 +47,9 @@ JSON has no comments, so the reasoning lives here. **Do not merge these blocks.*
 | 1 | translator `isolated/` | `document_start` | ISOLATED | The only place with `chrome.*`. Must start early so bundle discovery finishes before the user enters a battle. |
 | 2 | combos `discovery/` + `bridge/bridge.js` | `document_start` | ISOLATED | Same reason for the garage hook: discovery must finish before the garage opens. Also defines `TankiQoL.GarageBridge`, which block 5 uses. |
 | 3 | every combos `game/` file | `document_start` | MAIN | Needs the page's own `window` for the `Object.prototype` traps. Must be `document_start` — the state is built later, but the trap has to be armed first. |
-| 3b | advisor `recon/game/` (**POC**) | `document_start` | MAIN | Same trap technique for the battle state. Kept out of block 3 — a different feature must stay separately removable. |
+| 3b | advisor `recon/game/` + `bridge/game/` | `document_start` | MAIN | Same trap technique for the battle state. Kept out of block 3 — a different feature must stay separately removable. |
 | 4 | translator `main/` | `document_start` | MAIN | Same, for the chat HUD. |
-| 5 | combos (DOM side) | `document_idle` | ISOLATED (default) | Pure DOM work that only makes sense once the page exists. Its internal order is the dependency chain below. |
+| 5 | `shared/` + combos (DOM side) + advisor (model + view) | `document_idle` | ISOLATED (default) | Pure DOM work that only makes sense once the page exists. Its internal order is the dependency chain below. The advisor loads after combos because it calls `InstantLoader`. |
 
 `shared/components/switch.js` and `select.js` appear in **both** block 4 and
 block 5. Not a mistake: JS worlds don't share a `window`, so each world needs its
@@ -64,12 +64,14 @@ block 5 can't run until the page exists.
 Scripts load in the exact order listed. **A file that isn't in the manifest never
 loads.** Within block 5 the order is:
 
-1. `shared/components/` — no dependencies
+1. `shared/icons.js` + `shared/components/` — no dependencies
 2. `features/combos/lib/` (constants, utils, language, cleaner) — no dependencies
 3. `migration/`, `dom/`, `save/`, `equip/`, `randomizer/` — depend on lib
 4. `features/combos/view/` — base file first, then its mixins (`view/card/*`
    after `combo_card_renderer.js`, `view/*.js` after `view_renderer.js`)
-5. `features/combos/main.js` — always last, orchestrates everything
+5. `features/combos/main.js` — orchestrates combos
+6. `features/advisor/` — bridge, model, view, `main.js`; last, because it
+   equips through combos' `InstantLoader`
 
 Block 3 (the MAIN-world files) ends with `discovery/game/boot.js`, which arms the
 traps once every other file has defined its half of `__CMB.internals`.
@@ -176,10 +178,26 @@ features/combos/
     ├── tab_navigator.js       #   navigates between garage tabs
     └── navigation_helpers.js  #   MutationObserver-based waiting
 
-features/advisor/              # (POC) recommendations — exploration stage
-└── recon/game/                # [MAIN] battle-state probe; prints to console, temporary
-    ├── report.js              #   parse captured state -> structured users, print
-    └── probe.js               #   the traps + change detection (loads after report)
+shared/
+├── icons.js                   # SVG paths more than one feature draws
+└── components/                # drawer / switch / select
+
+features/advisor/              # recommended protections — see advisor.md
+├── main.js                    # starts the panel while the garage is on screen
+├── recon/game/                # [MAIN] the battle state — capture only, no output
+│   ├── report.js              #   parse the roster, rank turrets by kills
+│   ├── inventory.js           #   the account's protection modules + percentages
+│   └── probe.js               #   the four traps (loads after report)
+├── bridge/                    # its own pipe, tagged __adv
+│   ├── bridge.js              #   TankiQoL.AdvisorBridge
+│   └── game/bridge_main.js    #   [MAIN] answers {turrets, modules, flags}
+├── model/                     # pure — no chrome, no DOM, no game objects
+│   ├── resistance_map.js      #   turret baseItemId -> resistance enum, 30% bar
+│   └── recommend.js           #   ranking + inventory -> {ordered, equip}
+└── view/
+    ├── panel_render.js        #   builds the DOM, harvests the game's icons
+    ├── protection_panel.js    #   injection, runtime placement, equipping
+    └── protection_panel.css
 
 features/translator/
 ├── isolated/                  # [ISOLATED] the only chrome.* access

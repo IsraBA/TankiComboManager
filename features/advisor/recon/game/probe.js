@@ -1,6 +1,6 @@
 // features/advisor/recon/game/probe.js  [MAIN world]
 
-// POC זמני: מלכודות מצב הקרב. ההדפסה היחידה היא ההמלצה החיה.
+// מלכודות מצב הקרב. אוסף בלבד — שום פלט, שום עבודה מעבר ללכידה.
 
 (function () {
   'use strict';
@@ -24,20 +24,30 @@
   I.tankCache = {};
   I.resCache = {};
   let battleId = null;
+  let lastTankRef = null;
+  let lastResRef = null;
 
   // ---- מטפלי לכידה ----
 
+  // המפות מתרוקנות זמנית (מוות, מוסך); ה-cache מחזיק את האחרון הידוע.
+  // ה-state אימוטבילי: שדה שלא השתנה שומר רפרנס, ואז אין מה לפרק.
   function onRoster(o) {
     NS.debug.rosterCaptures++;
     I.roster = o;
     const m = I.fieldMap(o);
     if (!m) return;
-    // המפות מתרוקנות זמנית (מוות, מוסך); ה-cache מחזיק את האחרון הידוע
-    const tank = I.parseKMap(I.cell(o[m.tankInfo]));
-    const res = I.parseKMap(I.cell(o[m.tankResistance]));
-    for (const id of Object.keys(tank)) I.tankCache[id] = tank[id];
-    for (const id of Object.keys(res)) I.resCache[id] = res[id];
-    I.printRecommendation();
+    const t = o[m.tankInfo];
+    if (t !== lastTankRef) {
+      lastTankRef = t;
+      const tank = I.parseKMap(I.cell(t));
+      for (const id of Object.keys(tank)) I.tankCache[id] = tank[id];
+    }
+    const r = o[m.tankResistance];
+    if (r !== lastResRef) {
+      lastResRef = r;
+      const res = I.parseKMap(I.cell(r));
+      for (const id of Object.keys(res)) I.resCache[id] = res[id];
+    }
   }
 
   function onBattle(o) {
@@ -54,7 +64,8 @@
       battleId = null;
       I.tankCache = {};
       I.resCache = {};
-      I.resetRecommendation();
+      lastTankRef = null;
+      lastResRef = null;
     }
   }
 
