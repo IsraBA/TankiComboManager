@@ -2,7 +2,9 @@
 /* עיצוב מודל מחיקת קומבו - משכפל את העיצוב של מודל יציאה מהמשחק */
 
 /* === Modal Root (מכל) === */
-#cme_modal-root {
+/* מודל "מה חדש" חולק את כל מסגרת הדיאלוג, כולל השורש */
+#cme_modal-root,
+#cme_whats-new-root {
   pointer-events: none;
   position: fixed;
   width: 100%;

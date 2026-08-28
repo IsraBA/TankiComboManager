@@ -46,6 +46,7 @@ carries a running id and its own timeout, so several can be in flight at once.
 | `i2m` | `selectPaint` | `{id}` | re-select the mounted paint (3D model only) |
 | `i2m` | `applyCombo` | `{id, desired, opts}` | apply a combo |
 | `m2i` | `ready` | — | MAIN's listeners are up; ISOLATED re-sends the constants |
+| `m2i` | `resetWhatsNew` | — | dev helper: MAIN asks ISOLATED to clear the update-notice flag. The only `m2i` that is not a reply, so `bridge.js`'s `REPLIES` filter drops it and `whats_new_modal.js` listens for it itself |
 | `m2i` | `comboResult` | `{id, ok, combo, mounted, stats}` | reply |
 | `m2i` | `indexResult` | `{id, ok, items[], devices[]}` | reply |
 | `m2i` | `cooldownResult` | `{id, known, active, msLeft}` | reply — polled once a second while the view is open |

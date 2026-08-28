@@ -530,6 +530,46 @@ Three things are worth knowing before changing any of it:
   bundle and could not be extracted. If the exact phrasing matters, read it off
   the game in each language and correct `lib/language_manager.js`.
 
+## The "what's new" modal
+
+Shown once when the combos tab is opened after an update. It **reuses the delete
+modal's chrome outright** — the same root rules, the same
+`cme_DialogContainerComponentStyle-*` classes, and the same
+`<div class="…-container"><span>` the delete modal puts its text in — so it ships
+with no CSS of its own and cannot drift from it. Building a `<ul>` instead was
+the first attempt and it inherited none of that typography, and missing the root
+rules (`position: fixed`, full-screen) left it uncentred.
+
+**The flag stores a version, not a boolean.** `whatsNewSeenVersion` holds the
+`NEWS_VERSION` the user acknowledged, so announcing the next release is one
+constant plus a new `LINES` list in `view/panels/whats_new_modal.js` — a boolean
+would have to be cleared for every existing user, which storage cannot do.
+
+- **Every way out counts as acknowledged** — the X, the button, the backdrop and
+  Escape all route through `hide()`, which marks it seen. Anything else leaves
+  users with a popup that keeps coming back.
+- **The lobby button's yellow badge reads the same flag**, so dismissing the
+  modal clears the badge too; `hide()` calls `LobbyButtonInjector.refreshBadge()`
+  so it goes away without waiting for a re-render. The flag is cached in memory
+  because `inject()` runs on every mutation batch and must not hit storage that
+  often — while it is still loading, `isUnseen()` reports false, so the badge
+  never flashes and then disappears.
+- The badge is the game's `Ellipse.svg` (`#FFEE00` dot plus a 25% halo)
+  **rebuilt in CSS**: that filename is content-hashed and would rotate.
+- **It is a flex item in the image row, not an absolutely positioned overlay.**
+  The lobby's own `MountedItemsStyle-containerBlockGarage` is `overflow: hidden`,
+  so a badge parked on the button's corner gets its overhang clipped — there is
+  no amount of `transform` that fixes that. Inserting it as the first child of
+  `.cme_lobby-combo-images-container` instead makes it push the item images
+  slightly right and keeps it wholly inside the clip region. `flex-shrink: 0`
+  stops the `flex: 1` image wrappers from squeezing it.
+- **One deliberate departure from the delete modal**, in
+  `whats_new_modal.css`: the list is left-aligned instead of centred.
+  Everything else, the red gradient included, is inherited on purpose.
+- `__CMB.resetWhatsNew()` replays it from the plain page console — MAIN posts a
+  non-reply `m2i` that this module listens for, because the flag lives in
+  `chrome.storage` and only ISOLATED can touch it. See `debugging.md`.
+
 ## Languages
 
 `LanguageManager` auto-detects the game language from UI text (11 languages). Use

@@ -114,6 +114,10 @@
       this.hideGameContent();
       this.startHideGuard();
       this.startCooldownGuard();
+
+      // כניסה ראשונה אחרי עדכון; מגן על עצמו מפני הצגה חוזרת
+      const news = window.TankiQoL.WhatsNewModal;
+      if (news) news.maybeShow();
     },
 
     // המשחק מרנדר מחדש ומאבד את ההסתרה, ולכן זה נקרא גם מהשומר

@@ -22,6 +22,13 @@ __CMB.internals.mountCooldown(); // {known, active, msLeft} — the equip cooldo
 // combos — DOM side (ISOLATED)
 chrome.storage.local.get(["savedCombos"], (r) => console.log(r.savedCombos));
 
+// combos — replay the "what's new" modal. Works from the plain page console:
+// the flag lives in chrome.storage (ISOLATED), so MAIN just relays the request.
+__CMB.resetWhatsNew();          // then reopen the COMBOS tab
+// The ISOLATED-side method exists too, but reaching it means switching the
+// console's Context dropdown to the extension, which resets on every reload:
+TankiQoL.WhatsNewModal.reset();
+
 // advisor — battle probe (MAIN world). Prints nothing; pull on demand.
 __ADV.debug; // {rosterCaptures, battleCaptures, localCaptures, userCaptures, skipped, lastError}
 __ADV.raw(); // {battle, roster, local, selfId, turrets[], users[]} — state + ranking
@@ -74,7 +81,7 @@ own console context instead.
 There is no test framework here. What exists is **`build/harnesses/`** — plain
 `node <file>` scripts, no dependencies, that run the _shipped_ code offline
 against the bundles in `../../../research/`. They live under `build/`, so they
-never reach the store zip. 334 checks across 14 files:
+never reach the store zip. 353 checks across 15 files:
 
 - **`verify_shipped.js`** — loads `discovery/*.js` as shipped, runs
   `discover()` against every bundle in `research/`, and diffs the result for the
@@ -97,6 +104,10 @@ never reach the store zip. 334 checks across 14 files:
 - **`test_advisor_recommend.js`** — the advisor's pure model on invented
   battles: Armadillo's slot, the 30% bar, ownership, unknown turrets, the
   already-equipped set comparison, and that ranking order is authoritative.
+- **`test_whats_new.js`** — the update modal's gate: shown once per news
+  version, every way of closing it counts as acknowledged, an older stored
+  version means "show again", and `reset()` really clears the key. Both failure
+  modes here are silent — popping up every single time, or never again.
 - **`test_view_layer.js`** — the odd one out: it reads `styles.css`,
   `template.js` and `tank_preview.js` as **text**, because what it guards is a
   stacking/hit-testing contract, not logic. The view must stay

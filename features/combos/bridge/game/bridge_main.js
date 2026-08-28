@@ -12,6 +12,13 @@
     window.postMessage({ __cmb: true, dir: 'm2i', action, payload }, '*');
   }
 
+  // עוזר קונסול: chrome.storage קיים רק ב-ISOLATED, ולכן זה רק שולח.
+  // ה-m2i הזה אינו תשובה, והגשר ב-ISOLATED מסנן אותו בלי נזק.
+  NS.resetWhatsNew = function () {
+    reply('resetWhatsNew', {});
+    return 'asked the extension to clear the flag — reopen the COMBOS tab';
+  };
+
   window.addEventListener('message', (e) => {
     if (e.source !== window) return;
     const m = e.data;

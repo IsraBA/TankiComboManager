@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Tanki Online — Combos & QoL",
-  "version": "3.1",
+  "version": "4.0",
   "description": "Quality-of-life tools for Tanki Online: save and switch full equipment combos in one click, and translate battle chat in real time.",
   "permissions": ["storage"],
   "host_permissions": [
@@ -27,6 +27,7 @@
         "features/combos/view/panels/delete_combo_modal.css",
         "features/combos/view/panels/randomizer_settings.css",
         "features/combos/view/panels/import_export.css",
+        "features/combos/view/panels/whats_new_modal.css",
         "features/advisor/view/protection_panel.css",
         "features/translator/main/gamesettings.css"
       ],
@@ -144,6 +145,7 @@
         "features/combos/view/panels/delete_combo_modal.js",
         "features/combos/view/panels/randomizer_settings.js",
         "features/combos/view/panels/import_export.js",
+        "features/combos/view/panels/whats_new_modal.js",
         "features/combos/view/card/combo_card_renderer.js",
         "features/combos/view/card/rows.js",
         "features/combos/view/card/events.js",

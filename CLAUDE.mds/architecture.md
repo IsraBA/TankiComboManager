@@ -87,6 +87,7 @@ a feature must not scatter loose generic keys into it.
 | `local` | `equipProtectionsOnLoad` | combos | bool — include protections when equipping |
 | `local` | `autoOpenCombosOnGarageEntry` | combos | bool |
 | `local` | `randomizerSettings` | combos | randomizer options object |
+| `local` | `whatsNewSeenVersion` | combos | the news version the user acknowledged |
 | `local` | `garageConstants:v<N>:<bundle url>` | combos | cached per-build discovery result |
 | `local` | `hudConstants:<bundle url>` | translator | cached per-build discovery result |
 | `sync` | `translator` | translator | `{ enabled, showOriginal, targetLang }` |
@@ -146,7 +147,8 @@ features/combos/
 │   ├── card/                  #   combo_card_renderer + rows, events, title_edit,
 │   │                          #   combo_drag_handler, combo_card.css
 │   ├── lobby/                 #   button, C shortcut, auto-open, lobby_button.css
-│   └── panels/                #   delete modal, randomizer settings, import/export
+│   └── panels/                #   delete modal, randomizer settings, import/export,
+│                              #   whats_new_modal (once per NEWS_VERSION)
 │
 ├── equip/                     # stage 4 — clicking a combo
 │   ├── instant_loader.js      #   decides WHAT to apply

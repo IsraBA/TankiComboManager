@@ -77,12 +77,16 @@ The zip lands in `build/dist/tanki-combos-qol-v<version>.zip`.
      30%) → the block is absent entirely;
    - pressing Enter to chat in battle must **not** create a combo (the ghost-save
      regression).
-7. **Translator**: enter a battle; foreign chat should show original → spinner →
+7. **Update notice**: on a profile that has not seen this `NEWS_VERSION`, the
+   lobby COMBOS button carries a yellow badge and the modal opens on the first
+   entry to the tab. Closing it any way (X, button, backdrop, Escape) clears
+   both, permanently. `TankiQoL.WhatsNewModal.reset()` replays it.
+8. **Translator**: enter a battle; foreign chat should show original → spinner →
    `[SRC] » translation`. Check the toggle button next to the chat alert button
    and Alt+T. Open the game's Settings screen and confirm the injected toggle +
    language dropdown are there and styled natively. Resize / toggle fullscreen
    and confirm no duplicate chat lines.
-8. After code changes: click the refresh icon on the extension card, then reload
+9. After code changes: click the refresh icon on the extension card, then reload
    the game tab.
 
 Before any release, also run the offline harnesses (`debugging.md`) — they cover

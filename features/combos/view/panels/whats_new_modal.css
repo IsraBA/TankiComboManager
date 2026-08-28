@@ -1,0 +1,12 @@
+/* features/combos/view/panels/whats_new_modal.css */
+
+/* המסגרת כולה מגיעה ממודל המחיקה; כאן רק ההבדלים המכוונים. */
+
+/* רשימה מיושרת לשמאל; במודל המחיקה זה משפט אחד ממורכז */
+#cme_whats-new-root .cme_DialogBuyGarageItemComponentStyle-container {
+  justify-content: flex-start;
+}
+
+#cme_whats-new-root .cme_DialogBuyGarageItemComponentStyle-container span {
+  text-align: left;
+}

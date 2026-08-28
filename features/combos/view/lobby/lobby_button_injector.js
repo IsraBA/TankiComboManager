@@ -35,6 +35,7 @@
       if (existingButton) {
         this.injected = true;
         this.lobbyButton = existingButton;
+        this.refreshBadge();
         return;
       }
 
@@ -110,6 +111,26 @@
 
       this.lobbyButton = button;
       this.injected = true;
+      this.refreshBadge();
+    },
+
+    // הבאדג' תלוי בדגל של "מה חדש"; נקרא גם כשהמודל נסגר.
+    // פריט flex ולא absolute: ההורה של המשחק חותך חריגות.
+    refreshBadge() {
+      const button = this.lobbyButton;
+      if (!button) return;
+      const row = button.querySelector(".cme_lobby-combo-images-container");
+      if (!row) return;
+      const news = window.TankiQoL.WhatsNewModal;
+      const want = !!(news && news.isUnseen());
+      const existing = row.querySelector(".cme_new-badge");
+      if (want && !existing) {
+        const badge = document.createElement("div");
+        badge.className = "cme_new-badge";
+        row.insertBefore(badge, row.firstChild);
+      } else if (!want && existing) {
+        existing.remove();
+      }
     },
 
     // ניווט לקומבואים דרך תותחים
