@@ -126,10 +126,13 @@
 /* === באדג' "יש כאן חדש" === */
 /* מהעתק של Ellipse.svg של המשחק: עיגול #FFEE00 ברדיוס 8/30 ועוד הילה
    באותו צבע ב-25% שממלאת עד שולי הקופסה. שם הקובץ שלו hashed, ולכן
-   משוחזר ב-CSS ולא נטען. פריט בשורה ולא absolute — הוא דוחף את
-   התמונות ימינה ולא נחתך על ידי containerBlockGarage. */
+   משוחזר ב-CSS ולא נטען. פריט בשורה ולא absolute — כך הוא לא
+   נחתך על ידי containerBlockGarage של המשחק. */
 .cme_new-badge {
   flex-shrink: 0;
+  align-self: center;
+  margin-left: 0.25em;
+  margin-bottom: 0.40em;
   width: 1.875em;
   height: 1.875em;
   border-radius: 50%;

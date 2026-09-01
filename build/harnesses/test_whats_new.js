@@ -94,6 +94,10 @@ function makeEnv(stored) {
     "globalThis.window = globalThis; window.TankiQoL = { LanguageManager: { getUIText: (k) => 'T:' + k } };",
     ctx,
   );
+  // הכותרת מציירת את אייקון הקונפטי מ-shared/icons.js
+  vm.runInContext(fs.readFileSync(path.join(EXT, "shared/icons.js"), "utf8"), ctx, {
+    filename: "shared/icons.js",
+  });
   vm.runInContext(fs.readFileSync(path.join(EXT, FILE), "utf8"), ctx, {
     filename: FILE,
   });
@@ -193,6 +197,10 @@ ok("before reset: seen", env.M.isUnseen() === false);
   ok(
     "every string is a translated key, none hardcoded",
     keys.every((k) => html.includes("T:" + k)),
+  );
+  ok(
+    "the title leads with the confetti icon",
+    html.indexOf("cme_whats-new-party") < html.indexOf("T:whatsNewTitle"),
   );
 
   console.log(

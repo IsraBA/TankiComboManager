@@ -556,13 +556,14 @@ would have to be cleared for every existing user, which storage cannot do.
   never flashes and then disappears.
 - The badge is the game's `Ellipse.svg` (`#FFEE00` dot plus a 25% halo)
   **rebuilt in CSS**: that filename is content-hashed and would rotate.
-- **It is a flex item in the image row, not an absolutely positioned overlay.**
-  The lobby's own `MountedItemsStyle-containerBlockGarage` is `overflow: hidden`,
-  so a badge parked on the button's corner gets its overhang clipped — there is
-  no amount of `transform` that fixes that. Inserting it as the first child of
-  `.cme_lobby-combo-images-container` instead makes it push the item images
-  slightly right and keeps it wholly inside the clip region. `flex-shrink: 0`
-  stops the `flex: 1` image wrappers from squeezing it.
+- **It is a flex item, not an absolutely positioned overlay.** The lobby's own
+  `MountedItemsStyle-containerBlockGarage` is `overflow: hidden`, so a badge
+  parked on the button's corner gets its overhang clipped — no amount of
+  `transform` fixes that. It goes in the flow instead, as the last child of
+  `.cme_lobby-combo-images-container`, so it closes the button at the right
+  edge, `align-self: center` keeping it vertically centred. Not the outer row:
+  that is `space-between` with two children, and a third would drag the images
+  to the centre. `flex-shrink: 0` stops it being squeezed.
 - **One deliberate departure from the delete modal**, in
   `whats_new_modal.css`: the list is left-aligned instead of centred.
   Everything else, the red gradient included, is inherited on purpose.

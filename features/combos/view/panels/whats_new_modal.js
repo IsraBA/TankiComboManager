@@ -62,7 +62,7 @@
                 <div class="cme_ModalStyle-rootHover">
                     <div class="cme_DialogContainerComponentStyle-container">
                         <div class="cme_DialogContainerComponentStyle-header">
-                            <h1>${t("whatsNewTitle")}</h1>
+                            <h1>${window.TankiQoL.Icons.party("cme_whats-new-party")}${t("whatsNewTitle")}</h1>
                             <div class="cme_DialogContainerComponentStyle-containerForImg">
                                 <div class="cme_DialogContainerComponentStyle-imgClose" data-action="close"></div>
                             </div>

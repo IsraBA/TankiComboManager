@@ -116,6 +116,8 @@
 
     // הבאדג' תלוי בדגל של "מה חדש"; נקרא גם כשהמודל נסגר.
     // פריט flex ולא absolute: ההורה של המשחק חותך חריגות.
+    // בסוף שורת התמונות ולא בשורה החיצונית — שם space-between היה
+    // גורר את התמונות למרכז.
     refreshBadge() {
       const button = this.lobbyButton;
       if (!button) return;
@@ -127,7 +129,7 @@
       if (want && !existing) {
         const badge = document.createElement("div");
         badge.className = "cme_new-badge";
-        row.insertBefore(badge, row.firstChild);
+        row.appendChild(badge);
       } else if (!want && existing) {
         existing.remove();
       }
