@@ -260,16 +260,16 @@ img {
   background-color: rgb(60, 170, 226) !important;
   cursor: pointer !important;
 }
-:is(:is(.tt-help-container > .tt-popup) > .tt-footer) > .tt-boosty-button {
-  background-color: rgb(242, 97, 44) !important;
+:is(:is(.tt-help-container > .tt-popup) > .tt-footer) > .tt-client-button {
+  background-color: rgb(68, 204, 0) !important;
   border-radius: 0.5em !important;
-  margin-top: 1em !important;
+  margin-bottom: 1em !important;
   padding: 0.8em 0px !important;
 }
 :is(
-  :is(:is(.tt-help-container > .tt-popup) > .tt-footer) > .tt-boosty-button
+  :is(:is(.tt-help-container > .tt-popup) > .tt-footer) > .tt-client-button
 ):hover {
-  background-color: rgb(243, 115, 68) !important;
+  background-color: rgb(76, 230, 0) !important;
   cursor: pointer !important;
 }
 .MatchmakingWaitComponentStyle-container {
@@ -697,7 +697,7 @@ img {
   border-width: 0.6em !important;
   border-style: solid !important;
   border-color: transparent rgb(3, 41, 48) transparent transparent !important;
-  border-image: initial !important;
+  border-image: none !important;
   content: "" !important;
   height: 0px !important;
   left: 0px !important;
@@ -709,8 +709,56 @@ img {
 .GarageCommonStyle-positionContentAlteration {
   overflow-y: hidden !important;
 }
+.SkinsAndAlterationsStyle-SkinsVerticalComponent {
+  grid-template-columns: repeat(auto-fill, 13em) !important;
+  padding-left: 1.5em !important;
+}
+.SkinsAndAlterationsStyle-SkinsVerticalComponent > div {
+  height: 17.3em !important;
+  width: 13em !important;
+}
+:is(.SkinsAndAlterationsStyle-SkinsVerticalComponent.tt-sorted > div):has(
+  .SquarePriceButtonComponentStyle-priceStyle
+) {
+  order: 1 !important;
+}
+:is(.SkinsAndAlterationsStyle-SkinsVerticalComponent.tt-sorted > div):has(
+  > img[src*="unavailable"]
+) {
+  order: 2 !important;
+}
+.tt-garage-sort-button {
+  align-items: center !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.25) !important;
+  display: flex !important;
+  height: 100% !important;
+  justify-content: center !important;
+  left: 0px !important;
+  position: absolute !important;
+  width: 6em !important;
+}
+.tt-garage-sort-button:hover {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  cursor: pointer !important;
+}
+.tt-garage-sort-button.tt-enabled > :first-child {
+  background-color: rgb(255, 255, 255) !important;
+}
+.tt-garage-sort-button > :first-child {
+  background-color: rgb(191, 213, 255) !important;
+  height: 2.2em !important;
+  mask-image: url("chrome-extension://khcoecipddmigggaeokhmhmhjhlpcpnb/assets/5e11f54c05672f233b2d.svg") !important;
+  mask-size: contain !important;
+  width: 2.2em !important;
+}
 .SkinCellStyle-nameDevices {
-  top: 0.4em !important;
+  top: 1em !important;
+}
+.SkinCellStyle-iconCell {
+  height: 7em !important;
+  position: relative !important;
+  top: 0.5em !important;
+  width: 7em !important;
 }
 .garage-item > .ItemNotificationMarkerStyle-base {
   left: 0.4em !important;
@@ -1218,7 +1266,7 @@ img {
   border-width: 0.6em !important;
   border-style: solid !important;
   border-color: rgba(3, 41, 48, 0.9) transparent transparent !important;
-  border-image: initial !important;
+  border-image: none !important;
   content: "" !important;
   height: 0px !important;
   left: 50% !important;
@@ -1307,7 +1355,66 @@ img {
   tr {
   width: 65.25em !important;
 }
+:is(
+    .BattleTabStatisticComponentStyle-commonBlockScroll
+      + .-flexCenterAlignCenter
+  )
+  .tt-defence-label {
+  display: flex !important;
+  justify-content: flex-start !important;
+}
+:is(
+    :is(
+        .BattleTabStatisticComponentStyle-commonBlockScroll
+          + .-flexCenterAlignCenter
+      )
+      .tt-defence-label
+  )
+  > :first-child {
+  background-repeat: no-repeat !important;
+  background-size: contain !important;
+  height: 1em !important;
+  margin-right: 0.1875em !important;
+  width: 1em !important;
+}
+:is(
+    :is(
+        .BattleTabStatisticComponentStyle-commonBlockScroll
+          + .-flexCenterAlignCenter
+      )
+      .tt-defence-label
+  )
+  > :last-child {
+  color: rgb(255, 255, 255) !important;
+  font-family: BaseFontRegular, FallbackFontRegular !important;
+  font-size: 0.875em !important;
+  font-style: normal !important;
+  font-weight: 400 !important;
+}
+:is(
+  :is(
+      :is(
+          .BattleTabStatisticComponentStyle-commonBlockScroll
+            + .-flexCenterAlignCenter
+        )
+        .tt-defence-label
+    )
+    > :last-child
+)::before {
+  content: "×" !important;
+}
 
+.BattleComponentStyle-canvasContainer.tt-tab-hidden
+  > .BattleTabStatisticComponentStyle-container {
+  display: none !important;
+}
+.BattleFinishStyle-container {
+  background: unset !important;
+}
+.BattleFinishStyle-container > .-backgroundImageCover {
+  position: absolute !important;
+  top: 0px !important;
+}
 .BattleKillBoardComponentStyle-tableContainer table {
   align-items: center !important;
   height: 42em !important;
@@ -1410,6 +1517,433 @@ img {
   margin-bottom: 0px !important;
   margin-right: 0.5em !important;
 }
+.BattleResultNavigationComponentStyle-commonBlockProBattleButton {
+  flex-direction: row !important;
+  height: 8.25em !important;
+  width: 17em !important;
+}
+.BattleResultNavigationComponentStyle-commonBlockProBattleButton
+  > :first-child {
+  margin-bottom: 0px !important;
+  margin-right: 0.5em !important;
+}
+.BattleKillBoardComponentStyle-tableContainer.tt-extended {
+  align-items: center !important;
+  display: flex !important;
+  flex-direction: column !important;
+  font-size: max(min(1.48148vh, 0.97vw), 3px) !important;
+  justify-content: flex-start !important;
+}
+.BattleKillBoardComponentStyle-tableContainer.tt-extended
+  > .TableComponentStyle-table {
+  height: unset !important;
+}
+:is(
+    .BattleKillBoardComponentStyle-tableContainer.tt-extended
+      > .TableComponentStyle-table
+  )
+  :is(th, td):first-child {
+  width: 30% !important;
+}
+:is(
+    .BattleKillBoardComponentStyle-tableContainer.tt-extended
+      > .TableComponentStyle-table
+  )
+  :is(th, td):is(:first-child, :nth-child(2)) {
+  order: -2 !important;
+}
+:is(
+    .BattleKillBoardComponentStyle-tableContainer.tt-extended
+      > .TableComponentStyle-table
+  )
+  .tt-equipment-cell,
+:is(
+    .BattleKillBoardComponentStyle-tableContainer.tt-extended
+      > .TableComponentStyle-table
+  )
+  .tt-equipment-cell-head {
+  order: -1 !important;
+  width: 18.56% !important;
+}
+:is(
+    .BattleKillBoardComponentStyle-tableContainer.tt-extended
+      > .TableComponentStyle-table
+  )
+  .tt-equipment-cell-head
+  > h2 {
+  color: rgb(191, 213, 255) !important;
+  font-family: BaseFontMedium, FallbackFontMedium !important;
+  font-size: 0.875em !important;
+  font-style: normal !important;
+  font-weight: 500 !important;
+}
+:is(
+    :is(
+        .BattleKillBoardComponentStyle-tableContainer.tt-extended
+          > .TableComponentStyle-table
+      )
+      .tt-equipment-cell
+  )
+  .tt-container {
+  align-items: center !important;
+  display: flex !important;
+  gap: 1.25em !important;
+  height: 100% !important;
+  justify-content: center !important;
+  width: 100% !important;
+}
+:is(
+    :is(
+        .BattleKillBoardComponentStyle-tableContainer.tt-extended
+          > .TableComponentStyle-table
+      )
+      .tt-equipment-cell
+  )
+  .tt-group {
+  align-items: center !important;
+  display: flex !important;
+  gap: 0.25em !important;
+}
+:is(
+    :is(
+        .BattleKillBoardComponentStyle-tableContainer.tt-extended
+          > .TableComponentStyle-table
+      )
+      .tt-equipment-cell
+  )
+  .tt-icon {
+  background-repeat: no-repeat !important;
+  background-size: contain !important;
+  height: 1em !important;
+  width: 1em !important;
+}
+:is(
+  :is(
+      :is(
+          .BattleKillBoardComponentStyle-tableContainer.tt-extended
+            > .TableComponentStyle-table
+        )
+        .tt-equipment-cell
+    )
+    .tt-icon
+):hover {
+  cursor: pointer !important;
+}
+:is(
+    :is(
+        .BattleKillBoardComponentStyle-tableContainer.tt-extended
+          > .TableComponentStyle-table
+      )
+      .tt-equipment-cell
+  )
+  .tt-tooltip {
+  background-color: rgb(3, 41, 48) !important;
+  border-radius: 0.4em !important;
+  box-shadow: rgba(0, 0, 0, 0.5) 0px 0px 0.2em !important;
+  color: rgb(255, 255, 255) !important;
+  padding: 0.3em 0.7em !important;
+  text-transform: uppercase !important;
+  transform: translate(-50%, -3em) !important;
+  z-index: 4 !important;
+}
+:is(
+  :is(
+      :is(
+          .BattleKillBoardComponentStyle-tableContainer.tt-extended
+            > .TableComponentStyle-table
+        )
+        .tt-equipment-cell
+    )
+    .tt-tooltip
+)::before {
+  border-width: 0.6em !important;
+  border-style: solid !important;
+  border-color: rgb(3, 41, 48) transparent transparent !important;
+  border-image: none !important;
+  content: "" !important;
+  height: 0px !important;
+  left: 50% !important;
+  position: absolute !important;
+  top: calc(100% - 1px) !important;
+  transform: translateX(-50%) !important;
+  width: 0px !important;
+}
+:is(
+    .BattleKillBoardComponentStyle-tableContainer.tt-extended
+      > .TableComponentStyle-table
+  )
+  :is(th, td):is(:nth-child(4), :nth-child(5)) {
+  display: none !important;
+}
+:is(
+    .BattleKillBoardComponentStyle-tableContainer.tt-extended
+      > .TableComponentStyle-table
+  )
+  :is(th, td):nth-child(6) {
+  width: 14.28% !important;
+}
+:is(
+    .BattleKillBoardComponentStyle-tableContainer.tt-extended
+      > .TableComponentStyle-table
+  )
+  td:nth-child(6) {
+  text-wrap: nowrap !important;
+}
+:is(
+    :is(
+        .BattleKillBoardComponentStyle-tableContainer.tt-extended
+          > .TableComponentStyle-table
+      )
+      td:nth-child(6)
+  )
+  > :first-child {
+  margin-right: 0.3em !important;
+}
+:is(
+    :is(
+        .BattleKillBoardComponentStyle-tableContainer.tt-extended
+          > .TableComponentStyle-table
+      )
+      td:nth-child(6)
+  )
+  > :last-child {
+  color: rgb(196, 205, 212) !important;
+  font-weight: 500 !important;
+}
+.BattleKillBoardComponentStyle-tableContainer.tt-extended
+  .TableComponentStyle-thead {
+  background-color: rgba(191, 213, 255, 0.05) !important;
+  border-bottom: 0.1em solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 0.5em 0.5em 0px 0px !important;
+  margin-bottom: 0px !important;
+  padding: 0.3em 1em 0.1em !important;
+  position: unset !important;
+}
+.BattleKillBoardComponentStyle-tableContainer.tt-extended
+  .TableComponentStyle-tBody {
+  background-clip: padding-box !important;
+  background-color: rgba(191, 213, 255, 0.05) !important;
+  border-width: 1em 0px 1em 1em !important;
+  border-style: solid !important;
+  border-color: rgba(191, 213, 255, 0.05) !important;
+  border-image: none !important;
+  border-radius: 0px 0px 0.5em 0.5em !important;
+  height: unset !important;
+  margin-top: 0px !important;
+  max-height: 39.0625em !important;
+  min-height: unset !important;
+  scrollbar-color: rgba(255, 255, 255, 0.15) rgb(24, 32, 39) !important;
+}
+.BattleKillBoardComponentStyle-tableContainer.tt-extended .tt-player-details {
+  align-items: flex-start !important;
+  background-color: rgba(191, 213, 255, 0.05) !important;
+  border-radius: 0px 0px 0.5em 0.5em !important;
+  box-sizing: border-box !important;
+  color: rgb(255, 255, 255) !important;
+  display: flex !important;
+  font-family: BaseFontMedium, FallbackFontMedium !important;
+  height: 6em !important;
+  justify-content: space-between !important;
+  padding: 0.8em 1.75em 0px !important;
+  width: 51em !important;
+}
+:is(
+    .BattleKillBoardComponentStyle-tableContainer.tt-extended .tt-player-details
+  )
+  .tt-section {
+  display: flex !important;
+  gap: 0.5em !important;
+}
+:is(
+    :is(
+        .BattleKillBoardComponentStyle-tableContainer.tt-extended
+          .tt-player-details
+      )
+      .tt-equipment-details
+  )
+  .tt-item {
+  display: flex !important;
+  gap: 0.8em !important;
+  width: 14em !important;
+}
+:is(
+    :is(
+        .BattleKillBoardComponentStyle-tableContainer.tt-extended
+          .tt-player-details
+      )
+      .tt-equipment-details
+  )
+  .tt-main-icon-container {
+  align-items: center !important;
+  display: flex !important;
+  flex: 0 0 auto !important;
+  height: 4em !important;
+  justify-content: center !important;
+  width: 4em !important;
+}
+:is(
+    :is(
+        .BattleKillBoardComponentStyle-tableContainer.tt-extended
+          .tt-player-details
+      )
+      .tt-equipment-details
+  )
+  .tt-main-icon {
+  background-repeat: no-repeat !important;
+  background-size: contain !important;
+  filter: drop-shadow(white 0px 0px 0px) !important;
+  flex: 0 0 auto !important;
+  height: 3.8em !important;
+  width: 3.8em !important;
+}
+:is(
+    :is(
+        .BattleKillBoardComponentStyle-tableContainer.tt-extended
+          .tt-player-details
+      )
+      .tt-equipment-details
+  )
+  .tt-info {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.5em !important;
+}
+:is(
+    :is(
+        :is(
+            .BattleKillBoardComponentStyle-tableContainer.tt-extended
+              .tt-player-details
+          )
+          .tt-equipment-details
+      )
+      .tt-info
+  )
+  .tt-name {
+  color: rgb(196, 205, 212) !important;
+  font-size: 0.8em !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+}
+:is(
+    :is(
+        :is(
+            .BattleKillBoardComponentStyle-tableContainer.tt-extended
+              .tt-player-details
+          )
+          .tt-equipment-details
+      )
+      .tt-info
+  )
+  .tt-augment {
+  font-size: 0.85em !important;
+  text-transform: uppercase !important;
+}
+:is(
+    :is(
+        :is(
+            :is(
+                .BattleKillBoardComponentStyle-tableContainer.tt-extended
+                  .tt-player-details
+              )
+              .tt-equipment-details
+          )
+          .tt-info
+      )
+      .tt-augment
+  )
+  > span {
+  color: rgb(224, 230, 237) !important;
+}
+:is(
+    .BattleKillBoardComponentStyle-tableContainer.tt-extended .tt-player-details
+  )
+  .tt-panel-divider {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  height: 4.2em !important;
+  margin-left: 1em !important;
+  margin-right: 1em !important;
+  width: 0.1em !important;
+}
+:is(
+    .BattleKillBoardComponentStyle-tableContainer.tt-extended .tt-player-details
+  )
+  .tt-damage-details {
+  gap: 2em !important;
+}
+:is(
+    :is(
+        .BattleKillBoardComponentStyle-tableContainer.tt-extended
+          .tt-player-details
+      )
+      .tt-damage-details
+  )
+  .tt-stats-box {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 4em !important;
+  justify-content: space-between !important;
+  width: 6.5em !important;
+}
+:is(
+    :is(
+        :is(
+            .BattleKillBoardComponentStyle-tableContainer.tt-extended
+              .tt-player-details
+          )
+          .tt-damage-details
+      )
+      .tt-stats-box
+  )
+  .tt-label {
+  color: rgb(138, 155, 168) !important;
+  font-size: 0.8em !important;
+  letter-spacing: 0.05em !important;
+  text-transform: uppercase !important;
+}
+:is(
+    :is(
+        :is(
+            .BattleKillBoardComponentStyle-tableContainer.tt-extended
+              .tt-player-details
+          )
+          .tt-damage-details
+      )
+      .tt-stats-box
+  )
+  .tt-value {
+  font-size: 1.5em !important;
+  font-weight: 700 !important;
+}
+.tt-total-damage:is(
+  :is(
+      :is(
+          :is(
+              .BattleKillBoardComponentStyle-tableContainer.tt-extended
+                .tt-player-details
+            )
+            .tt-damage-details
+        )
+        .tt-stats-box
+    )
+    .tt-value
+) {
+  color: rgb(224, 230, 237) !important;
+}
+.tt-critical-damage:is(
+  :is(
+      :is(
+          :is(
+              .BattleKillBoardComponentStyle-tableContainer.tt-extended
+                .tt-player-details
+            )
+            .tt-damage-details
+        )
+        .tt-stats-box
+    )
+    .tt-value
+) {
+  color: rgb(245, 0, 0) !important;
+}
 
 :is(
     .BattlePassLobbyComponentStyle-menuBattlePass,
@@ -1441,6 +1975,118 @@ img {
   )
   > img {
   pointer-events: all !important;
+}
+
+.GameSettingsStyle-gameSettingsBlock {
+  height: unset !important;
+}
+.tt-settings-containter {
+  display: flex !important;
+  flex-direction: column !important;
+  height: max-content !important;
+  margin-bottom: 1.5em !important;
+  width: 100% !important;
+}
+.tt-settings-containter .tt-tooltip {
+  background-color: rgb(3, 41, 48) !important;
+  border-radius: 0.4em !important;
+  box-shadow: rgba(0, 0, 0, 0.5) 0px 0px 0.2em !important;
+  color: rgb(255, 255, 255) !important;
+  padding: 0.3em 0.7em !important;
+  text-transform: uppercase !important;
+  transform: translate(-100%, -3.3em) !important;
+  z-index: 4 !important;
+}
+:is(.tt-settings-containter .tt-tooltip)::before {
+  border-width: 0.6em !important;
+  border-style: solid !important;
+  border-color: rgb(3, 41, 48) transparent transparent !important;
+  border-image: none !important;
+  content: "" !important;
+  height: 0px !important;
+  left: 50% !important;
+  position: absolute !important;
+  top: calc(100% - 1px) !important;
+  transform: translateX(-50%) !important;
+  width: 0px !important;
+}
+.tt-settings-containter > .tt-checkbox-setting {
+  align-items: center !important;
+  display: flex !important;
+  height: 2.25em !important;
+  justify-content: flex-start !important;
+  margin-bottom: 1.25em !important;
+  width: 100% !important;
+}
+:is(.tt-settings-containter > .tt-checkbox-setting) > .tt-checkbox-container {
+  display: flex !important;
+}
+:is(
+    :is(.tt-settings-containter > .tt-checkbox-setting) > .tt-checkbox-container
+  )
+  > .tt-checkbox {
+  background-color: rgba(191, 213, 255, 0.25) !important;
+  border: 0.063em solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 6.25rem !important;
+  cursor: pointer !important;
+  display: flex !important;
+  height: 1.5em !important;
+  width: 2.75em !important;
+}
+:is(
+  :is(
+      :is(.tt-settings-containter > .tt-checkbox-setting)
+        > .tt-checkbox-container
+    )
+    > .tt-checkbox
+)::before {
+  background: url("chrome-extension://khcoecipddmigggaeokhmhmhjhlpcpnb/assets/1918884a723176a5e230.svg")
+    50% 50% / 100% 100% no-repeat !important;
+  content: "" !important;
+  height: auto !important;
+  left: 0.25em !important;
+  margin-top: 0px !important;
+  position: relative !important;
+  transition: 0.2s !important;
+  width: 1rem !important;
+}
+:is(.tt-settings-containter > .tt-checkbox-setting) > .tt-description {
+  align-items: center !important;
+  cursor: pointer !important;
+  display: flex !important;
+  height: 3em !important;
+  justify-content: flex-start !important;
+  margin-left: 0px !important;
+  position: relative !important;
+  width: max-content !important;
+}
+:is(:is(.tt-settings-containter > .tt-checkbox-setting) > .tt-description)
+  > label {
+  color: rgba(255, 255, 255, 0.5) !important;
+  cursor: pointer !important;
+  font-family: BaseFontRegular, FallbackFontRegular !important;
+  font-size: 1em !important;
+  font-style: normal !important;
+  font-weight: 400 !important;
+  line-height: normal !important;
+  margin-left: 1em !important;
+  margin-right: 1em !important;
+  z-index: 2 !important;
+}
+.tt-checked:is(.tt-settings-containter > .tt-checkbox-setting) .tt-checkbox {
+  background-color: rgba(118, 255, 51, 0.25) !important;
+}
+:is(
+  .tt-checked:is(.tt-settings-containter > .tt-checkbox-setting) .tt-checkbox
+)::before {
+  background: url("chrome-extension://khcoecipddmigggaeokhmhmhjhlpcpnb/assets/afad1b22241b0c2c54da.svg")
+    50% 50% / 100% 100% no-repeat !important;
+  left: 1.5em !important;
+}
+.tt-checked:is(.tt-settings-containter > .tt-checkbox-setting)
+  > .tt-description
+  > label {
+  color: rgb(255, 255, 255) !important;
 }
 
 html {
@@ -1795,7 +2441,7 @@ html {
   height: 100%;
 }
 .-background {
-  background-image: url("https://s.eu.tankionline.com/static/images/background.7b940177.webp");
+  background-image: url("https://s.eu.tankionline.com/637/124533/134/102/31765126734043/image.webp");
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
@@ -1840,7 +2486,7 @@ html {
 }
 .-defaultHotKeyStyle {
   background-color: rgb(255, 255, 255);
-  border-radius: 0.1875em;
+  border-radius: 0.1875rem;
   box-sizing: border-box;
   color: rgb(0, 25, 38);
   display: flex;
@@ -1856,7 +2502,7 @@ html {
 }
 .-inlineBlockForHotKey {
   background-color: rgb(255, 255, 255);
-  border-radius: 0.1875em;
+  border-radius: 0.1875rem;
   box-sizing: border-box;
   color: rgb(0, 25, 38);
   display: flex;
@@ -1878,7 +2524,7 @@ html {
 }
 .ApplicationLoaderComponentStyle-helpChangeKey {
   background-color: rgb(255, 255, 255);
-  border-radius: 0.1875em;
+  border-radius: 0.1875rem;
   box-sizing: border-box;
   color: rgb(0, 25, 38);
   display: flex;
@@ -2036,7 +2682,7 @@ html {
 }
 .-commonBlockForHotKey {
   background-color: rgb(255, 255, 255);
-  border-radius: 0.1875em;
+  border-radius: 0.1875rem;
   box-sizing: border-box;
   color: rgb(0, 25, 38);
   display: flex;
@@ -2240,7 +2886,7 @@ html {
   display: flex;
   background-color: rgb(118, 255, 51);
   border-radius: 6.25em;
-  width: 67%;
+  width: 22%;
   height: 100%;
 }
 .ksc-19 {
@@ -2415,7 +3061,7 @@ html {
   width: 23.75em;
   height: 10.75em;
   background-color: rgba(118, 255, 51, 0.25);
-  border-radius: 0.5em;
+  border-radius: 0.5rem;
   box-shadow: rgba(118, 255, 51, 0.25) 0em 0em 0em 0.063em;
   box-sizing: border-box;
   z-index: 4;
@@ -2524,7 +3170,7 @@ html {
 }
 .PrimaryMenuItemComponentStyle-itemCommonLi:hover {
   box-shadow: rgb(255, 255, 255) 0em 0em 0em 0.125em;
-  border-radius: 0.5em;
+  border-radius: 0.5rem;
 }
 .PrimaryMenuItemComponentStyle-itemCommonLi:hover div {
   background-color: rgb(255, 255, 255);
@@ -2566,7 +3212,7 @@ html {
 }
 .PrimaryMenuItemComponentStyle-itemLiContainers:hover {
   box-shadow: rgb(255, 255, 255) 0em 0em 0em 0.125em;
-  border-radius: 0.5em;
+  border-radius: 0.5rem;
 }
 .PrimaryMenuItemComponentStyle-itemLiContainers:hover div {
   background-color: rgb(255, 255, 255);
@@ -2580,6 +3226,13 @@ html {
   transition: 0.2s ease-in-out;
 }
 
+.PrimaryMenuItemComponentStyle-notificationIconNewNews {
+  width: 1.875em;
+  height: 1.875em;
+  margin-right: 0.625em;
+  position: absolute;
+  right: 0px;
+}
 .PrimaryMenuItemComponentStyle-itemLiQuests {
   display: flex;
   align-items: center;
@@ -2601,17 +3254,10 @@ html {
 }
 .PrimaryMenuItemComponentStyle-itemLiQuests:hover {
   box-shadow: rgb(255, 255, 255) 0em 0em 0em 0.125em;
-  border-radius: 0.5em;
+  border-radius: 0.5rem;
 }
 .PrimaryMenuItemComponentStyle-itemLiQuests:hover div {
   background-color: rgb(255, 255, 255);
-}
-.PrimaryMenuItemComponentStyle-notificationIconNewNews {
-  width: 1.875em;
-  height: 1.875em;
-  margin-right: 0.625em;
-  position: absolute;
-  right: 0px;
 }
 .PrimaryMenuItemComponentStyle-itemLiGarage {
   display: flex;
@@ -2634,33 +3280,10 @@ html {
 }
 .PrimaryMenuItemComponentStyle-itemLiGarage:hover {
   box-shadow: rgb(255, 255, 255) 0em 0em 0em 0.125em;
-  border-radius: 0.5em;
+  border-radius: 0.5rem;
 }
 .PrimaryMenuItemComponentStyle-itemLiGarage:hover div {
   background-color: rgb(255, 255, 255);
-}
-.PrimaryMenuItemComponentStyle-discountNotification {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: BaseFontBold, FallbackFontBold;
-  font-style: normal;
-  font-weight: 500;
-  font-size: 1.375em;
-  line-height: normal;
-  background-color: rgb(255, 238, 0);
-  border-radius: 0.25em;
-  color: rgb(0, 0, 0);
-  margin-left: 1em;
-  margin-right: 0.625em;
-  position: absolute;
-  right: 0px;
-  width: 2.6875em;
-  -webkit-box-align: center;
-  -webkit-box-pack: center;
-}
-.PrimaryMenuItemComponentStyle-discountNotification:hover {
-  color: rgb(0, 0, 0);
 }
 .PrimaryMenuItemComponentStyle-itemLiShop {
   display: flex;
@@ -2683,7 +3306,7 @@ html {
 }
 .PrimaryMenuItemComponentStyle-itemLiShop:hover {
   box-shadow: rgb(255, 255, 255) 0em 0em 0em 0.125em;
-  border-radius: 0.5em;
+  border-radius: 0.5rem;
 }
 .PrimaryMenuItemComponentStyle-itemLiShop:hover div {
   background-color: rgb(255, 255, 255);
@@ -2709,7 +3332,7 @@ html {
 }
 .PrimaryMenuItemComponentStyle-itemLiOption:hover {
   box-shadow: rgb(255, 255, 255) 0em 0em 0em 0.125em;
-  border-radius: 0.5em;
+  border-radius: 0.5rem;
 }
 .PrimaryMenuItemComponentStyle-itemLiOption:hover div {
   background-color: rgb(255, 255, 255);
@@ -2885,7 +3508,7 @@ html {
   right: 2.5em;
   z-index: 1;
   cursor: pointer;
-  border-radius: 0.5em;
+  border-radius: 0.5rem;
   filter: drop-shadow(rgba(0, 0, 0, 0.25) 0px 4px 4px);
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
@@ -2931,7 +3554,6 @@ html {
   line-height: normal;
   margin-left: 0.25em;
 }
-
 .BattlePassLobbyComponentStyle-timers {
   display: flex;
   align-items: center;
@@ -2960,6 +3582,7 @@ html {
   color: rgba(255, 255, 255, 0.6);
   margin-left: 0.25em;
 }
+
 .BattlePassLobbyComponentStyle-blockBattlePass {
   display: flex;
   align-items: center;
@@ -3063,6 +3686,154 @@ html {
   top: 0px;
   position: absolute;
 }
+.-flexStartAlignCenterColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-box-align: center;
+  -webkit-box-pack: start;
+}
+.EventBattlePassLobbyComponentStyle-buttonEventBattlePass {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  background: radial-gradient(
+    106.67% 100% at 0% 0%,
+    rgb(212, 127, 255) 0%,
+    rgba(0, 25, 38, 0.5) 100%
+  );
+  border-radius: 0.5rem;
+  cursor: pointer;
+  height: 9em;
+  padding: 0.5em;
+  position: absolute;
+  right: 26.5em;
+  top: 8.5em;
+  width: 8.375em;
+  backdrop-filter: blur(0.781em);
+  box-shadow: rgb(213, 128, 255) 0em 0em 0em 1px;
+  z-index: 1;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-box-align: center;
+  -webkit-box-pack: start;
+}
+.EventBattlePassLobbyComponentStyle-buttonEventBattlePass:hover {
+  box-shadow: rgb(213, 128, 255) 0em 0em 0em 2px;
+}
+.EventBattlePassLobbyComponentStyle-commonBlockProgressBar {
+  background-color: rgba(0, 25, 38, 0.5);
+  border-radius: 6.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: 2.4em;
+  height: 5em;
+  position: absolute;
+  width: 5em;
+  -webkit-box-align: center;
+  -webkit-box-pack: center;
+}
+.EventBattlePassLobbyComponentStyle-commonBlockProgressBar h2 {
+  color: rgb(255, 204, 0);
+  font-family: BaseFontRegular, FallbackFontRegular;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 1.5em;
+  margin: 0px;
+  z-index: 2;
+}
+.EventBattlePassLobbyComponentStyle-progressBar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6.25rem;
+  height: 4em;
+  width: 4em;
+  position: absolute;
+  z-index: 2;
+  -webkit-box-align: center;
+  -webkit-box-pack: center;
+}
+.EventBattlePassLobbyComponentStyle-progressBar span {
+  color: rgb(255, 204, 0);
+  font-family: BaseFontRegular, FallbackFontRegular;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 1.5em;
+}
+.EventBattlePassLobbyComponentStyle-descriptionEventPass {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  bottom: 0.4em;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-box-align: center;
+  -webkit-box-pack: center;
+}
+.EventBattlePassLobbyComponentStyle-descriptionEventPass h2 {
+  color: rgb(255, 255, 255);
+  font-family: BaseFontBold, FallbackFontBold;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 1em;
+  line-height: normal;
+  margin: 0px;
+  text-transform: uppercase;
+}
+.EventBattlePassLobbyComponentStyle-descriptionEventPass h3 {
+  color: rgb(255, 204, 0);
+  font-family: BaseFontMedium, FallbackFontMedium;
+  font-style: normal;
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 0.75em;
+  margin: 0px;
+}
+.ChallengeTimerComponentStyle-timer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-box-align: center;
+  -webkit-box-pack: start;
+}
+.ChallengeTimerComponentStyle-timer h3 {
+  color: rgb(255, 255, 255);
+  font-family: BaseFontMedium, FallbackFontMedium;
+  font-style: normal;
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 0.75em;
+  margin: 0px 0px 0.5em;
+}
+.ChallengeTimerComponentStyle-textTime {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: BaseFontMedium, FallbackFontMedium;
+  font-style: normal;
+  font-weight: 500;
+  text-transform: none;
+  border-radius: 0.25rem;
+  background-color: rgb(255, 204, 0);
+  color: rgb(0, 25, 38);
+  height: 1.5em;
+  padding: 0px 0.25em;
+  width: auto;
+  font-size: 1.125em;
+  -webkit-box-align: center;
+  -webkit-box-pack: center;
+}
 .AnnouncementHomeScreenComponentStyle-mainContainer {
   touch-action: none;
   display: flex;
@@ -3078,7 +3849,7 @@ html {
   backdrop-filter: blur(0.781em);
   background-color: rgba(0, 25, 38, 0.25);
   border: 0.063em solid rgba(255, 255, 255, 0.25);
-  border-radius: 0.5em;
+  border-radius: 0.5rem;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
   -webkit-box-align: center;
@@ -3088,16 +3859,6 @@ html {
 .AnnouncementHomeScreenComponentStyle-mainContainer:hover {
   border: 0.063em solid rgb(191, 213, 255);
   box-shadow: rgb(191, 213, 255) 0em 0em 0em 0.062em;
-}
-.-flexStartAlignCenterColumn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-  -webkit-box-align: center;
-  -webkit-box-pack: start;
 }
 .AnnouncementHomeScreenComponentStyle-mainBackGroundContainer {
   display: flex;
@@ -3151,7 +3912,7 @@ html {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 0.25em;
+  border-radius: 0.25rem;
   width: auto;
   height: 1.5em;
   flex: 1 0 auto;
@@ -3183,6 +3944,7 @@ html {
   -webkit-box-align: center;
   -webkit-box-pack: end;
 }
+
 .AnnouncementHomeScreenComponentStyle-announceContainer {
   background: linear-gradient(rgba(0, 25, 38, 0) 0%, rgb(0, 25, 38) 100%);
   bottom: 0px;
@@ -3263,7 +4025,7 @@ html {
 .-buttonQE {
   background-color: rgba(255, 255, 255, 0.9);
   box-sizing: border-box;
-  border-radius: 0.1875em;
+  border-radius: 0.1875rem;
   height: 1.5em;
   margin-left: 0.5em;
   margin-right: 0.5em;
@@ -3290,145 +4052,6 @@ html {
 }
 .-buttonQE:hover {
   background-color: rgb(255, 255, 255);
-}
-
-.EventBattlePassLobbyComponentStyle-buttonEventBattlePass {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  background: radial-gradient(
-    106.67% 100% at 0% 0%,
-    rgb(212, 127, 255) 0%,
-    rgba(0, 25, 38, 0.5) 100%
-  );
-  border-radius: 0.5em;
-  cursor: pointer;
-  height: 9em;
-  padding: 0.5em;
-  position: absolute;
-  right: 26.5em;
-  top: 8.5em;
-  width: 8.375em;
-  backdrop-filter: blur(0.781em);
-  box-shadow: rgb(213, 128, 255) 0em 0em 0em 1px;
-  z-index: 1;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-  -webkit-box-align: center;
-  -webkit-box-pack: start;
-}
-.EventBattlePassLobbyComponentStyle-buttonEventBattlePass:hover {
-  box-shadow: rgb(213, 128, 255) 0em 0em 0em 2px;
-}
-.EventBattlePassLobbyComponentStyle-commonBlockProgressBar {
-  background-color: rgba(0, 25, 38, 0.5);
-  border-radius: 6.25em;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  top: 2.4em;
-  height: 5em;
-  position: absolute;
-  width: 5em;
-  -webkit-box-align: center;
-  -webkit-box-pack: center;
-}
-.EventBattlePassLobbyComponentStyle-commonBlockProgressBar h2 {
-  color: rgb(255, 204, 0);
-  font-family: BaseFontRegular, FallbackFontRegular;
-  font-style: normal;
-  font-weight: normal;
-  font-size: 1.5em;
-  margin: 0px;
-  z-index: 2;
-}
-.EventBattlePassLobbyComponentStyle-progressBar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 6.25em;
-  height: 4em;
-  width: 4em;
-  position: absolute;
-  z-index: 2;
-  -webkit-box-align: center;
-  -webkit-box-pack: center;
-}
-.EventBattlePassLobbyComponentStyle-progressBar span {
-  color: rgb(255, 204, 0);
-  font-family: BaseFontRegular, FallbackFontRegular;
-  font-style: normal;
-  font-weight: normal;
-  font-size: 1.5em;
-}
-.EventBattlePassLobbyComponentStyle-descriptionEventPass {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  position: absolute;
-  bottom: 0.4em;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-  -webkit-box-align: center;
-  -webkit-box-pack: center;
-}
-.EventBattlePassLobbyComponentStyle-descriptionEventPass h2 {
-  color: rgb(255, 255, 255);
-  font-family: BaseFontBold, FallbackFontBold;
-  font-style: normal;
-  font-weight: 500;
-  font-size: 1em;
-  line-height: normal;
-  margin: 0px;
-  text-transform: uppercase;
-}
-.EventBattlePassLobbyComponentStyle-descriptionEventPass h3 {
-  color: rgb(255, 204, 0);
-  font-family: BaseFontMedium, FallbackFontMedium;
-  font-style: normal;
-  font-weight: 500;
-  text-transform: uppercase;
-  font-size: 0.75em;
-  margin: 0px;
-}
-.ChallengeTimerComponentStyle-timer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-  -webkit-box-align: center;
-  -webkit-box-pack: start;
-}
-.ChallengeTimerComponentStyle-timer h3 {
-  color: rgb(255, 255, 255);
-  font-family: BaseFontMedium, FallbackFontMedium;
-  font-style: normal;
-  font-weight: 500;
-  text-transform: uppercase;
-  font-size: 0.75em;
-  margin: 0px 0px 0.5em;
-}
-.ChallengeTimerComponentStyle-textTime {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: BaseFontMedium, FallbackFontMedium;
-  font-style: normal;
-  font-weight: 500;
-  text-transform: none;
-  border-radius: 0.25em;
-  background-color: rgb(255, 204, 0);
-  color: rgb(0, 25, 38);
-  height: 1.5em;
-  padding: 0px 0.25em;
-  width: auto;
-  font-size: 1.125em;
-  -webkit-box-align: center;
-  -webkit-box-pack: center;
 }
 .LobbyLoaderComponentStyle-container {
   position: absolute;
@@ -3479,43 +4102,21 @@ html {
   width: 20em;
   height: 2em;
 }
-.-flexSpaceBetweenAlignStretchColumn {
+.-hidden {
+  visibility: hidden;
+  opacity: 0;
+}
+.GarageCommonStyle-garageContainer {
+  width: 100%;
+  height: calc(100% - 6em);
   display: flex;
   flex-direction: column;
-  align-items: stretch;
-  justify-content: space-between;
+  align-items: center;
+  justify-content: flex-start;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
-  -webkit-box-align: stretch;
-  -webkit-box-pack: justify;
-}
-.AnnouncementComponentStyle-mainContainer {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: space-between;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-  -webkit-box-align: stretch;
-  -webkit-box-pack: justify;
-}
-.AnnouncementComponentStyle-extContent {
-  width: 100%;
-  height: 100%;
-  border-style: none;
-}
-.AnnouncementComponentStyle-extContent::-webkit-scrollbar {
-  display: block;
-  width: 0.6em;
-  border-left: 0.18em solid rgb(50, 54, 62);
-  border-right: 0.18em solid rgb(50, 54, 62);
-  background-color: rgba(255, 255, 255, 0.2);
-}
-.AnnouncementComponentStyle-extContent::-webkit-scrollbar-thumb {
-  background-color: rgb(197, 197, 197);
-  border-radius: 10px;
+  -webkit-box-align: center;
+  -webkit-box-pack: start;
 }
 .-backgroundColor {
   background-color: transparent;
@@ -3571,7 +4172,7 @@ html {
 }
 .BreadcrumbsComponentStyle-backButton h3 {
   background-color: rgb(255, 255, 255);
-  border-radius: 0.1875em;
+  border-radius: 0.1875rem;
   box-sizing: border-box;
   color: rgb(0, 25, 38);
   display: flex;
@@ -3664,7 +4265,6 @@ html {
   -webkit-box-align: center;
   -webkit-box-pack: center;
 }
-
 .BreadcrumbsComponentStyle-rightButtonsContainer {
   place-content: center space-between;
   display: flex;
@@ -3701,26 +4301,10 @@ html {
   mask-repeat: no-repeat;
   mask-size: contain;
 }
-.-hidden {
-  visibility: hidden;
-  opacity: 0;
-}
-.GarageCommonStyle-garageContainer {
-  width: 100%;
-  height: calc(100% - 6em);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-  -webkit-box-align: center;
-  -webkit-box-pack: start;
-}
-.ksc-62 {
+.ksc-44 {
   z-index: 2;
 }
-.ksc-63 {
+.ksc-45 {
   width: 1.75em;
   height: 1.75em;
   margin-left: 0.75em;
@@ -3735,9 +4319,10 @@ html {
   background-position: 50% 50%;
   background-size: 0.5em;
 }
-.ksc-63:hover {
+.ksc-45:hover {
   opacity: 1;
 }
+
 .GarageCommonStyle-commonStylePositionContent {
   height: 100%;
   width: 100%;
@@ -3804,7 +4389,7 @@ html {
   cursor: default;
   z-index: 2;
   border: 0.063em solid rgba(255, 255, 255, 0.25);
-  border-radius: 0.5em;
+  border-radius: 0.5rem;
   padding: 0.75em;
   width: 21em;
   -webkit-box-orient: vertical;
@@ -3812,7 +4397,7 @@ html {
   -webkit-box-align: center;
   -webkit-box-pack: start;
 }
-@-webkit-keyframes ksc-keyframe-65 {
+@-webkit-keyframes ksc-keyframe-47 {
   0% {
     opacity: 0;
     transform: translateX(-5vw);
@@ -3821,7 +4406,7 @@ html {
     opacity: 1;
   }
 }
-@keyframes ksc-keyframe-65 {
+@keyframes ksc-keyframe-47 {
   0% {
     opacity: 0;
     transform: translateX(-5vw);
@@ -3831,10 +4416,10 @@ html {
   }
 }
 .-appearFromLeft {
-  animation: 200ms ease-out 0s 1 normal none running ksc-keyframe-65;
+  animation: 200ms ease-out 0s 1 normal none running ksc-keyframe-47;
 }
 .GarageCommonStyle-animatedBlurredLeftBlock {
-  animation: 200ms ease-out 0s 1 normal none running ksc-keyframe-65;
+  animation: 200ms ease-out 0s 1 normal none running ksc-keyframe-47;
   backdrop-filter: blur(3.125em);
 }
 .TankParametersStyle-marginBlockGear {
@@ -3951,7 +4536,6 @@ html {
   -webkit-box-align: center;
   -webkit-box-pack: center;
 }
-
 .MountedItemsStyle-container {
   display: flex;
   flex-direction: column;
@@ -3962,7 +4546,7 @@ html {
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
 }
-@-webkit-keyframes ksc-keyframe-71 {
+@-webkit-keyframes ksc-keyframe-53 {
   0% {
     opacity: 0;
     transform: translateX(5vw);
@@ -3971,7 +4555,7 @@ html {
     opacity: 1;
   }
 }
-@keyframes ksc-keyframe-71 {
+@keyframes ksc-keyframe-53 {
   0% {
     opacity: 0;
     transform: translateX(5vw);
@@ -3981,10 +4565,10 @@ html {
   }
 }
 .-appearFromRight {
-  animation: 200ms ease-out 0s 1 normal none running ksc-keyframe-71;
+  animation: 200ms ease-out 0s 1 normal none running ksc-keyframe-53;
 }
 .GarageCommonStyle-animatedBlurredRightBlock {
-  animation: 200ms ease-out 0s 1 normal none running ksc-keyframe-71;
+  animation: 200ms ease-out 0s 1 normal none running ksc-keyframe-53;
   backdrop-filter: blur(3.125em);
 }
 .MountedItemsStyle-containerBlockGarage {
@@ -4004,7 +4588,7 @@ html {
   }
 }
 .MountedItemsStyle-commonBlockDrone {
-  border-radius: 0.5em;
+  border-radius: 0.5rem;
   width: 10.9375em;
   height: 10.9375em;
   margin-bottom: 0.625em;
@@ -4045,11 +4629,12 @@ html {
   }
 }
 .MountedItemsStyle-commonBlockGrenades {
-  border-radius: 0.5em;
+  border-radius: 0.5rem;
   width: 10.9375em;
   height: 10.9375em;
   margin: 0px;
 }
+
 .-fontH3 {
   font-size: 1.125em;
 }
@@ -4143,7 +4728,6 @@ html {
   -webkit-box-align: stretch;
   -webkit-box-pack: start;
 }
-
 .-flexWrapWrap {
   flex-wrap: wrap;
 }
@@ -4166,7 +4750,7 @@ html {
     bottom: -1em;
   }
 }
-@-webkit-keyframes ksc-keyframe-86 {
+@-webkit-keyframes ksc-keyframe-66 {
   0% {
     opacity: 0;
     transform: translateY(5vh);
@@ -4175,7 +4759,7 @@ html {
     opacity: 1;
   }
 }
-@keyframes ksc-keyframe-86 {
+@keyframes ksc-keyframe-66 {
   0% {
     opacity: 0;
     transform: translateY(5vh);
@@ -4184,8 +4768,9 @@ html {
     opacity: 1;
   }
 }
+
 .-appearFromBottom {
-  animation: 200ms ease-out 0s 1 normal none running ksc-keyframe-86;
+  animation: 200ms ease-out 0s 1 normal none running ksc-keyframe-66;
 }
 .-cursorPointer {
   cursor: pointer;
@@ -4242,7 +4827,7 @@ html {
 }
 .SuppliesComponentStyle-cellAdd {
   background-color: rgba(191, 213, 255, 0.15);
-  border-radius: 0.5em;
+  border-radius: 0.5rem;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -4294,83 +4879,7 @@ html {
   width: inherit;
   height: inherit;
 }
-@media screen and (max-width: 640px), (max-height: 480px) {
-  .-discountLabel {
-    padding: 0px 0.1em;
-  }
-}
-.-discount {
-  background-color: rgb(255, 238, 0);
-  border-radius: 0.25em;
-  color: rgb(0, 25, 38);
-  cursor: default;
-  padding: 0px 0.188em;
-  text-align: center;
-  width: auto;
-  height: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  -webkit-box-align: center;
-  -webkit-box-pack: center;
-}
-.-discount span {
-  font-family: BaseFontMedium, FallbackFontMedium;
-  font-style: normal;
-  font-weight: 500;
-  text-transform: uppercase;
-  color: rgb(0, 25, 38);
-  font-size: 1em;
-  line-height: 100%;
-}
-@media screen and (max-width: 640px), (max-height: 480px) {
-  .-discount {
-    padding: 0px 0.1em;
-  }
-}
-.SuppliesComponentStyle-discountLabel {
-  background-color: rgb(255, 238, 0);
-  border-radius: 0.25em;
-  color: rgb(0, 25, 38);
-  cursor: default;
-  padding: 0px;
-  text-align: center;
-  width: 1.25em;
-  height: 1.25em;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: absolute;
-  right: 0px;
-  top: 0px;
-  z-index: 2;
-  font-family: BaseFontMedium, FallbackFontMedium;
-  font-style: normal;
-  font-weight: 500;
-  text-transform: uppercase;
-  font-size: 1em;
-  line-height: 100%;
-  -webkit-box-align: center;
-  -webkit-box-pack: center;
-}
-.SuppliesComponentStyle-discountLabel span {
-  font-family: BaseFontMedium, FallbackFontMedium;
-  font-style: normal;
-  font-weight: 500;
-  text-transform: uppercase;
-  color: rgb(0, 25, 38);
-  font-size: 1em;
-  line-height: 100%;
-}
-@media screen and (max-width: 640px), (max-height: 480px) {
-  .SuppliesComponentStyle-discountLabel {
-    padding: 0px 0.1em;
-  }
-}
-.ksc-87 {
-  cursor: pointer;
-}
-@-webkit-keyframes ksc-keyframe-89 {
+@-webkit-keyframes ksc-keyframe-69 {
   0% {
     opacity: 0;
     transform: scale(1.2);
@@ -4379,7 +4888,7 @@ html {
     opacity: 1;
   }
 }
-@keyframes ksc-keyframe-89 {
+@keyframes ksc-keyframe-69 {
   0% {
     opacity: 0;
     transform: scale(1.2);
@@ -4389,17 +4898,16 @@ html {
   }
 }
 .-appearWithScaling {
-  animation: 200ms ease-out 0s 1 normal none running ksc-keyframe-89;
+  animation: 200ms ease-out 0s 1 normal none running ksc-keyframe-69;
 }
 .TankPreviewComponentStyle-visible {
-  animation: 200ms ease-out 0s 1 normal none running ksc-keyframe-89;
+  animation: 200ms ease-out 0s 1 normal none running ksc-keyframe-69;
   position: absolute;
   visibility: visible;
   width: 100%;
   height: 100%;
   opacity: 1;
 }
-
 .GarageMenuComponentStyle-garageMenuContainer {
   display: flex;
   align-items: center;
@@ -4552,12 +5060,12 @@ html {
   width: 100%;
   z-index: 1;
 }
-.ksc-90 {
+.ksc-70 {
   height: 4em;
   width: 100%;
   z-index: 2;
 }
-.ksc-91.ksc-91 {
+.ksc-71.ksc-71 {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -4569,11 +5077,11 @@ html {
   -webkit-box-pack: center;
   user-select: none;
 }
-.ksc-92 {
+.ksc-72 {
   height: 4em;
   width: max-content;
 }
-.ksc-93 {
+.ksc-73 {
   cursor: default;
 }
 .TanksPartBaseComponentStyle-tankPartContainer {
@@ -4612,6 +5120,7 @@ html {
   -webkit-box-align: center;
   -webkit-box-pack: start;
 }
+
 .ListItemsComponentStyle-itemsContainer {
   overflow: auto hidden;
   scrollbar-width: none;
@@ -4640,7 +5149,7 @@ html {
 .-itemStyle {
   background-color: rgba(191, 213, 255, 0.15);
   box-shadow: rgba(191, 213, 255, 0.3) 0em 0em 0em 0.063em;
-  border-radius: 0.5em;
+  border-radius: 0.5rem;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -4675,33 +5184,6 @@ html {
   width: auto;
   height: 6.25em;
   position: absolute;
-}
-
-.GarageItemComponentStyle-unavailable {
-  height: 3em;
-  width: 3em;
-  top: 50%;
-  margin-top: -1.5em;
-}
-.GarageItemComponentStyle-itemPriceInCrystals {
-  display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
-  margin-right: 0.75em;
-  -webkit-box-align: start;
-  -webkit-box-pack: start;
-}
-.GarageItemComponentStyle-itemPriceInCrystals span {
-  color: rgb(0, 215, 255);
-  font-family: BaseFontRegular, FallbackFontRegular;
-  font-style: normal;
-  font-weight: 500;
-  font-size: 1em;
-}
-.GarageItemComponentStyle-itemPriceInCrystals img {
-  width: 1em;
-  height: 1em;
-  margin-right: 0.313em;
 }
 .PaintsCollectionComponentStyle-containerPaints {
   display: flex;
@@ -4951,6 +5433,9 @@ html {
   font-size: 0.75em;
   margin-right: 0.75em;
 }
+.ksc-89 {
+  color: rgb(191, 213, 255);
+}
 .SquarePriceButtonComponentStyle-commonBlockButton {
   position: relative;
   min-width: 10.9375em;
@@ -4970,18 +5455,18 @@ html {
   -webkit-box-align: end;
   -webkit-box-pack: end;
 }
-.ksc-112 {
+.ksc-91 {
   position: absolute;
   width: 100%;
   height: 100%;
 }
-.ksc-114 {
+.ksc-93 {
   position: absolute;
   width: 100%;
   height: 100%;
   text-align: right;
 }
-.ksc-115 {
+.ksc-94 {
   font-size: 1em;
   font-weight: 700;
   line-height: 1.25em;
@@ -4997,6 +5482,7 @@ html {
   -webkit-box-align: center;
   -webkit-box-pack: start;
 }
+
 .PaintsCollectionComponentStyle-favoriteIconContainer {
   right: 0px;
   position: absolute;
@@ -5016,7 +5502,6 @@ html {
   -webkit-box-align: stretch;
   -webkit-box-pack: center;
 }
-
 .TanksPartComponentStyle-descriptionContainer {
   display: flex;
   flex-direction: column;
@@ -5207,18 +5692,18 @@ html {
 .ItemDescriptionComponentStyle-marginP:hover {
   color: rgb(255, 255, 255);
 }
-.ksc-131 {
+.ksc-111 {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.ksc-131.ksc-131 {
+.ksc-111.ksc-111 {
   display: flex;
   max-width: 22.5em;
   min-height: 1.5em;
   width: auto;
   height: auto;
 }
-.ksc-132 {
+.ksc-112 {
   overflow: hidden;
   text-overflow: ellipsis;
   font-size: 1.5em;
@@ -5226,11 +5711,14 @@ html {
   max-width: 22.5em;
   width: auto;
 }
-.ksc-134 {
+.ksc-114 {
+  cursor: pointer;
+}
+.ksc-115 {
   margin-top: 0.75em;
   position: relative;
 }
-.ksc-135.ksc-135 {
+.ksc-116.ksc-116 {
   height: 1.5em;
   left: 0px;
   margin-right: 0.5em;
@@ -5254,6 +5742,7 @@ html {
   font-size: 1.5em;
   margin: 0px;
 }
+
 .-fontH5 {
   font-size: 0.75em;
 }
@@ -5296,7 +5785,7 @@ html {
   align-items: center;
   justify-content: center;
   box-shadow: rgba(255, 255, 255, 0.25) 0em 0em 0em 0.063em;
-  border-radius: 0.5em;
+  border-radius: 0.5rem;
   height: 3em;
   margin-right: 0.75em;
   width: 3em;
@@ -5319,6 +5808,9 @@ html {
   display: flex;
   justify-content: flex-end;
   -webkit-box-pack: end;
+}
+.ksc-155 {
+  height: 100%;
 }
 .GarageCommonStyle-positionContentAlteration {
   height: 100%;
@@ -5357,13 +5849,64 @@ html {
   height: 6em;
   min-width: 18.5em;
   width: 18.5em;
-  border-radius: 0.75em;
+  border-radius: 0.75rem;
+}
+.ksc-156 {
+  height: calc(100% - 4em);
+}
+.ksc-157 {
+  background: radial-gradient(
+    191.67% 100% at 100% 100%,
+    rgba(191, 212, 255, 0.25) 0%,
+    rgba(191, 212, 255, 0) 100%
+  );
+  border-right: 1px solid rgba(255, 255, 255, 0.25);
+  height: calc(100% - 4em);
+  left: 0px;
+  padding: 2em;
+  width: 18.5em;
+  max-width: 18.5em;
+  min-width: 18.5em;
+}
+.ksc-158 {
+  width: 18.5em;
+}
+.ksc-158 h1 {
+  margin-bottom: 0px;
+}
+.ksc-159 {
+  background-image: url("https://s.eu.tankionline.com/624/172214/74/266/31770701132467/image.svg");
+  width: 19.5em;
+  height: 12em;
+  margin-bottom: 2em;
+}
+@media screen and (max-width: 640px), (max-height: 480px) {
+  .ksc-159 {
+    height: 9em;
+    width: 9em;
+  }
 }
 .GarageTurretsAlterationsComponentStyle-styleDescriptionBlock {
   width: 18.5em;
 }
-
-@-webkit-keyframes ksc-keyframe-167 {
+.ksc-160.ksc-160 {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  height: auto;
+  cursor: pointer;
+  width: 18.5em;
+  padding-top: 0px;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-box-align: start;
+  -webkit-box-pack: start;
+}
+.ksc-160.ksc-160 h4 {
+  margin-top: 0.625em;
+}
+@-webkit-keyframes ksc-keyframe-161 {
   0% {
     background-color: rgba(191, 213, 255, 0.25);
   }
@@ -5374,7 +5917,7 @@ html {
     background-color: rgba(191, 213, 255, 0.25);
   }
 }
-@keyframes ksc-keyframe-167 {
+@keyframes ksc-keyframe-161 {
   0% {
     background-color: rgba(191, 213, 255, 0.25);
   }
@@ -5386,7 +5929,7 @@ html {
   }
 }
 .AlterationButtonStyle-commonButton {
-  border-radius: 0.1875em;
+  border-radius: 0.1875rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -5398,7 +5941,7 @@ html {
   -webkit-box-pack: center;
 }
 .AlterationButtonStyle-buyButton {
-  border-radius: 0.75em;
+  border-radius: 0.75rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -5408,6 +5951,50 @@ html {
   width: 18.5em;
   -webkit-box-align: center;
   -webkit-box-pack: center;
+}
+
+.ksc-162.ksc-162 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  box-sizing: border-box;
+  cursor: pointer;
+  position: relative;
+  background-color: rgba(191, 213, 255, 0.25);
+  height: 6em;
+  width: 18.5em;
+  -webkit-box-align: center;
+  -webkit-box-pack: center;
+}
+.ksc-162.ksc-162 span {
+  color: rgb(191, 213, 255);
+}
+.ksc-162.ksc-162:hover {
+  box-shadow: rgb(255, 255, 255) 0em 0em 0em 2px;
+}
+.ksc-162.ksc-162:active {
+  animation: 0.5s linear 0s 1 normal none running ksc-keyframe-161;
+}
+.ksc-162.ksc-162.ksc-162 {
+  height: 6em;
+  min-width: 18.5em;
+  width: 18.5em;
+  border-radius: 0.75rem;
+}
+.ksc-163 {
+  background-image: url("https://s.eu.tankionline.com/static/images/ic_unmount.01e4da15.svg");
+  background-size: contain;
+  width: 4em;
+  height: 4em;
+}
+.ksc-164 {
+  height: 100%;
+  position: absolute;
+  width: 100%;
+}
+.ksc-165 {
+  padding: 0.125em 0.375em 0px;
 }
 .SkinsAndAlterationsStyle-SkinsVerticalComponent {
   width: 100%;
@@ -5441,6 +6028,11 @@ html {
 }
 .-scrollBarVisible::-webkit-scrollbar-thumb:hover {
   background-color: rgba(255, 255, 255, 0.2);
+}
+.ksc-166 {
+  margin-left: 0px;
+  height: auto;
+  max-height: calc(100% - 3.5em);
 }
 .SkinCellComponentStyle-gradientCategoryDevices-COMMON {
   background-repeat: no-repeat;
@@ -5498,6 +6090,64 @@ html {
   -webkit-box-align: center;
   -webkit-box-pack: end;
 }
+.ksc-167 {
+  box-sizing: border-box;
+  background: rgba(191, 213, 255, 0.15);
+  border-radius: 0.5rem;
+  position: relative;
+  text-align: center;
+  overflow: hidden;
+  cursor: pointer;
+  opacity: 1;
+  width: clamp(180px, 16vw, 240px);
+  height: clamp(180px, 16vw, 240px);
+  box-shadow: rgba(191, 213, 255, 0.3) 0em 0em 0em 0.063em;
+}
+.ksc-167 h3 {
+  font-family: BaseFontMedium, FallbackFontMedium;
+  font-style: normal;
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 1.125em;
+}
+.ksc-167 h3 {
+  color: rgb(191, 213, 255);
+}
+.ksc-167:hover {
+  box-shadow: rgb(191, 213, 255) 0em 0em 0em 0.125em;
+}
+.ksc-167:nth-child(2n) {
+  margin-bottom: 0px;
+}
+.ksc-168 {
+  box-sizing: border-box;
+  background: rgba(191, 213, 255, 0.15);
+  border-radius: 0.5rem;
+  position: relative;
+  text-align: center;
+  overflow: hidden;
+  cursor: pointer;
+  opacity: 0.75;
+  width: clamp(180px, 16vw, 240px);
+  height: clamp(180px, 16vw, 240px);
+  box-shadow: rgba(191, 213, 255, 0.3) 0em 0em 0em 0.063em;
+}
+.ksc-168 h3 {
+  font-family: BaseFontMedium, FallbackFontMedium;
+  font-style: normal;
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 1.125em;
+}
+.ksc-168 h3 {
+  color: rgb(191, 213, 255);
+}
+.ksc-168:hover {
+  box-shadow: rgb(191, 213, 255) 0em 0em 0em 0.125em;
+}
+.ksc-168:nth-child(2n) {
+  margin-bottom: 0px;
+}
 .SkinCellComponentStyle-gradientCategoryDevices-LEGENDARY {
   background-image: radial-gradient(
     100% 100% at 0% 0%,
@@ -5533,6 +6183,38 @@ html {
   right: 0px;
   width: 3em;
   z-index: 2;
+}
+.ksc-169 {
+  box-sizing: border-box;
+  background: rgba(118, 255, 51, 0.15);
+  border-radius: 0.5rem;
+  position: relative;
+  text-align: center;
+  overflow: hidden;
+  cursor: auto;
+  opacity: 1;
+  width: clamp(180px, 16vw, 240px);
+  height: clamp(180px, 16vw, 240px);
+  box-shadow: rgb(255, 255, 255) 0em 0em 0em 0.125em;
+}
+.ksc-169 h3 {
+  font-family: BaseFontMedium, FallbackFontMedium;
+  font-style: normal;
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 1.125em;
+}
+.ksc-169 h3 {
+  color: rgb(118, 255, 51);
+}
+.ksc-169:hover {
+  box-shadow: rgb(191, 213, 255) 0em 0em 0em 0.125em;
+}
+.ksc-169:hover {
+  box-shadow: rgb(118, 255, 51) 0em 0em 0em 0.125em;
+}
+.ksc-169:nth-child(2n) {
+  margin-bottom: 0px;
 }
 .SkinCellComponentStyle-gradientCategoryDevices-EPIC {
   background-image: radial-gradient(
@@ -5589,619 +6271,6 @@ html {
   top: 0px;
   width: 1em;
   z-index: 2;
-}
-@-webkit-keyframes ksc-keyframe-178 {
-  0% {
-    background-color: rgb(118, 255, 51);
-  }
-  50% {
-    background-color: rgba(118, 255, 51, 0.7);
-  }
-  100% {
-    background-color: rgb(118, 255, 51);
-  }
-}
-@keyframes ksc-keyframe-178 {
-  0% {
-    background-color: rgb(118, 255, 51);
-  }
-  50% {
-    background-color: rgba(118, 255, 51, 0.7);
-  }
-  100% {
-    background-color: rgb(118, 255, 51);
-  }
-}
-.SkinCellComponentStyle-gradientCategoryDevices-SPECIAL {
-  background-image: radial-gradient(
-    100% 100% at 0% 0%,
-    rgb(255, 51, 51) 0%,
-    rgba(255, 51, 51, 0) 100%
-  );
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: center center;
-  height: 100%;
-  opacity: 0.5;
-  position: absolute;
-  top: 0px;
-  width: 100%;
-  z-index: 1;
-}
-.SkinCellComponentStyle-deviceCategoryIcons-SPECIAL {
-  background-image: url("https://s.eu.tankionline.com/static/images/special_icon.48160275.svg");
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: center center;
-  height: 1em;
-  left: 0px;
-  position: absolute;
-  top: 0px;
-  width: 1em;
-  z-index: 2;
-}
-.GarageItemComponentStyle-amountItemsScroll {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: BaseFontMedium, FallbackFontMedium;
-  font-style: normal;
-  font-weight: 500;
-  text-transform: uppercase;
-  font-size: 1em;
-  color: rgb(0, 25, 38);
-  background-color: rgb(191, 213, 255);
-  border-radius: 6.25em;
-  height: auto;
-  min-width: 1em;
-  padding-left: 0.375em;
-  padding-right: 0.375em;
-  width: auto;
-  -webkit-box-align: center;
-  -webkit-box-pack: center;
-}
-.GarageGrenadePreviewComponentStyle-view {
-  position: absolute;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-size: contain;
-  width: calc(100% - 51em);
-  height: calc(100% - 30em);
-  top: 13em;
-  -webkit-box-align: start;
-  -webkit-box-pack: center;
-}
-@media screen and (min-width: 1280px), (min-height: 950px) {
-  .GarageGrenadePreviewComponentStyle-view {
-    width: calc(100% - 70em);
-    height: calc(100% - 31em);
-    top: 15em;
-  }
-}
-.GarageSuppliesComponentStyle-containerButtons {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  width: 22.3em;
-  height: 9.75em;
-  margin-top: 1.25em;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-  -webkit-box-align: center;
-  -webkit-box-pack: start;
-}
-@media screen and (max-width: 640px), (max-height: 480px) {
-  .GarageSuppliesComponentStyle-containerButtons {
-    height: 6em;
-  }
-}
-.TanksPartComponentStyle-amountItems {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 1.5em;
-  background-color: rgb(118, 255, 51);
-  border-radius: 6.25em;
-  box-shadow: rgba(118, 255, 51, 0.99) 0px 0px 1.25rem 0px;
-  min-width: 2em;
-  width: auto;
-  margin-top: 1.5em;
-  -webkit-box-align: center;
-  -webkit-box-pack: center;
-}
-.TanksPartComponentStyle-amountItems span {
-  font-size: 1em;
-  font-family: BaseFontMedium, FallbackFontMedium;
-  font-style: normal;
-  font-weight: 500;
-  text-transform: uppercase;
-  padding: 0.625rem;
-}
-@media screen and (min-width: 1280px), (min-height: 950px) {
-  .TanksPartComponentStyle-amountItems {
-    margin-top: 4em;
-  }
-}
-@-webkit-keyframes ksc-keyframe-197 {
-  0% {
-    background-color: rgb(0, 212, 255);
-  }
-  50% {
-    background-color: rgba(0, 212, 255, 0.8);
-  }
-  100% {
-    background-color: rgb(0, 212, 255);
-  }
-}
-@keyframes ksc-keyframe-197 {
-  0% {
-    background-color: rgb(0, 212, 255);
-  }
-  50% {
-    background-color: rgba(0, 212, 255, 0.8);
-  }
-  100% {
-    background-color: rgb(0, 212, 255);
-  }
-}
-
-.SquarePriceButtonComponentStyle-paddingPriceStyleButton {
-  padding: 0.5em;
-}
-.GarageCommonStyle-iconCoinSmall {
-  width: 1em;
-  height: 1em;
-}
-.-flexEndAlignStart {
-  display: flex;
-  align-items: flex-start;
-  justify-content: flex-end;
-  -webkit-box-align: start;
-  -webkit-box-pack: end;
-}
-.DisplayPriceComponentStyle-discountTimer {
-  margin-top: 0px;
-  margin-right: 0px;
-}
-.DisplayPriceComponentStyle-discountTimer span {
-  font-family: BaseFontRegular, FallbackFontRegular;
-  font-style: normal;
-  font-weight: normal;
-  font-size: 1em;
-  text-transform: lowercase;
-}
-.SquarePriceButtonComponentStyle-discountLabel {
-  background-color: rgb(255, 238, 0);
-  border-radius: 0.25em;
-  color: rgb(0, 25, 38);
-  cursor: default;
-  padding: 0px 0.188em;
-  text-align: center;
-  width: auto;
-  height: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  align-self: flex-end;
-  font-family: BaseFontMedium, FallbackFontMedium;
-  font-style: normal;
-  font-weight: 500;
-  text-transform: uppercase;
-  font-size: 1em;
-  margin-left: 0.375em;
-  min-height: 1.25em;
-  min-width: 2.5em;
-  -webkit-box-align: center;
-  -webkit-box-pack: center;
-}
-.SquarePriceButtonComponentStyle-discountLabel span {
-  font-family: BaseFontMedium, FallbackFontMedium;
-  font-style: normal;
-  font-weight: 500;
-  text-transform: uppercase;
-  color: rgb(0, 25, 38);
-  font-size: 1em;
-  line-height: 100%;
-}
-@media screen and (max-width: 640px), (max-height: 480px) {
-  .SquarePriceButtonComponentStyle-discountLabel {
-    padding: 0px 0.1em;
-  }
-}
-.GarageItemComponentStyle-itemResistanceIcon {
-  position: absolute;
-  width: 3em;
-  height: 3em;
-  margin-top: 1.125em;
-  z-index: 2;
-}
-.GarageProtectionsComponentStyle-blockParametersProtection {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: space-between;
-  margin-left: 0px;
-  width: 21.875em;
-  z-index: 2;
-  margin-top: 1.5em;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-  -webkit-box-align: stretch;
-  -webkit-box-pack: justify;
-}
-.GarageProtectionsComponentStyle-blockParametersProtection h1 {
-  font-family: BaseFontMedium, FallbackFontMedium;
-  font-style: normal;
-  font-weight: 500;
-  text-transform: uppercase;
-  font-size: 1.5em;
-  margin-top: 0px;
-}
-.GarageProtectionsComponentStyle-blockParametersProtection h2 {
-  font-family: BaseFontRegular, FallbackFontRegular;
-  font-style: normal;
-  font-weight: 500;
-  font-size: 1em;
-  margin-top: 0px;
-}
-.GarageProtectionsComponentStyle-blockParametersProtection h3 {
-  font-family: BaseFontRegular, FallbackFontRegular;
-  font-style: normal;
-  font-weight: normal;
-  font-size: 1em;
-}
-@media screen and (min-width: 1280px), (min-height: 950px) {
-  .GarageProtectionsComponentStyle-blockParametersProtection {
-    margin-top: 4em;
-  }
-}
-.GarageProtectionsComponentStyle-aboutDefence span {
-  font-size: 1em;
-}
-.GarageProtectionsComponentStyle-containerEquipmentCannon {
-  background-color: transparent;
-  display: flex;
-  align-items: stretch;
-  justify-content: flex-start;
-  position: relative;
-  width: 18.25em;
-  height: auto;
-  margin-left: 0px;
-  -webkit-box-align: stretch;
-  -webkit-box-pack: start;
-}
-.GarageProtectionsComponentStyle-blockParameterEquip {
-  display: flex;
-  align-items: stretch;
-  justify-content: space-between;
-  width: 18.25em;
-  height: 5em;
-  margin-left: 0px;
-  margin-top: 0px;
-  -webkit-box-align: stretch;
-  -webkit-box-pack: justify;
-}
-.GarageProtectionsComponentStyle-unequip {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  width: auto;
-  height: 1.563em;
-  -webkit-box-align: center;
-  -webkit-box-pack: start;
-}
-.-borderRadius4px {
-  border-radius: 0.25em;
-  box-sizing: border-box;
-}
-.-boxShadowForButton {
-  box-shadow: rgba(191, 213, 255, 0.5) 0px 0px 0px 0.063em;
-}
-.GarageProtectionsComponentStyle-equipmentResistance {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 4em;
-  height: 5em;
-  margin-left: 0px;
-  position: relative;
-  cursor: pointer;
-  -webkit-box-align: center;
-  -webkit-box-pack: center;
-}
-.GarageProtectionsComponentStyle-mountedResist {
-  background-image: url("https://s.eu.tankionline.com/static/images/protectionSlotEquip.5f03fffe.svg");
-  background-repeat: no-repeat;
-  background-size: 100%;
-  background-position: center center;
-}
-.GarageProtectionsComponentStyle-mountedResist:hover {
-  background-image: url("https://s.eu.tankionline.com/static/images/hoverProtectionEquipSlot.53a400d5.svg");
-  background-repeat: no-repeat;
-  background-size: 100%;
-  background-position: center center;
-}
-.GarageProtectionsComponentStyle-resistanceIcon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 2em;
-  height: 2em;
-  position: relative;
-  -webkit-box-align: center;
-  -webkit-box-pack: center;
-}
-.GarageProtectionsComponentStyle-resistanceIconContainer {
-  width: 4.688em;
-  height: 3.563em;
-}
-.GarageProtectionsComponentStyle-resistanceIconContainer img {
-  width: 3.75em;
-  height: auto;
-}
-.-buttonNeutralHover {
-  background-color: rgba(191, 213, 255, 0.05);
-  box-shadow: rgb(191, 213, 255) 0em 0em 0em 0.125em;
-}
-.GarageProtectionsComponentStyle-mountedResistActive {
-  background-image: url("https://s.eu.tankionline.com/static/images/selectedEquipSlot.6403c13c.svg");
-  background-repeat: no-repeat;
-  background-size: 100%;
-  background-position: center center;
-}
-.GarageProtectionsComponentStyle-mountedResistActive:hover {
-  background-image: url("https://s.eu.tankionline.com/static/images/hoverProtectionEquipSlot.53a400d5.svg");
-  background-repeat: no-repeat;
-  background-size: 100%;
-  background-position: center center;
-}
-.GarageProtectionsComponentStyle-freeSlotActive {
-  background-image: url("https://s.eu.tankionline.com/static/images/hoverProtectionEmptySlot.a0889570.svg");
-  background-repeat: no-repeat;
-  background-size: 100%;
-  background-position: center center;
-}
-.GarageProtectionsComponentStyle-freeSlotActive:hover {
-  background-image: url("https://s.eu.tankionline.com/static/images/hoverProtectionEmptySlot.a0889570.svg");
-  background-repeat: no-repeat;
-  background-size: 100%;
-  background-position: center center;
-}
-.GarageProtectionsComponentStyle-actionHintImage {
-  width: 1.938em;
-  height: 1.938em;
-  opacity: 1;
-  position: absolute;
-  z-index: 3;
-  cursor: pointer;
-  margin-top: -8.25em;
-}
-.GarageProtectionsComponentStyle-iconEquipResist {
-  width: 1.938em;
-  height: 1.938em;
-  opacity: 1;
-  position: absolute;
-  z-index: 3;
-  cursor: pointer;
-  margin-top: -8.25em;
-  background-image: url("https://s.eu.tankionline.com/static/images/arrow.ee0f04fc.svg");
-  background-repeat: no-repeat;
-  background-size: 100%;
-  background-position: center center;
-}
-.GarageProtectionsComponentStyle-freeSlot {
-  background-image: url("https://s.eu.tankionline.com/static/images/protectionSlotEmpty.f0a3082e.svg");
-  background-repeat: no-repeat;
-  background-size: 100%;
-  background-position: center center;
-}
-.GarageProtectionsComponentStyle-freeSlot:hover {
-  background-image: url("https://s.eu.tankionline.com/static/images/hoverProtectionEmptySlot.a0889570.svg");
-  background-repeat: no-repeat;
-  background-size: 100%;
-  background-position: center center;
-}
-.ksc-217 {
-  color: rgb(191, 213, 255);
-}
-.ksc-237 {
-  height: 100%;
-}
-.ksc-238 {
-  height: calc(100% - 4em);
-}
-.ksc-239 {
-  background: radial-gradient(
-    191.67% 100% at 100% 100%,
-    rgba(191, 212, 255, 0.25) 0%,
-    rgba(191, 212, 255, 0) 100%
-  );
-  border-right: 1px solid rgba(255, 255, 255, 0.25);
-  height: calc(100% - 4em);
-  left: 0px;
-  padding: 2em;
-  width: 18.5em;
-  max-width: 18.5em;
-  min-width: 18.5em;
-}
-.ksc-240 {
-  width: 18.5em;
-}
-.ksc-240 h1 {
-  margin-bottom: 0px;
-}
-
-.ksc-241 {
-  background-image: url("https://s.eu.tankionline.com/605/115405/45/51/30263301223044/image.svg");
-  width: 19.5em;
-  height: 12em;
-  margin-bottom: 2em;
-}
-@media screen and (max-width: 640px), (max-height: 480px) {
-  .ksc-241 {
-    height: 9em;
-    width: 9em;
-  }
-}
-.ksc-242.ksc-242 {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-  height: auto;
-  cursor: pointer;
-  width: 18.5em;
-  padding-top: 0px;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-  -webkit-box-align: start;
-  -webkit-box-pack: start;
-}
-.ksc-242.ksc-242 h4 {
-  margin-top: 0.625em;
-}
-.ksc-243.ksc-243 {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 0.75em;
-  box-sizing: border-box;
-  cursor: pointer;
-  position: relative;
-  background-color: rgba(191, 213, 255, 0.25);
-  height: 6em;
-  width: 18.5em;
-  -webkit-box-align: center;
-  -webkit-box-pack: center;
-}
-.ksc-243.ksc-243 span {
-  color: rgb(191, 213, 255);
-}
-.ksc-243.ksc-243:hover {
-  box-shadow: rgb(255, 255, 255) 0em 0em 0em 2px;
-}
-.ksc-243.ksc-243:active {
-  animation: 0.5s linear 0s 1 normal none running ksc-keyframe-167;
-}
-.ksc-243.ksc-243.ksc-243 {
-  height: 6em;
-  min-width: 18.5em;
-  width: 18.5em;
-  border-radius: 0.75em;
-}
-.ksc-244 {
-  background-image: url("https://s.eu.tankionline.com/static/images/ic_unmount.01e4da15.svg");
-  background-size: contain;
-  width: 4em;
-  height: 4em;
-}
-.ksc-245 {
-  height: 100%;
-  position: absolute;
-  width: 100%;
-}
-.ksc-246 {
-  padding: 0.125em 0.375em 0px;
-}
-.ksc-247 {
-  margin-left: 0px;
-  height: auto;
-  max-height: calc(100% - 3.5em);
-}
-.ksc-248 {
-  box-sizing: border-box;
-  background: rgba(191, 213, 255, 0.15);
-  border-radius: 0.5em;
-  position: relative;
-  text-align: center;
-  overflow: hidden;
-  cursor: pointer;
-  opacity: 1;
-  width: clamp(180px, 16vw, 240px);
-  height: clamp(180px, 16vw, 240px);
-  box-shadow: rgba(191, 213, 255, 0.3) 0em 0em 0em 0.063em;
-}
-.ksc-248 h3 {
-  font-family: BaseFontMedium, FallbackFontMedium;
-  font-style: normal;
-  font-weight: 500;
-  text-transform: uppercase;
-  font-size: 1.125em;
-}
-.ksc-248 h3 {
-  color: rgb(191, 213, 255);
-}
-.ksc-248:hover {
-  box-shadow: rgb(191, 213, 255) 0em 0em 0em 0.125em;
-}
-.ksc-248:nth-child(2n) {
-  margin-bottom: 0px;
-}
-.ksc-249 {
-  box-sizing: border-box;
-  background: rgba(191, 213, 255, 0.15);
-  border-radius: 0.5em;
-  position: relative;
-  text-align: center;
-  overflow: hidden;
-  cursor: pointer;
-  opacity: 0.75;
-  width: clamp(180px, 16vw, 240px);
-  height: clamp(180px, 16vw, 240px);
-  box-shadow: rgba(191, 213, 255, 0.3) 0em 0em 0em 0.063em;
-}
-.ksc-249 h3 {
-  font-family: BaseFontMedium, FallbackFontMedium;
-  font-style: normal;
-  font-weight: 500;
-  text-transform: uppercase;
-  font-size: 1.125em;
-}
-.ksc-249 h3 {
-  color: rgb(191, 213, 255);
-}
-.ksc-249:hover {
-  box-shadow: rgb(191, 213, 255) 0em 0em 0em 0.125em;
-}
-.ksc-249:nth-child(2n) {
-  margin-bottom: 0px;
-}
-.ksc-250 {
-  box-sizing: border-box;
-  background: rgba(118, 255, 51, 0.15);
-  border-radius: 0.5em;
-  position: relative;
-  text-align: center;
-  overflow: hidden;
-  cursor: auto;
-  opacity: 1;
-  width: clamp(180px, 16vw, 240px);
-  height: clamp(180px, 16vw, 240px);
-  box-shadow: rgb(255, 255, 255) 0em 0em 0em 0.125em;
-}
-.ksc-250 h3 {
-  font-family: BaseFontMedium, FallbackFontMedium;
-  font-style: normal;
-  font-weight: 500;
-  text-transform: uppercase;
-  font-size: 1.125em;
-}
-.ksc-250 h3 {
-  color: rgb(118, 255, 51);
-}
-.ksc-250:hover {
-  box-shadow: rgb(191, 213, 255) 0em 0em 0em 0.125em;
-}
-.ksc-250:hover {
-  box-shadow: rgb(118, 255, 51) 0em 0em 0em 0.125em;
-}
-.ksc-250:nth-child(2n) {
-  margin-bottom: 0px;
 }
 
 @font-face {
@@ -6479,16 +6548,16 @@ img {
   background-color: #3caae2 !important;
   cursor: pointer !important;
 }
-:is(:is(.tt-help-container > .tt-popup) > .tt-footer) > .tt-boosty-button {
-  background-color: #f2612c !important;
+:is(:is(.tt-help-container > .tt-popup) > .tt-footer) > .tt-client-button {
+  background-color: #4c0 !important;
   border-radius: 0.5em !important;
-  margin-top: 1em !important;
+  margin-bottom: 1em !important;
   padding: 0.8em 0 !important;
 }
 :is(
-  :is(:is(.tt-help-container > .tt-popup) > .tt-footer) > .tt-boosty-button
+  :is(:is(.tt-help-container > .tt-popup) > .tt-footer) > .tt-client-button
 ):hover {
-  background-color: #f37344 !important;
+  background-color: #4ce600 !important;
   cursor: pointer !important;
 }
 .MatchmakingWaitComponentStyle-container {
@@ -6925,8 +6994,56 @@ img {
 .GarageCommonStyle-positionContentAlteration {
   overflow-y: hidden !important;
 }
+.SkinsAndAlterationsStyle-SkinsVerticalComponent {
+  grid-template-columns: repeat(auto-fill, 13em) !important;
+  padding-left: 1.5em !important;
+}
+.SkinsAndAlterationsStyle-SkinsVerticalComponent > div {
+  height: 17.3em !important;
+  width: 13em !important;
+}
+:is(.SkinsAndAlterationsStyle-SkinsVerticalComponent.tt-sorted > div):has(
+  .SquarePriceButtonComponentStyle-priceStyle
+) {
+  order: 1 !important;
+}
+:is(.SkinsAndAlterationsStyle-SkinsVerticalComponent.tt-sorted > div):has(
+  > img[src*="unavailable"]
+) {
+  order: 2 !important;
+}
+.tt-garage-sort-button {
+  align-items: center !important;
+  border-right: 1px solid hsla(0, 0%, 100%, 0.25) !important;
+  display: flex !important;
+  height: 100% !important;
+  justify-content: center !important;
+  left: 0 !important;
+  position: absolute !important;
+  width: 6em !important;
+}
+.tt-garage-sort-button:hover {
+  background-color: hsla(0, 0%, 100%, 0.15) !important;
+  cursor: pointer !important;
+}
+.tt-garage-sort-button.tt-enabled > :first-child {
+  background-color: #fff !important;
+}
+.tt-garage-sort-button > :first-child {
+  background-color: #bfd5ff !important;
+  height: 2.2em !important;
+  mask-image: url(chrome-extension://khcoecipddmigggaeokhmhmhjhlpcpnb/assets/5e11f54c05672f233b2d.svg) !important;
+  mask-size: contain !important;
+  width: 2.2em !important;
+}
 .SkinCellStyle-nameDevices {
-  top: 0.4em !important;
+  top: 1em !important;
+}
+.SkinCellStyle-iconCell {
+  height: 7em !important;
+  position: relative !important;
+  top: 0.5em !important;
+  width: 7em !important;
 }
 .garage-item > .ItemNotificationMarkerStyle-base {
   left: 0.4em !important;
@@ -7518,7 +7635,66 @@ img {
   tr {
   width: 65.25em !important;
 }
+:is(
+    .BattleTabStatisticComponentStyle-commonBlockScroll
+      + .-flexCenterAlignCenter
+  )
+  .tt-defence-label {
+  display: flex !important;
+  justify-content: flex-start !important;
+}
+:is(
+    :is(
+        .BattleTabStatisticComponentStyle-commonBlockScroll
+          + .-flexCenterAlignCenter
+      )
+      .tt-defence-label
+  )
+  > :first-child {
+  background-repeat: no-repeat !important;
+  background-size: contain !important;
+  height: 1em !important;
+  margin-right: 0.1875em !important;
+  width: 1em !important;
+}
+:is(
+    :is(
+        .BattleTabStatisticComponentStyle-commonBlockScroll
+          + .-flexCenterAlignCenter
+      )
+      .tt-defence-label
+  )
+  > :last-child {
+  color: #fff !important;
+  font-family: BaseFontRegular, FallbackFontRegular !important;
+  font-size: 0.875em !important;
+  font-style: normal !important;
+  font-weight: 400 !important;
+}
+:is(
+  :is(
+      :is(
+          .BattleTabStatisticComponentStyle-commonBlockScroll
+            + .-flexCenterAlignCenter
+        )
+        .tt-defence-label
+    )
+    > :last-child
+):before {
+  content: "×" !important;
+}
 
+.BattleComponentStyle-canvasContainer.tt-tab-hidden
+  > .BattleTabStatisticComponentStyle-container {
+  display: none !important;
+}
+.BattleFinishStyle-container {
+  background: unset !important;
+}
+.BattleFinishStyle-container > .-backgroundImageCover {
+  position: absolute !important;
+  top: 0 !important;
+}
 .BattleKillBoardComponentStyle-tableContainer table {
   align-items: center !important;
   height: 42em !important;
@@ -7621,6 +7797,429 @@ img {
   margin-bottom: 0 !important;
   margin-right: 0.5em !important;
 }
+.BattleResultNavigationComponentStyle-commonBlockProBattleButton {
+  flex-direction: row !important;
+  height: 8.25em !important;
+  width: 17em !important;
+}
+.BattleResultNavigationComponentStyle-commonBlockProBattleButton
+  > :first-child {
+  margin-bottom: 0 !important;
+  margin-right: 0.5em !important;
+}
+.BattleKillBoardComponentStyle-tableContainer.tt-extended {
+  align-items: center !important;
+  display: flex !important;
+  flex-direction: column !important;
+  font-size: max(min(1.48148vh, 0.97vw), 3px) !important;
+  justify-content: flex-start !important;
+}
+.BattleKillBoardComponentStyle-tableContainer.tt-extended
+  > .TableComponentStyle-table {
+  height: unset !important;
+}
+:is(
+    .BattleKillBoardComponentStyle-tableContainer.tt-extended
+      > .TableComponentStyle-table
+  )
+  :is(th, td):first-child {
+  width: 30% !important;
+}
+:is(
+    .BattleKillBoardComponentStyle-tableContainer.tt-extended
+      > .TableComponentStyle-table
+  )
+  :is(th, td):is(:first-child, :nth-child(2)) {
+  order: -2 !important;
+}
+:is(
+    .BattleKillBoardComponentStyle-tableContainer.tt-extended
+      > .TableComponentStyle-table
+  )
+  .tt-equipment-cell,
+:is(
+    .BattleKillBoardComponentStyle-tableContainer.tt-extended
+      > .TableComponentStyle-table
+  )
+  .tt-equipment-cell-head {
+  order: -1 !important;
+  width: 18.56% !important;
+}
+:is(
+    .BattleKillBoardComponentStyle-tableContainer.tt-extended
+      > .TableComponentStyle-table
+  )
+  .tt-equipment-cell-head
+  > h2 {
+  color: #bfd5ff !important;
+  font-family: BaseFontMedium, FallbackFontMedium !important;
+  font-size: 0.875em !important;
+  font-style: normal !important;
+  font-weight: 500 !important;
+}
+:is(
+    :is(
+        .BattleKillBoardComponentStyle-tableContainer.tt-extended
+          > .TableComponentStyle-table
+      )
+      .tt-equipment-cell
+  )
+  .tt-container {
+  align-items: center !important;
+  display: flex !important;
+  gap: 1.25em !important;
+  height: 100% !important;
+  justify-content: center !important;
+  width: 100% !important;
+}
+:is(
+    :is(
+        .BattleKillBoardComponentStyle-tableContainer.tt-extended
+          > .TableComponentStyle-table
+      )
+      .tt-equipment-cell
+  )
+  .tt-group {
+  align-items: center !important;
+  display: flex !important;
+  gap: 0.25em !important;
+}
+:is(
+    :is(
+        .BattleKillBoardComponentStyle-tableContainer.tt-extended
+          > .TableComponentStyle-table
+      )
+      .tt-equipment-cell
+  )
+  .tt-icon {
+  background-repeat: no-repeat !important;
+  background-size: contain !important;
+  height: 1em !important;
+  width: 1em !important;
+}
+:is(
+  :is(
+      :is(
+          .BattleKillBoardComponentStyle-tableContainer.tt-extended
+            > .TableComponentStyle-table
+        )
+        .tt-equipment-cell
+    )
+    .tt-icon
+):hover {
+  cursor: pointer !important;
+}
+:is(
+    :is(
+        .BattleKillBoardComponentStyle-tableContainer.tt-extended
+          > .TableComponentStyle-table
+      )
+      .tt-equipment-cell
+  )
+  .tt-tooltip {
+  background-color: #032930 !important;
+  border-radius: 0.4em !important;
+  box-shadow: 0 0 0.2em rgba(0, 0, 0, 0.5) !important;
+  color: #fff !important;
+  padding: 0.3em 0.7em !important;
+  text-transform: uppercase !important;
+  transform: translate(-50%, -3em) !important;
+  z-index: 4 !important;
+}
+:is(
+  :is(
+      :is(
+          .BattleKillBoardComponentStyle-tableContainer.tt-extended
+            > .TableComponentStyle-table
+        )
+        .tt-equipment-cell
+    )
+    .tt-tooltip
+):before {
+  border: 0.6em solid transparent !important;
+  border-top-color: #032930 !important;
+  content: "" !important;
+  height: 0 !important;
+  left: 50% !important;
+  position: absolute !important;
+  top: calc(100% - 1px) !important;
+  transform: translateX(-50%) !important;
+  width: 0 !important;
+}
+:is(
+    .BattleKillBoardComponentStyle-tableContainer.tt-extended
+      > .TableComponentStyle-table
+  )
+  :is(th, td):is(:nth-child(4), :nth-child(5)) {
+  display: none !important;
+}
+:is(
+    .BattleKillBoardComponentStyle-tableContainer.tt-extended
+      > .TableComponentStyle-table
+  )
+  :is(th, td):nth-child(6) {
+  width: 14.28% !important;
+}
+:is(
+    .BattleKillBoardComponentStyle-tableContainer.tt-extended
+      > .TableComponentStyle-table
+  )
+  td:nth-child(6) {
+  text-wrap: nowrap !important;
+}
+:is(
+    :is(
+        .BattleKillBoardComponentStyle-tableContainer.tt-extended
+          > .TableComponentStyle-table
+      )
+      td:nth-child(6)
+  )
+  > :first-child {
+  margin-right: 0.3em !important;
+}
+:is(
+    :is(
+        .BattleKillBoardComponentStyle-tableContainer.tt-extended
+          > .TableComponentStyle-table
+      )
+      td:nth-child(6)
+  )
+  > :last-child {
+  color: #c4cdd4 !important;
+  font-weight: 500 !important;
+}
+.BattleKillBoardComponentStyle-tableContainer.tt-extended
+  .TableComponentStyle-thead {
+  background-color: rgb(191 213 255/5%) !important;
+  border-bottom: 0.1em solid hsla(0, 0%, 100%, 0.1) !important;
+  border-radius: 0.5em 0.5em 0 0 !important;
+  margin-bottom: 0 !important;
+  padding: 0.3em 1em 0.1em !important;
+  position: unset !important;
+}
+.BattleKillBoardComponentStyle-tableContainer.tt-extended
+  .TableComponentStyle-tBody {
+  background-clip: padding-box !important;
+  background-color: rgb(191 213 255/5%) !important;
+  border: 1em solid rgb(191 213 255/5%) !important;
+  border-radius: 0 0 0.5em 0.5em !important;
+  border-right-width: 0 !important;
+  height: unset !important;
+  margin-top: 0 !important;
+  max-height: 39.0625em !important;
+  min-height: unset !important;
+  scrollbar-color: hsla(0, 0%, 100%, 0.15) #182027 !important;
+}
+.BattleKillBoardComponentStyle-tableContainer.tt-extended .tt-player-details {
+  align-items: flex-start !important;
+  background-color: rgb(191 213 255/5%) !important;
+  border-radius: 0 0 0.5em 0.5em !important;
+  box-sizing: border-box !important;
+  color: #fff !important;
+  display: flex !important;
+  font-family: BaseFontMedium, FallbackFontMedium !important;
+  height: 6em !important;
+  justify-content: space-between !important;
+  padding: 0.8em 1.75em 0 !important;
+  width: 51em !important;
+}
+:is(
+    .BattleKillBoardComponentStyle-tableContainer.tt-extended .tt-player-details
+  )
+  .tt-section {
+  display: flex !important;
+  gap: 0.5em !important;
+}
+:is(
+    :is(
+        .BattleKillBoardComponentStyle-tableContainer.tt-extended
+          .tt-player-details
+      )
+      .tt-equipment-details
+  )
+  .tt-item {
+  display: flex !important;
+  gap: 0.8em !important;
+  width: 14em !important;
+}
+:is(
+    :is(
+        .BattleKillBoardComponentStyle-tableContainer.tt-extended
+          .tt-player-details
+      )
+      .tt-equipment-details
+  )
+  .tt-main-icon-container {
+  align-items: center !important;
+  display: flex !important;
+  flex: none !important;
+  height: 4em !important;
+  justify-content: center !important;
+  width: 4em !important;
+}
+:is(
+    :is(
+        .BattleKillBoardComponentStyle-tableContainer.tt-extended
+          .tt-player-details
+      )
+      .tt-equipment-details
+  )
+  .tt-main-icon {
+  background-repeat: no-repeat !important;
+  background-size: contain !important;
+  filter: drop-shadow(0 0 0 white) !important;
+  flex: none !important;
+  height: 3.8em !important;
+  width: 3.8em !important;
+}
+:is(
+    :is(
+        .BattleKillBoardComponentStyle-tableContainer.tt-extended
+          .tt-player-details
+      )
+      .tt-equipment-details
+  )
+  .tt-info {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.5em !important;
+}
+:is(
+    :is(
+        :is(
+            .BattleKillBoardComponentStyle-tableContainer.tt-extended
+              .tt-player-details
+          )
+          .tt-equipment-details
+      )
+      .tt-info
+  )
+  .tt-name {
+  color: #c4cdd4 !important;
+  font-size: 0.8em !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+}
+:is(
+    :is(
+        :is(
+            .BattleKillBoardComponentStyle-tableContainer.tt-extended
+              .tt-player-details
+          )
+          .tt-equipment-details
+      )
+      .tt-info
+  )
+  .tt-augment {
+  font-size: 0.85em !important;
+  text-transform: uppercase !important;
+}
+:is(
+    :is(
+        :is(
+            :is(
+                .BattleKillBoardComponentStyle-tableContainer.tt-extended
+                  .tt-player-details
+              )
+              .tt-equipment-details
+          )
+          .tt-info
+      )
+      .tt-augment
+  )
+  > span {
+  color: #e0e6ed !important;
+}
+:is(
+    .BattleKillBoardComponentStyle-tableContainer.tt-extended .tt-player-details
+  )
+  .tt-panel-divider {
+  background-color: hsla(0, 0%, 100%, 0.1) !important;
+  height: 4.2em !important;
+  margin-left: 1em !important;
+  margin-right: 1em !important;
+  width: 0.1em !important;
+}
+:is(
+    .BattleKillBoardComponentStyle-tableContainer.tt-extended .tt-player-details
+  )
+  .tt-damage-details {
+  gap: 2em !important;
+}
+:is(
+    :is(
+        .BattleKillBoardComponentStyle-tableContainer.tt-extended
+          .tt-player-details
+      )
+      .tt-damage-details
+  )
+  .tt-stats-box {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 4em !important;
+  justify-content: space-between !important;
+  width: 6.5em !important;
+}
+:is(
+    :is(
+        :is(
+            .BattleKillBoardComponentStyle-tableContainer.tt-extended
+              .tt-player-details
+          )
+          .tt-damage-details
+      )
+      .tt-stats-box
+  )
+  .tt-label {
+  color: #8a9ba8 !important;
+  font-size: 0.8em !important;
+  letter-spacing: 0.05em !important;
+  text-transform: uppercase !important;
+}
+:is(
+    :is(
+        :is(
+            .BattleKillBoardComponentStyle-tableContainer.tt-extended
+              .tt-player-details
+          )
+          .tt-damage-details
+      )
+      .tt-stats-box
+  )
+  .tt-value {
+  font-size: 1.5em !important;
+  font-weight: 700 !important;
+}
+.tt-total-damage:is(
+  :is(
+      :is(
+          :is(
+              .BattleKillBoardComponentStyle-tableContainer.tt-extended
+                .tt-player-details
+            )
+            .tt-damage-details
+        )
+        .tt-stats-box
+    )
+    .tt-value
+) {
+  color: #e0e6ed !important;
+}
+.tt-critical-damage:is(
+  :is(
+      :is(
+          :is(
+              .BattleKillBoardComponentStyle-tableContainer.tt-extended
+                .tt-player-details
+            )
+            .tt-damage-details
+        )
+        .tt-stats-box
+    )
+    .tt-value
+) {
+  color: #f50000 !important;
+}
 
 :is(
     .BattlePassLobbyComponentStyle-menuBattlePass,
@@ -7652,4 +8251,114 @@ img {
   )
   > img {
   pointer-events: all !important;
+}
+
+.GameSettingsStyle-gameSettingsBlock {
+  height: unset !important;
+}
+.tt-settings-containter {
+  display: flex !important;
+  flex-direction: column !important;
+  height: max-content !important;
+  margin-bottom: 1.5em !important;
+  width: 100% !important;
+}
+.tt-settings-containter .tt-tooltip {
+  background-color: #032930 !important;
+  border-radius: 0.4em !important;
+  box-shadow: 0 0 0.2em rgba(0, 0, 0, 0.5) !important;
+  color: #fff !important;
+  padding: 0.3em 0.7em !important;
+  text-transform: uppercase !important;
+  transform: translate(-100%, -3.3em) !important;
+  z-index: 4 !important;
+}
+:is(.tt-settings-containter .tt-tooltip):before {
+  border: 0.6em solid transparent !important;
+  border-top-color: #032930 !important;
+  content: "" !important;
+  height: 0 !important;
+  left: 50% !important;
+  position: absolute !important;
+  top: calc(100% - 1px) !important;
+  transform: translateX(-50%) !important;
+  width: 0 !important;
+}
+.tt-settings-containter > .tt-checkbox-setting {
+  align-items: center !important;
+  display: flex !important;
+  height: 2.25em !important;
+  justify-content: flex-start !important;
+  margin-bottom: 1.25em !important;
+  width: 100% !important;
+}
+:is(.tt-settings-containter > .tt-checkbox-setting) > .tt-checkbox-container {
+  display: flex !important;
+}
+:is(
+    :is(.tt-settings-containter > .tt-checkbox-setting) > .tt-checkbox-container
+  )
+  > .tt-checkbox {
+  background-color: rgba(191, 213, 255, 0.25) !important;
+  border: 0.063em solid hsla(0, 0%, 100%, 0.2) !important;
+  border-radius: 6.25rem !important;
+  cursor: pointer !important;
+  display: flex !important;
+  height: 1.5em !important;
+  width: 2.75em !important;
+}
+:is(
+  :is(
+      :is(.tt-settings-containter > .tt-checkbox-setting)
+        > .tt-checkbox-container
+    )
+    > .tt-checkbox
+):before {
+  background: url(chrome-extension://khcoecipddmigggaeokhmhmhjhlpcpnb/assets/1918884a723176a5e230.svg)
+    50% 50%/100% 100% no-repeat !important;
+  content: "" !important;
+  height: auto !important;
+  left: 0.25em !important;
+  margin-top: 0 !important;
+  position: relative !important;
+  transition: all 0.2s ease 0s !important;
+  width: 1rem !important;
+}
+:is(.tt-settings-containter > .tt-checkbox-setting) > .tt-description {
+  align-items: center !important;
+  cursor: pointer !important;
+  display: flex !important;
+  height: 3em !important;
+  justify-content: flex-start !important;
+  margin-left: 0 !important;
+  position: relative !important;
+  width: max-content !important;
+}
+:is(:is(.tt-settings-containter > .tt-checkbox-setting) > .tt-description)
+  > label {
+  color: hsla(0, 0%, 100%, 0.5) !important;
+  cursor: pointer !important;
+  font-family: BaseFontRegular, FallbackFontRegular !important;
+  font-size: 1em !important;
+  font-style: normal !important;
+  font-weight: 400 !important;
+  line-height: normal !important;
+  margin-left: 1em !important;
+  margin-right: 1em !important;
+  z-index: 2 !important;
+}
+.tt-checked:is(.tt-settings-containter > .tt-checkbox-setting) .tt-checkbox {
+  background-color: rgba(118, 255, 51, 0.25) !important;
+}
+:is(
+  .tt-checked:is(.tt-settings-containter > .tt-checkbox-setting) .tt-checkbox
+):before {
+  background: url(chrome-extension://khcoecipddmigggaeokhmhmhjhlpcpnb/assets/afad1b22241b0c2c54da.svg)
+    50% 50%/100% 100% no-repeat !important;
+  left: 1.5em !important;
+}
+.tt-checked:is(.tt-settings-containter > .tt-checkbox-setting)
+  > .tt-description
+  > label {
+  color: #fff !important;
 }

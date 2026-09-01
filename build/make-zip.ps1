@@ -43,6 +43,8 @@ $denyPatterns = @(
 $staging = Join-Path $env:TEMP ("tanki_qol_pkg_" + [System.Guid]::NewGuid().ToString('N'))
 $distDir = Join-Path $root 'build/dist'
 $zipPath = Join-Path $distDir ("tanki-combos-qol-v{0}.zip" -f $version)
+# תיקייה מחולצת לטעינה כ-unpacked, נבנית מחדש בכל הרצה
+$unpackedDir = Join-Path $distDir ("tanki-combos-qol-v{0}" -f $version)
 
 New-Item -ItemType Directory -Path $staging -Force | Out-Null
 New-Item -ItemType Directory -Path $distDir -Force | Out-Null
@@ -108,6 +110,13 @@ try {
     $sizeKb = [math]::Round((Get-Item $zipPath).Length / 1KB, 1)
     Write-Host ""
     Write-Host ("OK  version {0}  ->  {1}  ({2} KB)" -f $version, $zipPath, $sizeKb) -ForegroundColor Green
+
+    # חילוץ ה-ZIP לתיקייה נקייה, כדי לטעון unpacked בלי צעדים ביד
+    if (Test-Path $unpackedDir) { Remove-Item $unpackedDir -Recurse -Force }
+    New-Item -ItemType Directory -Path $unpackedDir -Force | Out-Null
+    Expand-Archive -Path $zipPath -DestinationPath $unpackedDir -Force
+
+    Write-Host ("Extracted  ->  {0}" -f $unpackedDir) -ForegroundColor Green
     Write-Host "Next: docs/PACKAGING.md -> 'Before uploading' checklist."
 }
 finally {

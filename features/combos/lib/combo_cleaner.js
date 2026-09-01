@@ -1,0 +1,96 @@
+// features/combos/lib/combo_cleaner.js
+
+// מודול זה אחראי לניקוי אוטומטי של קומבואים ריקים
+(function () {
+  "use strict";
+
+  window.TankiQoL = window.TankiQoL || {};
+
+  window.TankiQoL.ComboCleaner = {
+    // בדיקה אם קומבו ריק (כל הפריטים הוסרו או לא קיימים)
+    isComboEmpty(combo) {
+      if (!combo || !combo.data) return true;
+
+      const data = combo.data;
+      const removedItems = combo.removedItems || {};
+
+      // בדיקת פריטים ראשיים (turret, hull, grenade, drone)
+      const hasActiveTurret = data.turret && !removedItems.turret;
+      const hasActiveHull = data.hull && !removedItems.hull;
+      const hasActiveGrenade = data.grenade && !removedItems.grenade;
+      const hasActiveDrone = data.drone && !removedItems.drone;
+
+      // פריטים דקורטיביים — עדיין משנים משהו בהצטיידות, אז לא מוחקים.
+      // סקינים לא נספרים: בלי התותח/גוף שלהם הם לא מציידים כלום.
+      // אפקט ירייה אינו חריץ בקומבו כלל, ולכן לא נספר גם הוא.
+      const hasActivePaint = data.paint && !removedItems.paint;
+
+      // בדיקת הגנות - protection היא מערך
+      const protections =
+        data.protection && Array.isArray(data.protection)
+          ? data.protection
+          : [];
+      const removedProtections = removedItems.protection || [];
+      let hasActiveProtection = false;
+
+      // בדיקה אם יש לפחות הגנה אחת שלא הוסרה
+      for (let i = 0; i < protections.length; i++) {
+        if (protections[i] && !removedProtections.includes(i)) {
+          hasActiveProtection = true;
+          break;
+        }
+      }
+
+      // הקומבו ריק רק אם אין אף פריט פעיל
+      return (
+        !hasActiveTurret &&
+        !hasActiveHull &&
+        !hasActiveGrenade &&
+        !hasActiveDrone &&
+        !hasActiveProtection &&
+        !hasActivePaint
+      );
+    },
+
+    // כפילויות שנוצרו מייבוא או מגרסאות ישנות. השמירה מנקה כפילות
+    // בזמן אמת; זו הרשת שתופסת את השאר. הראשון ברשימה שורד.
+    _dropDuplicates(combos) {
+      const Match = window.TankiQoL.ComboIdentity;
+      if (!Match || !Match.isSameCombo) return combos;
+      const kept = [];
+      for (const combo of combos) {
+        if (kept.some((k) => Match.isSameCombo(k, combo))) continue;
+        kept.push(combo);
+      }
+      return kept;
+    },
+
+    // מחיקה אוטומטית של קומבואים ריקים וכפולים
+    // מקבלת callback שייקרא אחרי המחיקה (אופציונלי)
+    removeEmptyCombos(callback) {
+      chrome.storage.local.get(["savedCombos"], (result) => {
+        let combos = result.savedCombos || [];
+        const originalLength = combos.length;
+
+        // סינון קומבואים - הסרת קומבואים ריקים
+        combos = combos.filter((combo) => !this.isComboEmpty(combo));
+
+        // הכפילות נבדקת לפי סדר התצוגה, ולכן ממיינים קודם
+        combos.sort((a, b) => (a.order || 0) - (b.order || 0));
+        combos = this._dropDuplicates(combos);
+
+        const removedCount = originalLength - combos.length;
+
+        // שמירה רק אם היו קומבואים ריקים
+        if (removedCount > 0) {
+          chrome.storage.local.set({ savedCombos: combos }, () => {
+            if (callback) callback(removedCount);
+          });
+        } else {
+          // אם לא היו קומבואים ריקים, עדיין נקרא ל-callback
+          if (callback) callback(0);
+        }
+      });
+    },
+  };
+})();

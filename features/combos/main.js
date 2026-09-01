@@ -1,10 +1,8 @@
 // features/combos/main.js
 
-// המנצח על התזמורת - מוודא שהמשחק נטען ואז מפעיל הכל
+// המנצח על התזמורת: ממתין לטעינת המשחק ואז מפעיל הכל.
 (function () {
   "use strict";
-
-  console.log("[ComboManager] combos feature loaded");
 
   function waitForGameLoad() {
     function initIntegration() {
@@ -53,6 +51,11 @@
         // אתחול ה-View
         ViewRenderer.init();
 
+        // התצוגה גלויה בלי שומר — למשל אחרי חזרה מקרב
+        if (ViewRenderer.isViewVisible() && !ViewRenderer.hideGuardObserver) {
+          ViewRenderer.startHideGuard();
+        }
+
         const menuContainer = document.querySelector(DOM.MENU_CONTAINER);
         if (menuContainer) {
           // הפונקציות בפנים כבר מגנות מפני כפילויות
@@ -76,9 +79,7 @@
 
       // ה-observer שמקשיב לשינויים במוסך/לובי
       observer = new MutationObserver(() => {
-        // בלי debounce – רצים מייד על כל שינוי,
-        // אבל רק אם isRelevantScreen() מחזיר true
-        runInitLogic();
+        runInitLogic();   // בלי debounce; runInitLogic בודק רלוונטיות בעצמו
       });
 
       // פונקציה שמחליטה אם לחבר/לנתק את ה-observer
@@ -99,6 +100,9 @@
         if (!shouldObserve && observing) {
           observer.disconnect();
           observing = false;
+
+          // שלא יישאר שומר הסתרה פעיל בקרב
+          ViewRenderer.stopHideGuard();
 
           // לנתק גם את ההאזנה למקש C
           if (LobbyShortcutHandler) {

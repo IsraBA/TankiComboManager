@@ -1,22 +1,7 @@
 // features/translator/main/toggle.js  [MAIN world]
 
-// In-game translate-toggle button + Alt+T (MAIN world).
-//
-// Injects an HTML button next to the battle-chat input bar's alert button
-// (appears when the chat input is open). Clicking it — or pressing Alt+T —
-// flips showOriginal for the whole chat. State is written to chrome.storage via
-// __CT.settings.set(), so it persists and stays in sync with the in-game
-// settings panel; chat.js reacts to the echoed change and rebuilds.
-//
-// The button graphic is the translate icon, INLINED below. It uses the GAME's
-// own chat-button chrome (semi-transparent dark fill + faint white border) so it
-// blends in next to the native chat buttons — this is the version from the
-// original userscript, and is INTENTIONALLY different from the opaque standalone
-// extension icon (assets/translate-icon.svg / assets/icons/icon*.png). Inlining
-// (vs fetching the packaged SVG over the bridge) guarantees it always renders — a
-// resource fetch could silently fail and leave an empty, invisible button. The
-// OFF state is derived from the same markup by recoloring the glyph and adding a
-// red slash. white = translating, grey + red slash = showing original.
+// In-game toggle button + Alt+T; both flip showOriginal through storage.
+// The icon is INLINED on purpose — a failed fetch would leave it invisible.
 
 (function () {
   const NS = (window.__CT = window.__CT || {});

@@ -1,0 +1,210 @@
+// מודל "מה חדש": מוצג פעם אחת לכל גרסת חדשות, וכל דרך סגירה מסמנת
+// שנצפה. הכל מזויף חוץ מהקובץ הנבדק.
+// node build/harnesses/test_whats_new.js
+
+const fs = require("fs");
+const path = require("path");
+const vm = require("vm");
+
+const EXT =
+  "c:/Users/User/Documents/programming/Tanki Extensions/Combos Extension/TankiCombosQoL";
+const FILE = "features/combos/view/panels/whats_new_modal.js";
+
+let failures = 0;
+function ok(label, cond) {
+  console.log((cond ? "OK  " : "FAIL") + "   " + label);
+  if (!cond) failures++;
+}
+function eq(label, got, want) {
+  const good = JSON.stringify(got) === JSON.stringify(want);
+  console.log((good ? "OK  " : "FAIL") + "   " + label);
+  if (!good) {
+    console.log("       want " + JSON.stringify(want));
+    console.log("       got  " + JSON.stringify(got));
+    failures++;
+  }
+}
+
+// ---- סביבה מזויפת: DOM מינימלי ו-storage בזיכרון ----
+
+function makeEnv(stored) {
+  const store = Object.assign({}, stored);
+  const listeners = [];
+  const nodes = [];
+
+  function makeEl() {
+    const el = {
+      style: {},
+      children: [],
+      _html: "",
+      className: "",
+      id: "",
+      set innerHTML(v) { this._html = v; },
+      get innerHTML() { return this._html; },
+      appendChild(c) { this.children.push(c); return c; },
+      remove() {},
+      querySelector(sel) {
+        return (this._html || "").includes(sel.replace(/[[\]"']/g, "").split("=").pop())
+          ? makeEl()
+          : null;
+      },
+      querySelectorAll() { return []; },
+    };
+    nodes.push(el);
+    return el;
+  }
+
+  const ctx = {
+    console: { log() {}, error() {} },
+    Promise,
+    chrome: {
+      storage: {
+        local: {
+          get(keys, cb) {
+            const out = {};
+            for (const k of keys) if (k in store) out[k] = store[k];
+            cb(out);
+          },
+          set(obj, cb) { Object.assign(store, obj); if (cb) cb(); },
+          remove(keys, cb) {
+            for (const k of keys) delete store[k];
+            if (cb) cb();
+          },
+        },
+      },
+    },
+    document: {
+      body: { appendChild() {} },
+      createElement: makeEl,
+      addEventListener(type, fn) { listeners.push({ type, fn }); },
+      removeEventListener(type, fn) {
+        const i = listeners.findIndex((l) => l.type === type && l.fn === fn);
+        if (i >= 0) listeners.splice(i, 1);
+      },
+    },
+  };
+  // המודול מאזין ל-window עבור הממסר מ-MAIN
+  const winListeners = [];
+  ctx.addEventListener = (type, fn) => {
+    if (type === "message") winListeners.push(fn);
+  };
+
+  vm.createContext(ctx);
+  vm.runInContext(
+    "globalThis.window = globalThis; window.TankiQoL = { LanguageManager: { getUIText: (k) => 'T:' + k } };",
+    ctx,
+  );
+  // הכותרת מציירת את אייקון הקונפטי מ-shared/icons.js
+  vm.runInContext(fs.readFileSync(path.join(EXT, "shared/icons.js"), "utf8"), ctx, {
+    filename: "shared/icons.js",
+  });
+  vm.runInContext(fs.readFileSync(path.join(EXT, FILE), "utf8"), ctx, {
+    filename: FILE,
+  });
+
+  // מחקה את מה ש-__CMB.resetWhatsNew() מפרסם מהעולם MAIN
+  function relay(action) {
+    const data = { __cmb: true, dir: "m2i", action };
+    for (const fn of winListeners) fn({ source: ctx.window, data });
+  }
+
+  return {
+    ctx,
+    store,
+    listeners,
+    relay,
+    M: ctx.window.TankiQoL.WhatsNewModal,
+  };
+}
+
+// ---- טעינה נקייה: טרם נצפה ----
+
+let env = makeEnv({});
+const V = env.M._internals.NEWS_VERSION;
+const KEY = env.M._internals.KEY;
+ok("the shipped module loaded", typeof env.M.maybeShow === "function");
+ok("a fresh profile has not seen it", env.M.isUnseen() === true);
+
+env.M.maybeShow();
+ok("…so it opens", env.M.modalElement.style.display === "block");
+ok("…and the badge is still wanted while it is open", env.M.isUnseen() === true);
+
+env.M.hide();
+ok("closing marks it seen", env.M.isUnseen() === false);
+eq("…and the version is what got stored", env.store[KEY], V);
+ok("…and the Escape listener was removed", env.listeners.length === 0);
+
+// שנייה, שלישית — לא נפתח שוב באותה גרסה
+env.M.modalElement.style.display = "none";
+env.M.maybeShow();
+ok("it does not open a second time", env.M.modalElement.style.display === "none");
+
+// ---- פרופיל שכבר ראה את הגרסה הזאת ----
+
+env = makeEnv({ [KEY]: V });
+ok("a profile that already saw this version: no badge", env.M.isUnseen() === false);
+env.M.maybeShow();
+ok("…and nothing opens", env.M.modalElement === null);
+
+// ---- גרסת חדשות קודמת = עדכון חדש, מציגים שוב ----
+
+env = makeEnv({ [KEY]: "3.1" });
+ok("an older seen-version counts as unseen", env.M.isUnseen() === true);
+env.M.maybeShow();
+ok("…so the next update shows again", env.M.modalElement.style.display === "block");
+
+// ---- עוזר הקונסול ----
+
+env = makeEnv({ [KEY]: V });
+ok("before reset: seen", env.M.isUnseen() === false);
+(async () => {
+  const msg = await env.M.reset();
+  ok("reset clears the flag", env.M.isUnseen() === true);
+  ok("…removes the key rather than blanking it", !(KEY in env.store));
+  ok("…and reports back to the console", typeof msg === "string" && msg.length > 0);
+
+  env.M.maybeShow();
+  ok("…so it opens again", env.M.modalElement.style.display === "block");
+
+  // ---- הבאדג' בלובי מתרענן כשהמודל נסגר ----
+
+  let refreshed = 0;
+  env.ctx.window.TankiQoL.LobbyButtonInjector = {
+    refreshBadge() { refreshed++; },
+  };
+  env.M.hide();
+  ok("closing tells the lobby button to drop its badge", refreshed === 1);
+
+  // ---- הממסר מהעולם MAIN: __CMB.resetWhatsNew() ----
+
+  env = makeEnv({ [KEY]: V });
+  ok("before the relay: seen", env.M.isUnseen() === false);
+  env.relay("resetWhatsNew");
+  await new Promise((r) => setTimeout(r, 0));
+  ok("a resetWhatsNew message from MAIN clears the flag", env.M.isUnseen() === true);
+
+  env = makeEnv({ [KEY]: V });
+  env.relay("someOtherAction");
+  await new Promise((r) => setTimeout(r, 0));
+  ok("…and an unrelated m2i message is ignored", env.M.isUnseen() === false);
+
+  // ---- כל שורה בתצוגה עוברת דרך מנהל השפות ----
+
+  env = makeEnv({});
+  env.M.show();
+  const html = env.M.modalElement.innerHTML;
+  const keys = ["whatsNewTitle", "whatsNewGotIt"].concat(env.M._internals.LINES);
+  ok(
+    "every string is a translated key, none hardcoded",
+    keys.every((k) => html.includes("T:" + k)),
+  );
+  ok(
+    "the title leads with the confetti icon",
+    html.indexOf("cme_whats-new-party") < html.indexOf("T:whatsNewTitle"),
+  );
+
+  console.log(
+    failures ? "\n" + failures + " check(s) FAILED" : "\nall checks passed",
+  );
+  process.exit(failures ? 1 : 0);
+})();

@@ -1,12 +1,7 @@
 // shared/components/select.js
 
-// קומפוננטת dropdown בסגנון DropDownStyle של המשחק
-//
-// כל אפשרות היא { value, text, flag?, title? }. השדה flag (כתובת תמונה) מציג
-// דגל קטן לפני הטקסט — גם בטריגר וגם בשורות הרשימה — בדיוק כמו בבורר השפה
-// של המשחק (SettingsComponentStyle-dropdownPlaceholder: <img> + <span>).
-// השדה title מוסיף tooltip בריחוף (למשל שם שפה מלא כשהטקסט הוא קוד קצר).
-// שני השדות אופציונליים, ולכן שימושים ותיקים שלא מעבירים אותם עובדים כרגיל.
+// dropdown בסגנון DropDownStyle של המשחק.
+// כל אפשרות: { value, text, flag?, title? } — שני האחרונים אופציונליים.
 (function () {
   "use strict";
 

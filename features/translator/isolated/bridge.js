@@ -1,21 +1,7 @@
 // features/translator/isolated/bridge.js  [ISOLATED world]
-//
-// הגשר של פיצ'ר התרגום — הקובץ היחיד בפיצ'ר עם גישה ל-chrome.*
-// שני תפקידים:
-//   1. מסנכרן את ההגדרות מ/אל chrome.storage.sync עבור מודולי עולם MAIN,
-//      שיכולים לתפוס את המשחק אבל לא יכולים לגשת ל-chrome.*
-//   2. מעביר בקשות תרגום מ-MAIN אל ה-service worker (המקום היחיד שמורשה
-//      לבצע את ה-fetch החוצה — ראה background.js)
-//
-// פרוטוקול: window.postMessage, כל הודעה מתויגת `__ct` עם כיוון
-// (`i2m` = isolated->main, `m2i` = main->isolated). אותו תכנון כמו הגשר של
-// Shaft-Extension-V2; ההסבר על ה-handshake של `ready` נמצא ב-CLAUDE.md שלו.
-//
-// אחסון: כל ההגדרות של הפיצ'ר יושבות תחת מפתח storage אחד (`translator`)
-// כאובייקט. זו הקונבנציה בתוסף — מפתח אחד לכל פיצ'ר — כדי שמפתחות של
-// פיצ'רים שונים לא יתנגשו במרחב השמות הגלובלי של chrome.storage, ובלי
-// לזהם את שמות ההגדרות בתוך הפיצ'ר עצמו (הם נשארים enabled / showOriginal
-// / targetLang). ראה CLAUDE.md, "Storage layout".
+
+// הקובץ היחיד בפיצ'ר עם chrome.*: מסנכרן הגדרות ומעביר בקשות תרגום.
+// הפרוטוקול המלא: CLAUDE.mds/translator.md
 
 (function () {
   const STORAGE_KEY = 'translator';
@@ -26,9 +12,7 @@
     targetLang: 'en',       // קוד ISO; נבחר בהגדרות בתוך המשחק
   };
 
-  // עותק מקומי של ההגדרות הנוכחיות. מתעדכן מה-storage ומ-onChanged, ומשמש
-  // כבסיס למיזוג בכתיבה — כך אין צורך ב-get לפני כל set (ושתי כתיבות
-  // מהירות ברצף, למשל ספאם של Alt+T, לא דורכות אחת על השנייה).
+  // בסיס למיזוג בכתיבה, כדי שכתיבות מהירות לא ידרכו זו על זו
   let current = { ...DEFAULTS };
 
   function send(action, payload) {
@@ -42,11 +26,7 @@
     });
   }
 
-  // Config = נתיבים ש-MAIN צריך אבל לא יכול לחשב לבד (אין לו chrome.*).
-  // flagsBase היא תיקיית ה-chrome-extension:// של קבצי הדגלים; MAIN בונה כל
-  // כתובת כ-flagsBase + '<lang>.svg'. הדגלים מוצהרים ב-web_accessible_resources
-  // כדי שהדף יורשה לטעון אותם. (האייקון של כפתור התרגום מוטמע ישירות
-  // ב-toggle.js, ולכן אין מה להביא בשבילו.)
+  // נתיבים ש-MAIN צריך ולא יכול לחשב לבד; MAIN מוסיף '<lang>.svg'
   const CONFIG = {
     flagsBase: chrome.runtime.getURL('features/translator/assets/flags/'),
   };

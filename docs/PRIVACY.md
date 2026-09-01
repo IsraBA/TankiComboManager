@@ -1,10 +1,11 @@
 # Privacy Policy — Tanki Online: Combos & QoL
 
-**Last updated: 7 August 2026**
+**Last updated: 1 September 2026**
 
 Tanki Online: Combos & QoL ("the extension") is a browser extension that adds
 quality-of-life tools to the game at tankionline.com: saving and switching
-equipment setups ("combos"), and translating in-game battle chat. This policy
+equipment setups ("combos"), recommending protection modules against the enemy
+team in the battle you are in, and translating in-game battle chat. This policy
 explains exactly what data the extension processes and what it does not. It is
 written to be honest and specific — please read it before installing.
 
@@ -79,6 +80,24 @@ To detect your currently equipped items and to add its own buttons and panels, t
 extension reads and modifies the game page in your browser. Nothing read from the
 page is transmitted anywhere.
 
+### 5. The battle you are in (read locally, not transmitted)
+
+The protection-recommendation feature needs to know what the enemy team is
+using. It reads that from the battle data the game has **already loaded into your
+browser** — the same information the in-game scoreboard shows you: which team
+each player is on, their score and kills, and the turret, hull and augments they
+are currently using. It uses that to rank which turrets are doing the damage and
+to suggest the matching protection modules.
+
+- This is read **only while you are in a battle**, and only from data the game
+  itself put in your browser. The extension does not request it from anywhere and
+  does not communicate with the game's servers to obtain it.
+- It is used to draw a panel and then discarded. **Nothing about the battle, the
+  other players in it, or your own equipment is transmitted, stored or retained**
+  — not to us (we have no server), and not to any third party.
+- No profile or history of any player is built. Close the battle and the data is
+  gone.
+
 ## What the extension does NOT do
 
 - No account, sign-up, or login.
@@ -102,8 +121,9 @@ them or uninstall the extension.
 
 - **storage** — to save your combos and your settings.
 - **access to tankionline.com** — to run on the game page: to read your equipped
-  items, inject the extension's UI, and read the game script in order to locate
-  the chat UI.
+  items, inject the extension's UI, read the battle you are in so it can
+  recommend protection modules, and read the game script in order to locate the
+  chat UI.
 - **access to the translation services** (`translate.googleapis.com`,
   `lingva.lunar.icu`, `lingva.ml`) — to send message text for translation.
 

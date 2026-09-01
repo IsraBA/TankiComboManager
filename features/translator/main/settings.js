@@ -1,12 +1,7 @@
 // features/translator/main/settings.js  [MAIN world]
 
-// Settings store (MAIN world).
-//
-// Receives settings from the ISOLATED bridge via postMessage and exposes them
-// through `window.__CT.settings` with subscribe(). chrome.storage is the single
-// source of truth: nobody mutates settings locally — callers use set(), which
-// asks ISOLATED to write storage; the resulting onChanged event echoes back as
-// a `settings` message and updates state here. Mirrors Shaft-Extension-V2.
+// Settings store: chrome.storage is the single source of truth.
+// set() asks ISOLATED to write; the echo back updates state here.
 
 (function () {
   const NS = (window.__CT = window.__CT || {});

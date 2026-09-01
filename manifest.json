@@ -1,11 +1,9 @@
 {
   "manifest_version": 3,
   "name": "Tanki Online — Combos & QoL",
-  "version": "3.1",
+  "version": "4.0",
   "description": "Quality-of-life tools for Tanki Online: save and switch full equipment combos in one click, and translate battle chat in real time.",
-  "permissions": [
-    "storage"
-  ],
+  "permissions": ["storage"],
   "host_permissions": [
     "*://*.tankionline.com/*",
     "https://translate.googleapis.com/*",
@@ -17,27 +15,26 @@
   },
   "content_scripts": [
     {
-      "matches": [
-        "*://*.tankionline.com/*"
-      ],
+      "matches": ["*://*.tankionline.com/*"],
       "css": [
         "shared/components/drawer.css",
         "shared/components/switch.css",
         "shared/components/select.css",
         "features/combos/styles.css",
-        "features/combos/combo_card.css",
-        "features/combos/ui/lobby_button.css",
-        "features/combos/ui/delete_combo_modal.css",
-        "features/combos/ui/randomizer_settings.css",
-        "features/combos/ui/import_export.css",
+        "features/combos/view/card/combo_card.css",
+        "features/combos/view/cooldown.css",
+        "features/combos/view/lobby/lobby_button.css",
+        "features/combos/view/panels/delete_combo_modal.css",
+        "features/combos/view/panels/randomizer_settings.css",
+        "features/combos/view/panels/import_export.css",
+        "features/combos/view/panels/whats_new_modal.css",
+        "features/advisor/view/protection_panel.css",
         "features/translator/main/gamesettings.css"
       ],
       "run_at": "document_start"
     },
     {
-      "matches": [
-        "*://*.tankionline.com/*"
-      ],
+      "matches": ["*://*.tankionline.com/*"],
       "js": [
         "features/translator/isolated/bridge.js",
         "features/translator/isolated/detect.js"
@@ -46,9 +43,55 @@
       "world": "ISOLATED"
     },
     {
-      "matches": [
-        "*://*.tankionline.com/*"
+      "matches": ["*://*.tankionline.com/*"],
+      "js": [
+        "features/combos/discovery/parse.js",
+        "features/combos/discovery/state.js",
+        "features/combos/discovery/send.js",
+        "features/combos/discovery/actions.js",
+        "features/combos/discovery/index.js",
+        "features/combos/discovery/detect.js",
+        "features/combos/bridge/bridge.js"
       ],
+      "run_at": "document_start",
+      "world": "ISOLATED"
+    },
+    {
+      "matches": ["*://*.tankionline.com/*"],
+      "js": [
+        "features/combos/discovery/game/names.js",
+        "features/combos/capture/game/kotlin.js",
+        "features/combos/capture/game/collect.js",
+        "features/combos/capture/game/capture.js",
+        "features/combos/equip/game/store.js",
+        "features/combos/equip/game/mount.js",
+        "features/combos/equip/game/protections.js",
+        "features/combos/equip/game/devices.js",
+        "features/combos/equip/game/device_catalog.js",
+        "features/combos/equip/game/skins.js",
+        "features/combos/equip/game/cooldown.js",
+        "features/combos/randomizer/game/draw.js",
+        "features/combos/save/game/read.js",
+        "features/combos/equip/game/apply.js",
+        "features/combos/bridge/game/bridge_main.js",
+        "features/combos/discovery/game/boot.js"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
+      "matches": ["*://*.tankionline.com/*"],
+      "js": [
+        "features/advisor/recon/game/report.js",
+        "features/advisor/recon/game/inventory.js",
+        "features/advisor/recon/game/probe.js",
+        "features/advisor/bridge/game/bridge_main.js"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
+      "matches": ["*://*.tankionline.com/*"],
       "js": [
         "shared/components/switch.js",
         "shared/components/select.js",
@@ -64,55 +107,75 @@
       "world": "MAIN"
     },
     {
-      "matches": [
-        "*://*.tankionline.com/*"
-      ],
+      "matches": ["*://*.tankionline.com/*"],
       "js": [
+        "shared/icons.js",
         "shared/components/drawer.js",
         "shared/components/switch.js",
         "shared/components/select.js",
         "features/combos/lib/constants.js",
         "features/combos/lib/utils.js",
         "features/combos/lib/language_manager.js",
-        "features/combos/core/combo_cleaner.js",
-        "features/combos/core/tab_navigator.js",
-        "features/combos/core/scanners/base_item_scanner.js",
-        "features/combos/core/scanners/augment_scanner.js",
-        "features/combos/core/scanners/protection_scanner.js",
-        "features/combos/core/scanners/paint_scanner.js",
-        "features/combos/core/combo_saver.js",
-        "features/combos/core/equippers/base_item_equipper.js",
-        "features/combos/core/equippers/augment_equipper.js",
-        "features/combos/core/equippers/protection_equipper.js",
-        "features/combos/core/combo_loader.js",
-        "features/combos/core/navigation_helpers.js",
-        "features/combos/core/auto_navigator.js",
-        "features/combos/core/randomizer/item_list_scanner.js",
-        "features/combos/core/randomizer/random_from_saved.js",
-        "features/combos/core/randomizer/random_full.js",
-        "features/combos/core/randomizer/randomizer.js",
-        "features/combos/ui/menu_injector.js",
-        "features/combos/ui/lobby_button_injector.js",
-        "features/combos/ui/lobby_shortcut_handler.js",
-        "features/combos/ui/combo_drag_handler.js",
-        "features/combos/ui/delete_combo_modal.js",
-        "features/combos/ui/randomizer_settings.js",
-        "features/combos/ui/import_export.js",
-        "features/combos/ui/combo_card_renderer.js",
-        "features/combos/ui/view_renderer.js",
-        "features/combos/main.js"
+        "features/combos/lib/combo_cleaner.js",
+        "features/combos/migration/migrator_match.js",
+        "features/combos/migration/combo_migrator.js",
+        "features/combos/dom/tab_navigator.js",
+        "features/combos/dom/scanners/base_item_scanner.js",
+        "features/combos/dom/scanners/augment_scanner.js",
+        "features/combos/dom/scanners/protection_scanner.js",
+        "features/combos/save/old/combo_saver.js",
+        "features/combos/save/instant_saver.js",
+        "features/combos/equip/old/equippers/base_item_equipper.js",
+        "features/combos/equip/old/equippers/augment_equipper.js",
+        "features/combos/equip/old/equippers/protection_equipper.js",
+        "features/combos/equip/old/combo_loader.js",
+        "features/combos/equip/instant_loader.js",
+        "features/combos/equip/combo_identity.js",
+        "features/combos/dom/navigation_helpers.js",
+        "features/combos/view/lobby/auto_navigator.js",
+        "features/combos/randomizer/old/item_list_scanner.js",
+        "features/combos/randomizer/old/random_full.js",
+        "features/combos/randomizer/random_from_saved.js",
+        "features/combos/randomizer/random_full.js",
+        "features/combos/randomizer/randomizer.js",
+        "features/combos/view/menu_injector.js",
+        "features/combos/view/lobby/lobby_button_injector.js",
+        "features/combos/view/lobby/lobby_shortcut_handler.js",
+        "features/combos/view/card/combo_drag_handler.js",
+        "features/combos/view/panels/delete_combo_modal.js",
+        "features/combos/view/panels/randomizer_settings.js",
+        "features/combos/view/panels/import_export.js",
+        "features/combos/view/panels/whats_new_modal.js",
+        "features/combos/view/card/combo_card_renderer.js",
+        "features/combos/view/card/rows.js",
+        "features/combos/view/card/events.js",
+        "features/combos/view/card/title_edit.js",
+        "features/combos/view/view_renderer.js",
+        "features/combos/view/template.js",
+        "features/combos/view/events.js",
+        "features/combos/view/scroll.js",
+        "features/combos/view/drag.js",
+        "features/combos/view/combo_list.js",
+        "features/combos/view/combo_actions.js",
+        "features/combos/view/delete_animation.js",
+        "features/combos/view/tank_preview.js",
+        "features/combos/view/hide_guard.js",
+        "features/combos/view/cooldown_guard.js",
+        "features/combos/main.js",
+        "features/advisor/bridge/bridge.js",
+        "features/advisor/model/resistance_map.js",
+        "features/advisor/model/recommend.js",
+        "features/advisor/view/panel_render.js",
+        "features/advisor/view/protection_panel.js",
+        "features/advisor/main.js"
       ],
       "run_at": "document_idle"
     }
   ],
   "web_accessible_resources": [
     {
-      "resources": [
-        "features/translator/assets/flags/*.svg"
-      ],
-      "matches": [
-        "*://*.tankionline.com/*"
-      ]
+      "resources": ["features/translator/assets/flags/*.svg"],
+      "matches": ["*://*.tankionline.com/*"]
     }
   ],
   "action": {

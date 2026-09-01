@@ -1,7 +1,6 @@
 // features/combos/lib/constants.js
 
-// כאן אנחנו מגדירים את ה"כתובות" ב-HTML
-// משתמשים ב-IIFE כדי ליצור namespace גלובלי
+// כל הסלקטורים של ה-DOM של המשחק, במקום אחד.
 (function () {
   "use strict";
 
@@ -25,11 +24,18 @@
     // --- הסתרה ---
     GARAGE_WRAPPER: ".GarageCommonStyle-garageContainer",
     TANK_PREVIEW_CANVAS: "#tankPreviewCanvas",
-    POSITION_CONTENT: ".GarageCommonStyle-positionContent",
+    // מארחי תצוגת הטנק (אחד לכל סוג טאב).
+    // **אסור display:none** — ראה view/tank_preview.js.
+    PREVIEW_HOSTS: `
+            .GarageCommonStyle-positionContent,
+            .PaintsCollectionComponentStyle-containerPaints
+        `,
+
+    // התצוגה עצמה, בתוך המארח
+    TANK_PREVIEW: "#tankPreviewContainer, .GarageComponentStyle-tankPreview",
+
+    // מוסתר בזמן שהכרטיסייה פתוחה — רק מה שמחוץ למארחי התצוגה
     ELEMENTS_TO_HIDE: `
-            .GarageCommonStyle-positionContent, 
-            .PaintsCollectionComponentStyle-containerPaints,
-            .PaintsCollectionComponentStyle-blockPaints,
             .GarageSuppliesPreviewComponentStyle-view,
             .GarageCommonStyle-positionContentAlteration,
             .TanksPartComponentStyle-amountItems,
@@ -55,15 +61,9 @@
     // תיאור פריט ברשימה (לשם הפריט)
     ITEM_DESCRIPTION_DEVICE: ".GarageItemComponentStyle-descriptionDevice",
 
-    // מחיר פריט ברשימה (אם קיים, הפריט לא נרכש)
-    ITEM_PRICE_IN_CRYSTALS: ".GarageItemComponentStyle-itemPriceInCrystals",
-
     // --- כפתורי פעולה ---
     // כפתור Equip/Upgrade (הכפתור הראשי עם Enter hotkey)
     EQUIP_BUTTON: ".SquarePriceButtonComponentStyle-commonBlockButton",
-
-    // אלמנט Hotkey (Enter, Space וכו')
-    HOTKEY_ELEMENT: ".-commonBlockForHotKey",
 
     // --- זיהוי אוגמנטים (Sub Items) ---
     // הכפתור שפותח את חלון האוגמנטים (נמצא במסך התותח)
@@ -102,7 +102,6 @@
     BATTLE_CREATION_INDICATOR: ".BattleCreateComponentStyle-mainContainer", // הקונטיינר שמאפיין את מסך יצירת באטל
 
     // --- זיהוי הגנה (Protection) ---
-    PROTECTION_MODULE_NAME: ".GarageProtectionsComponentStyle-aboutDefence h1", // שם מודול ההגנה (Spider-0)
     PROTECTION_MOUNTED_RESIST:
       ".GarageProtectionsComponentStyle-mountedResist, .GarageProtectionsComponentStyle-mountedResistActive", // הגנה מצוידת (4 כאלה - כולל active)
     PROTECTION_RESISTANCE_ICON:
@@ -112,16 +111,11 @@
 
     // --- זיהוי צבעים (Paints) ---
     PAINT_NAME: ".PaintsCollectionComponentStyle-headlinePaint h1", // שם הצבע (White)
-    PAINT_LIST_CONTAINER: ".ListItemsComponentStyle-itemsContainer", // קונטיינר של רשימת הצבעים
 
     // --- כפתור בלובי ---
     LOBBY_TURRETS_BLOCK: ".-commonBlockForTurretsWeapon", // הדיב של התותחים בלובי
-    LOBBY_HULLS_BLOCK: ".-commonBlockForTurretsHulls", // הדיב של הגופים בלובי
     LOBBY_CONTAINER: ".MountedItemsStyle-containerBlockGarage", // הקונטיינר של כל הבלוקים
     LOBBY_ITEM_PREVIEW: ".MountedItemsStyle-itemPreview", // תמונות הפריטים בלובי
-    LOBBY_TANK_PART_NAME: ".MountedItemsStyle-tankPartNameContainer", // כותרת הבלוקים בלובי
-    LOBBY_DRONES_BLOCK: ".MountedItemsStyle-commonBlockDrone", // הדיב של הדרונים בלובי
-    LOBBY_GRENADES_BLOCK: ".MountedItemsStyle-commonBlockGrenades", // הדיב של הרימונים בלובי
 
     // --- מסך הלובי הראשי ---
     MAIN_SCREEN_CONTAINER: ".MainScreenComponentStyle-containerPanel", // הקונטיינר של המסך הראשי
@@ -132,9 +126,15 @@
     // --- רנדומייזר: זיהוי רמת נדירות אוגמנטים ---
     AUGMENT_CATEGORY_LEGENDARY:
       "SkinCellComponentStyle-gradientCategoryDevices-LEGENDARY",
-    AUGMENT_CATEGORY_EPIC:
-      "SkinCellComponentStyle-gradientCategoryDevices-EPIC",
-    AUGMENT_CATEGORY_COMMON:
-      "SkinCellComponentStyle-gradientCategoryDevices-COMMON",
+
+    // --- יועץ ההגנות ---
+    PROTECTION_COLUMN:
+      ".GarageProtectionsComponentStyle-blockParametersProtection", // העמודה שהפאנל מוזרק אליה
+    PROTECTION_EQUIP_BLOCK:
+      ".GarageProtectionsComponentStyle-containerEquipmentCannon", // בלוק ההגנות המורכבות של המשחק
+    // שמות מחלקה (לא סלקטורים) שחריצי ההמלצה והכפתור לובשים
+    PROTECTION_SLOT_CLASSES:
+      "GarageProtectionsComponentStyle-equipmentResistance GarageProtectionsComponentStyle-mountedResist",
+    PROTECTION_UNEQUIP_ROW_CLASS: "GarageProtectionsComponentStyle-unequip",
   };
 })();
