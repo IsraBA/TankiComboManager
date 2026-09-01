@@ -65,7 +65,8 @@ meant to be read there.
       extension transfers chat text to a translation service.
 - [ ] Update the dashboard's **Privacy practices** tab and permission
       justifications — every field's text is prepared in `docs/STORE.md`.
-- [ ] Remember that the new `host_permissions` make Chrome **disable the
-      extension for existing users until they re-approve**. Expect support
-      questions right after the update rolls out; consider mentioning it in the
-      listing's "What's new".
+- [ ] **Check whether this release changes `permissions` or `host_permissions`.**
+      Any addition is a privilege increase, and Chrome then **disables the
+      extension for every existing user until they re-approve** — expect support
+      questions and say so in the listing's "What's new". v4.0 adds none, so
+      nothing is disabled; v3.0 did, which is where that warning comes from.

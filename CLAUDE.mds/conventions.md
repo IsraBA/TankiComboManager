@@ -88,8 +88,10 @@ Two patterns are already in use; prefer them over inventing a third.
   ```
 - Core operations (save, load, equip) use **async/await**; `chrome.storage` calls
   use the **callback** API — keep that consistent.
-- **Graceful degradation**: log a warning and continue. If an item can't be found
-  or equipped, skip it and move on. Never block the user, never alert.
+- **Graceful degradation**: skip and continue. If an item can't be found or
+  equipped, drop that slot and move on — never block the user, never alert, and
+  (per the comments section above) never log it either: that is a normal outcome,
+  so return it to the caller instead of printing it.
 - Prefer `NavigationHelpers.waitForDOMChange()` (MutationObserver + debounce)
   over fixed `setTimeout` delays. Short `sleep()` (≤50 ms) is fine where a game
   animation genuinely needs time.

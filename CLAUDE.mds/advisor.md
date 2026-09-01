@@ -1,8 +1,8 @@
 # Feature: Advisor — recommended protections
 
-**Status: feature-complete, unreleased.** The recommendation is computed and
-shown in the game's protection tab, updates live, and the button equips it.
-Nothing is printed at runtime; `__ADV.raw()` serves that need on demand.
+**Status: complete, shipping in v4.0.** The recommendation is computed and shown
+in the game's protection tab, updates live, and the button equips it. Nothing is
+printed at runtime; `__ADV.raw()` serves that need on demand.
 
 ```
 features/advisor/

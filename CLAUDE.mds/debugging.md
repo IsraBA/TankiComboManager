@@ -1,8 +1,8 @@
 # Debugging
 
-Combos DOM code runs in ISOLATED, so its logs appear in the page console as
-`[ComboManager]` lines. The game hooks live in the page world, so use the **game
-tab's** console (not the extension's DevTools) for everything below.
+Nothing is printed at runtime, so there is no log stream to watch — everything
+below is pulled on demand. The game hooks live in the page world, so use the
+**game tab's** console (not the extension's DevTools) for all of it.
 
 ## Console surface
 
@@ -81,7 +81,7 @@ own console context instead.
 There is no test framework here. What exists is **`build/harnesses/`** — plain
 `node <file>` scripts, no dependencies, that run the _shipped_ code offline
 against the bundles in `../../../research/`. They live under `build/`, so they
-never reach the store zip. 353 checks across 15 files:
+never reach the store zip. 357 checks across 15 files:
 
 - **`verify_shipped.js`** — loads `discovery/*.js` as shipped, runs
   `discover()` against every bundle in `research/`, and diffs the result for the
@@ -93,6 +93,9 @@ never reach the store zip. 353 checks across 15 files:
   with a fake store and state, then asserts which actions each write dispatches:
   the protection set-diff, augment ownership rejection, skins. The write logic is
   tested without touching the game.
+- **`test_read_path.js`** — the same sandbox, the other direction: `readCombo`
+  and `readIndex` over a fake state, and the bridge end to end — the `ready`
+  handshake, a request in and the matching reply out.
 - **`test_migrator.js`**, **`test_instant_loader.js`**, **`test_instant_saver.js`**,
   **`test_card_render.js`**, **`test_protection_equal.js`**,
   **`test_equip_entry.js`**, **`test_random_draw.js`**,

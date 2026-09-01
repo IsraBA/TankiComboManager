@@ -70,8 +70,10 @@ says exactly which one that is. Do not load them all.
 - **CSS prefix**: every class the extension creates starts with `cme_`.
 - **Storage**: one key per feature. `savedCombos` and friends in `local`,
   `translator` in `sync`.
-- **Testing** is manual — load unpacked, open the game. The checklist is in
-  `CLAUDE.mds/store.md`.
+- **Testing** is the offline harnesses in `build/harnesses/` (`node <file>.js`,
+  see rule 8) plus a manual pass in the game — the checklist is in
+  `CLAUDE.mds/store.md`. Anything needing a real account or a live battle is
+  manual-only.
 
 ## Repository layout
 
@@ -83,8 +85,10 @@ says exactly which one that is. Do not load them all.
 ├── CLAUDE.mds/            # the detailed docs (start at README.md)
 ├── docs/                  # PACKAGING.md, PRIVACY.md, STORE.md
 ├── build/make-zip.ps1     # builds the store zip
-├── shared/components/     # drawer / switch / select, used by both features
+├── build/harnesses/       # the offline checks — plain `node <file>.js`
+├── shared/                # icons.js + components (drawer / switch / select)
 ├── features/combos/       # the combos feature — one folder per flow stage
+├── features/advisor/      # recommended protections — recon / model / view
 ├── features/translator/   # the translator feature
 ├── assets/                # icons
 └── HTML-examples/         # real game HTML & CSS samples (reference, never shipped)

@@ -6,7 +6,8 @@ fallback only (`combos.md`).
 
 - **Save**: `save/instant_saver.js` → `GarageBridge.readCombo()` → storage. No
   tab navigation; the user never leaves the combos view. Deliberately **no**
-  fallback: if the state isn't captured, the save button warns and saves nothing.
+  fallback: if the state isn't captured, or it holds no core items, the save
+  button saves nothing at all.
 - **Equip**: `equip/instant_loader.js` → `GarageBridge.applyCombo()` →
   `equip/game/apply.js` dispatches the game's own Redux actions. Also used by
   random-from-saved.

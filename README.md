@@ -103,8 +103,8 @@ This does the remembering.
   ranking in order, then the modules worth equipping, in the game's own styling.
 - **EQUIP ALL** applies the whole set in one click, changing only what actually
   differs, and disappears once there is nothing left to change.
-- **Only recommends what you own and have upgraded** past 30%, and Armadillo
-  always takes the first slot when you have it.
+- **Only recommends what you own and have upgraded** to 30% or more, and
+  Armadillo always takes the first slot when you have it.
 - **Stays out of the way** — nothing is shown outside a battle, or while the
   game is blocking equipment changes.
 
@@ -383,7 +383,8 @@ least one non-English game locale if you touched UI or selectors.
 clicking through the UI: instant, no flicker. Paint and skins became combo slots.
 Added protection recommendations that read the battle you are in. The combo you
 are wearing is marked, duplicate combos are no longer kept, and the game's equip
-cooldown is respected.
+cooldown is respected. Opening the tab after an update shows a one-time note of
+what changed. No new permissions.
 
 **v3.1** — Right-to-left chat fix: Hebrew and Arabic messages are no longer shown
 reversed on the game's canvas.
