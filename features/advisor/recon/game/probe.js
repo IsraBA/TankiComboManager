@@ -14,12 +14,9 @@
     localCaptures: 0,
     userCaptures: 0,
     skipped: 0,
+    discovered: false,
     lastError: null,
   };
-
-  // שדות הבילד הנוכחי (1327298e); האחרון שהבנאי כותב. גילוי — בהמשך.
-  // rq4_1=BattleUsers, ipw_1=BattleStatistics,
-  // sq2_1=LocalBattleUserState, fqi_1=User (הפרופיל שלנו)
 
   I.tankCache = {};
   I.resCache = {};
@@ -99,13 +96,24 @@
     }
   }
 
+  // שדה -> הסמנים שמאזינים עליו. הגילוי עשוי להחזיר שם שה-SEED כבר
+  // חימש עבור מחלקה אחרת, ודילוג שם היה מוחק את הלכידה בשקט.
+  I.armed = new Map();
+
   function armTrap(prop, marker, onCapture) {
     try {
-      // שדה שכבר בשימוש מלכודת אחרת — לא דורסים
+      const mine = I.armed.get(prop);
+      if (mine) {
+        if (!mine.some((e) => e.marker === marker)) mine.push({ marker, onCapture });
+        return;
+      }
+      // שדה שכבר בשימוש מלכודת זרה (הקומבואים, תוסף אחר) — לא דורסים
       if (Object.getOwnPropertyDescriptor(W.Object.prototype, prop)) {
         NS.debug.skipped++;
         return;
       }
+      const list = [{ marker, onCapture }];
+      I.armed.set(prop, list);
       Object.defineProperty(W.Object.prototype, prop, {
         configurable: true,
         enumerable: false,
@@ -120,10 +128,12 @@
             configurable: true,
             enumerable: true,
           });
-          try {
-            if (looksLike(this, marker)) onCapture(this);
-          } catch (e) {
-            NS.debug.lastError = String(e);
+          for (const e of list) {
+            try {
+              if (looksLike(this, e.marker)) e.onCapture(this);
+            } catch (err) {
+              NS.debug.lastError = String(err);
+            }
           }
         },
       });
@@ -143,8 +153,41 @@
     };
   };
 
-  armTrap('rq4_1', '"BattleUsers(', onRoster);
-  armTrap('ipw_1', '"BattleStatistics(', onBattle);
-  armTrap('sq2_1', '"LocalBattleUserState(', onLocal);
-  armTrap('fqi_1', '"User(', onUser);
+  // מפתח -> [שם המחלקה לאימות, מטפל]
+  const MARKERS = {
+    battleUsers: ['"BattleUsers(', onRoster],
+    battleStatistics: ['"BattleStatistics(', onBattle],
+    localBattleUserState: ['"LocalBattleUserState(', onLocal],
+    user: ['"User(', onUser],
+  };
+
+  // שמות הבילד האחרון הידוע (f1de53fa) — נדרסים ע"י recon/detect.js
+  const SEED = {
+    battleUsers: 'wq4_1',
+    battleStatistics: 'lpw_1',
+    localBattleUserState: 'xq2_1',
+    user: 'kqi_1',
+  };
+
+  function armAll(fields) {
+    for (const key of Object.keys(MARKERS)) {
+      const prop = fields[key];
+      if (typeof prop === 'string' && /^[\w$]+_1$/.test(prop)) {
+        armTrap(prop, MARKERS[key][0], MARKERS[key][1]);
+      }
+    }
+  }
+
+  armAll(SEED);
+
+  // השמות שהתגלו לבילד הרץ; שדה שכבר חמוש נשאר כמות שהוא
+  W.addEventListener('message', (e) => {
+    if (e.source !== W) return;
+    const m = e.data;
+    if (!m || !m.__adv || m.dir !== 'i2m' || m.action !== 'advisorFields') return;
+    if (!m.payload) return;
+    armAll(m.payload);
+    NS.debug.discovered = true;
+  });
+  W.postMessage({ __adv: true, dir: 'm2i', action: 'ready' }, '*');
 })();

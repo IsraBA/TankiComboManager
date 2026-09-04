@@ -6,7 +6,9 @@ printed at runtime; `__ADV.raw()` serves that need on demand.
 
 ```
 features/advisor/
-├── recon/game/probe.js      [MAIN] the four traps
+├── recon/game/probe.js      [MAIN] the four traps (SEED + discovered names)
+├── recon/discover.js        [ISOLATED] trap-field discovery from the bundle
+├── recon/detect.js          [ISOLATED] fetch, cache, send the fields to MAIN
 ├── recon/game/report.js     [MAIN] parse the roster, rank the turrets
 ├── recon/game/inventory.js  [MAIN] the account's protection modules
 ├── bridge/bridge.js         [ISOLATED] + bridge/game/bridge_main.js
@@ -48,14 +50,41 @@ structural decisions keep that cheap, and both must be preserved:
 Four MAIN-world traps, same technique as the garage hook (last field the
 constructor writes, validated by the class name inside its own `toString`).
 Field names are read at runtime out of each object's `toString`, so only the
-four trap fields are pinned to a build.
+four trap fields depend on the build — and since build f1de53fa broke them
+(Sep 2026), those too are **discovered at runtime** rather than pinned:
 
-| class | trap field (1327298e) | what it carries |
+- `recon/discover.js` [ISOLATED] parses the live bundle: for each marker
+  (`"BattleUsers(` etc.) it requires a **unique** `toString`, takes that class's
+  constructor, verifies the ctor assigns fields in exactly the `toString` order
+  (else returns null), and yields the **last** field. All four or nothing.
+- `recon/detect.js` [ISOLATED] fetches the bundle (mirrors combos'
+  `discovery/detect.js`: cached in `chrome.storage.local` as
+  `advisorFields:v<N>:<url>`, stale prefixes cleaned, `ready` handshake) and
+  posts the result to MAIN as an `__adv`/`advisorFields` message.
+- `probe.js` [MAIN] arms its `SEED` (latest known build) immediately, so the
+  current build works during the fetch, then arms whatever discovery sends.
+  `__ADV.debug.discovered` says the discovered names arrived.
+
+**One trapped field may carry several markers, and that is load-bearing.**
+`I.armed` maps field → the markers listening on it, because discovery can hand
+back a name the SEED already armed for a *different* class — the four names come
+out of one generator and share prefixes (`hpw_1` was `BattleUsers` in c4428a58;
+`lpw_1` is `BattleStatistics` today). Simply skipping an already-armed field
+would drop that capture silently, so a crossed name **adds** its marker instead.
+A field owned by a *foreign* trap (combos, another extension) is still skipped —
+`__ADV.debug.skipped` counts those. `test_advisor_probe.js` guards all of it.
+
+The invariant discovery leans on — ctor order == `toString` order, and the
+field counts (13/27/2/32) — held on 9/9 bundles;
+`build/harnesses/test_advisor_discover.js` re-checks every bundle in
+`research/` and diffs the current build against the SEED.
+
+| class | trap field (f1de53fa seed) | what it carries |
 |---|---|---|
-| `BattleUsers` | `rq4_1` | the roster: `uids`, `teams`, `stats`, `gearScores`, `tankInfo`, `tankResistance`, `onlineUsers` |
-| `BattleStatistics` | `ipw_1` | `mapName`, `mode`, `battleFormat`, **`isReArmorEnabled`**, `scoreLimit`, `battleLoaded` |
-| `LocalBattleUserState` | `sq2_1` | **`weaponResistanceProperty`**, **`isReArmorTemporaryDisabled`** |
-| `User` | `fqi_1` | our own profile — `id` identifies "me", and from that, who is an enemy |
+| `BattleUsers` | `wq4_1` | the roster: `uids`, `teams`, `stats`, `gearScores`, `tankInfo`, `tankResistance`, `onlineUsers` |
+| `BattleStatistics` | `lpw_1` | `mapName`, `mode`, `battleFormat`, **`isReArmorEnabled`**, `scoreLimit`, `battleLoaded` |
+| `LocalBattleUserState` | `xq2_1` | **`weaponResistanceProperty`**, **`isReArmorTemporaryDisabled`** |
+| `User` | `kqi_1` | our own profile — `id` identifies "me", and from that, who is an enemy |
 
 Measured facts, each of which cost a round to learn:
 

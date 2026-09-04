@@ -71,8 +71,9 @@
       out.upgradeFields = upgradeFields;
       // הרמה המקסימלית מאחורי מתודה; מתודת ה"האם במקסימום" היא עוגן חד-משמעי
       // ושווה לשמור גם אותה — זה המבחן שהמשחק עצמו מריץ
+      // בילד f1de53fa החליף === ב->=, לכן שניהם מתקבלים
       const mx = new RegExp('\\.([\\w$]+)=function\\(\\)\\{return this\\.' +
-        GD.escapeRe(upgradeFields.currentLevel) + '===this\\.([\\w$]+)\\(\\)\\}').exec(src);
+        GD.escapeRe(upgradeFields.currentLevel) + '(?:===|>=)this\\.([\\w$]+)\\(\\)\\}').exec(src);
       if (mx) { out.isMaxedMethod = mx[1]; out.maxLevelMethod = mx[2]; }
     }
 

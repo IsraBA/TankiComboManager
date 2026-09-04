@@ -70,7 +70,7 @@ own console context instead.
 | the combo count looks short / an owned item "missing"                     | the graph scan may have truncated: check `__CMB.debug.depthCut` and `.truncated`                                                                                                                 |
 | the paints tab (or any tab's content) shows through under the combos view | the game rendered it after `show()` did its one-off hiding — the guard (`view/hide_guard.js`) is off: check `ViewRenderer.hideGuardObserver`, and that the file is in `manifest.json`            |
 | the 3D tank is blank / won't drag while the combos view is open           | a preview host ended up `display:none` — look for an inline `display:none` on `PREVIEW_HOSTS` **without** `data-cme-preview-hidden`, which means something outside `keepTankPreviewAlive` hid it |
-| the advisor block never appears in the protection tab                     | check `__ADV.raw()`: `battle` not loaded (no battle), the equip cooldown is active, or no module passes the 30% bar. `__ADV.debug` counters at 0 mean the traps never fired — a new game build rotated the four field names in `probe.js` |
+| the advisor block never appears in the protection tab                     | check `__ADV.raw()`: `battle` not loaded (no battle), the equip cooldown is active, or no module passes the 30% bar. `__ADV.debug` counters at 0 mean the traps never fired — a new build rotated the field names AND discovery failed: `discovered === false` means `recon/detect.js` never delivered (fetch failed, or `discover()` returned null — run `test_advisor_discover.js` on the new bundle) |
 | advisor slots show item boxes instead of the small turret icons           | the icon harvest from the game's list found nothing (virtualised list?) and the fallback images are in use — cosmetic, `panel_render.js` `harvestIcons`                                          |
 | `__CT_DEBUG.discovered === false` after a few seconds                     | `detect.js` couldn't parse the bundle — see the recovery procedure in `translator.md`                                                                                                            |
 | `__CT_HUD === null` after entering a battle                               | the trap never validated: the offset field name is wrong                                                                                                                                         |
@@ -81,7 +81,7 @@ own console context instead.
 There is no test framework here. What exists is **`build/harnesses/`** — plain
 `node <file>` scripts, no dependencies, that run the _shipped_ code offline
 against the bundles in `../../../research/`. They live under `build/`, so they
-never reach the store zip. 357 checks across 15 files:
+never reach the store zip. ~385 checks across 17 files:
 
 - **`verify_shipped.js`** — loads `discovery/*.js` as shipped, runs
   `discover()` against every bundle in `research/`, and diffs the result for the
@@ -104,6 +104,19 @@ never reach the store zip. 357 checks across 15 files:
   families, imported combos, the fallback split, the card HTML for both data
   generations, what clicking a card does end to end, and the Enter-shortcut
   guard that once saved ghost combos from battle chat).
+- **`test_advisor_discover.js`** — the advisor's trap-field discovery
+  (`recon/discover.js` as shipped) against every bundle in `research/`, plus a
+  diff of the current build against the `SEED` in `recon/game/probe.js`. The
+  advisor's twin of `verify_shipped.js` — run it (and refresh the SEED) when a
+  new bundle lands.
+- **`test_advisor_probe.js`** — `probe.js` in a sandbox: the SEED captures
+  immediately, discovered names arm on arrival, a stranger class on a trapped
+  field is ignored, malformed names are refused, and a field owned by a foreign
+  trap is left alone. Its real target is the **crossed-name** case — discovery
+  handing a field the SEED already armed for a *different* class. The names come
+  from one generator (`hpw_1` was `BattleUsers` in c4428a58, `lpw_1` is
+  `BattleStatistics` today), so the crossing is plausible, and skipping an
+  already-armed field would kill that capture with no error anywhere.
 - **`test_advisor_recommend.js`** — the advisor's pure model on invented
   battles: Armadillo's slot, the 30% bar, ownership, unknown turrets, the
   already-equipped set comparison, and that ranking order is authoritative.

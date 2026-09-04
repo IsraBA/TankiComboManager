@@ -79,7 +79,7 @@ says exactly which one that is. Do not load them all.
 
 ```
 .
-├── manifest.json          # 7 content-script blocks — see architecture.md
+├── manifest.json          # 8 content-script blocks — see architecture.md
 ├── background.js          # service worker: the cross-origin translation fetch
 ├── CLAUDE.md              # this file
 ├── CLAUDE.mds/            # the detailed docs (start at README.md)

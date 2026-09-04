@@ -82,6 +82,15 @@
     {
       "matches": ["*://*.tankionline.com/*"],
       "js": [
+        "features/advisor/recon/discover.js",
+        "features/advisor/recon/detect.js"
+      ],
+      "run_at": "document_start",
+      "world": "ISOLATED"
+    },
+    {
+      "matches": ["*://*.tankionline.com/*"],
+      "js": [
         "features/advisor/recon/game/report.js",
         "features/advisor/recon/game/inventory.js",
         "features/advisor/recon/game/probe.js",

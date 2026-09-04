@@ -63,12 +63,12 @@ vm.runInContext(
     o[IF.mounted] = mounted;
     o[IF.mountIndex] = idx;
     o[IF.owned] = true;
-    o[IF.preview] = { r92: () => 'https://cdn/' + name + '.webp' };
+    o[IF.preview] = { [S.urlMethod]: () => 'https://cdn/' + name + '.webp' };
     Object.assign(o, extra || {});
     return o;
   }
   const mod = {}; mod[MF.baseItemId] = 'base6'; mod[MF.modificationIndex] = 4;
-  const up = {}; up[UF.currentLevel] = 12; up.wri = () => 45;
+  const up = {}; up[UF.currentLevel] = 12; up[S.maxLevelMethod] = () => 45;
 
   const turret = item('Firebird', 'WEAPON', true, 0);
   turret[IF.modification] = mod;

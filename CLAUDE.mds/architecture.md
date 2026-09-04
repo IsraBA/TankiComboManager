@@ -37,7 +37,7 @@ Content scripts can't use ES modules, so modules share namespace objects on
 | `window.__ADV` | MAIN | advisor battle probe: `.debug`, `.raw()`, and `.internals` (shared by its `game/` files) |
 | `__CT_*` | MAIN | translator console helpers — see `debugging.md` |
 
-## manifest.json — 7 content-script blocks
+## manifest.json — 8 content-script blocks
 
 JSON has no comments, so the reasoning lives here. **Do not merge these blocks.**
 
@@ -47,6 +47,7 @@ JSON has no comments, so the reasoning lives here. **Do not merge these blocks.*
 | 1 | translator `isolated/` | `document_start` | ISOLATED | The only place with `chrome.*`. Must start early so bundle discovery finishes before the user enters a battle. |
 | 2 | combos `discovery/` + `bridge/bridge.js` | `document_start` | ISOLATED | Same reason for the garage hook: discovery must finish before the garage opens. Also defines `TankiQoL.GarageBridge`, which block 5 uses. |
 | 3 | every combos `game/` file | `document_start` | MAIN | Needs the page's own `window` for the `Object.prototype` traps. Must be `document_start` — the state is built later, but the trap has to be armed first. |
+| 3a | advisor `recon/discover.js` + `recon/detect.js` | `document_start` | ISOLATED | The advisor's trap-field discovery — needs `chrome.storage` for its cache. Kept out of block 2 for the same removability reason as 3b. |
 | 3b | advisor `recon/game/` + `bridge/game/` | `document_start` | MAIN | Same trap technique for the battle state. Kept out of block 3 — a different feature must stay separately removable. |
 | 4 | translator `main/` | `document_start` | MAIN | Same, for the chat HUD. |
 | 5 | `shared/` + combos (DOM side) + advisor (model + view) | `document_idle` | ISOLATED (default) | Pure DOM work that only makes sense once the page exists. Its internal order is the dependency chain below. The advisor loads after combos because it calls `InstantLoader`. |
@@ -186,10 +187,13 @@ shared/
 
 features/advisor/              # recommended protections — see advisor.md
 ├── main.js                    # starts the panel while the garage is on screen
-├── recon/game/                # [MAIN] the battle state — capture only, no output
-│   ├── report.js              #   parse the roster, rank turrets by kills
-│   ├── inventory.js           #   the account's protection modules + percentages
-│   └── probe.js               #   the four traps (loads after report)
+├── recon/                     # the battle state — capture only, no output
+│   ├── discover.js            #   [ISOLATED] trap-field discovery from the bundle
+│   ├── detect.js              #   [ISOLATED] fetch + cache + send fields to MAIN
+│   └── game/                  #   [MAIN]
+│       ├── report.js          #     parse the roster, rank turrets by kills
+│       ├── inventory.js       #     the account's protection modules + percentages
+│       └── probe.js           #     the four traps: SEED + discovered names
 ├── bridge/                    # its own pipe, tagged __adv
 │   ├── bridge.js              #   TankiQoL.AdvisorBridge
 │   └── game/bridge_main.js    #   [MAIN] answers {turrets, modules, flags}

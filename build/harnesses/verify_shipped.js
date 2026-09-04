@@ -167,7 +167,7 @@ for (const b of fs
   if (problems.length) console.log("       problems:", problems.join(", "));
   ok ? pass++ : fail++;
 
-  if (b === "main.1327298e.js") {
+  if (b === "main.f1de53fa.js") {
     const mismatches = [];
     const cmp = (label, a, c) => {
       if (a !== c) mismatches.push(`${label}: seed=${a} real=${c}`);

@@ -1,25 +1,22 @@
-// features/combos/discovery/detect.js  [ISOLATED world]
+// features/advisor/recon/detect.js  [ISOLATED world]
 
-// מריץ את הגילוי על הבאנדל החי, שומר במטמון לפי כתובתו ושולח לעולם MAIN.
+// מריץ את גילוי שדות הקרב על הבאנדל החי, שומר במטמון ושולח לעולם MAIN.
 
 (function () {
   'use strict';
 
   const BUNDLE_URL_RE = /\/main\.[A-Za-z0-9]+\.js(?:[?#]|$)/;
 
-  // גרסת הסכמה של תוצאת הגילוי, וחלק ממפתח המטמון. **חובה להעלות אותה בכל
-  // שינוי בפלט של discover()** — אחרת מטמון ישן וחסר נטען, דורס את ה-SEED
-  // שדווקא מלא, וכל שדה חדש חוזר null. זה קרה בפועל.
-  // 11: מטמון v10 של f1de53fa נשמר בלי maxLevelMethod (הרג'קס נשבר)
-  const CACHE_VERSION = 11;
-  const CACHE_PREFIX = 'garageConstants:v' + CACHE_VERSION + ':';
+  // גרסת הסכמה, חלק ממפתח המטמון. להעלות בכל שינוי בפלט של discover()
+  const CACHE_VERSION = 1;
+  const CACHE_PREFIX = 'advisorFields:v' + CACHE_VERSION + ':';
 
   // ניקוי מפתחות מגרסאות סכמה קודמות, שה-storage לא יצבור זבל
   function cleanupStaleCaches() {
     try {
       chrome.storage.local.get(null, (all) => {
         const stale = Object.keys(all).filter(
-          (k) => k.startsWith('garageConstants:') && !k.startsWith(CACHE_PREFIX)
+          (k) => k.startsWith('advisorFields:') && !k.startsWith(CACHE_PREFIX)
         );
         if (stale.length) chrome.storage.local.remove(stale);
       });
@@ -55,8 +52,8 @@
     });
   }
 
-  function send(action, payload) {
-    window.postMessage({ __cmb: true, dir: 'i2m', action, payload }, '*');
+  function send(fields) {
+    window.postMessage({ __adv: true, dir: 'i2m', action: 'advisorFields', payload: fields }, '*');
   }
 
   function loadCached(cacheKey) {
@@ -65,7 +62,7 @@
     });
   }
 
-  let lastConstants = null;   // נשמר כדי לשלוח מחדש ב-handshake של 'ready'
+  let lastFields = null;   // נשמר כדי לשלוח מחדש ב-handshake של 'ready'
 
   (async function run() {
     cleanupStaleCaches();
@@ -78,29 +75,29 @@
     }
     const cacheKey = CACHE_PREFIX + url;
 
-    let constants = await loadCached(cacheKey);
-    if (!constants) {
+    let fields = await loadCached(cacheKey);
+    if (!fields) {
       try {
         const res = await fetch(url, { credentials: 'omit' });
         if (!res.ok) throw new Error('HTTP ' + res.status);
-        constants = window.TankiQoL.GarageDiscover.discover(await res.text());
-        if (constants) chrome.storage.local.set({ [cacheKey]: constants });
+        fields = window.TankiQoL.AdvisorDiscover.discover(await res.text());
+        if (fields) chrome.storage.local.set({ [cacheKey]: fields });
       } catch (e) {
-        console.error('[combos] detect: fetch/parse failed:', e);
+        console.error('[advisor] detect: fetch/parse failed:', e);
       }
     }
 
-    // בלי גילוי נשארים על ה-seed שב-discovery/game/names.js
-    if (!constants) return;
-    lastConstants = constants;
-    send('garageConstants', constants);
+    // בלי גילוי נשארים על ה-SEED שב-recon/game/probe.js
+    if (!fields) return;
+    lastFields = fields;
+    send(fields);
   })();
 
   // שליחה מחדש כש-MAIN מכריז מוכנות (הגילוי עלול להסתיים לפניו)
   window.addEventListener('message', (e) => {
     if (e.source !== window) return;
     const m = e.data;
-    if (!m || !m.__cmb || m.dir !== 'm2i') return;
-    if (m.action === 'ready' && lastConstants) send('garageConstants', lastConstants);
+    if (!m || !m.__adv || m.dir !== 'm2i') return;
+    if (m.action === 'ready' && lastFields) send(lastFields);
   });
 })();

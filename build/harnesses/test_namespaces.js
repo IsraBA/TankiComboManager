@@ -37,9 +37,10 @@ for (const file of ALL) {
   const rel = file.replace(EXT + path.sep, "").split(path.sep).join("/");
 
   // גם דרך כינוי: const NS = (window.TankiQoL = ...) ואז NS.X =
+  // כינוי של תת-מרחב (window.TankiQoL.GarageDiscover) אינו כינוי של TankiQoL
   const holders = new Set(["window.TankiQoL"]);
   const aliasRe =
-    /(?:const|let|var)\s+(\w+)\s*=\s*\(?\s*window\.TankiQoL\b/g;
+    /(?:const|let|var)\s+(\w+)\s*=\s*\(?\s*window\.TankiQoL(?!\.)/g;
   for (const a of src.matchAll(aliasRe)) holders.add(a[1]);
 
   for (const h of holders) {

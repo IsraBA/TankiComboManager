@@ -277,7 +277,8 @@ inferring it from code shape. Anchors:
 - **`ModificationCC`** (Mk) is a protocol class, so its `toString` uses a
   different shape and gets its own tiny parser.
 - **`UpgradableItemParams`** → `currentLevel`; the max is behind a method, found
-  via the "am I maxed?" method whose whole body is `currentLevel === maxLevel()`.
+  via the "am I maxed?" method whose whole body is `currentLevel === maxLevel()`
+  (build f1de53fa changed the `===` to `>=`; discovery accepts both).
 - **`GarageDevice`** → `installed` / `baseItemId` / `previewImage` /
   `infinityLifetimeItem`.
 - **image URL method** — found two independent ways: real call sites
@@ -299,15 +300,18 @@ Cached in `chrome.storage.local` keyed by **schema version + bundle URL**
 fields to `discover()`'s output while an old-schema result was cached meant the
 cache loaded as-is and **overrode the seed** (which did have the new fields), so
 every new column silently read null. **Bump `CACHE_VERSION` in `discovery/detect.js`
-whenever `discover()`'s output shape changes** (currently 10). Stale-prefix keys
+whenever `discover()`'s output shape changes** (currently 11 — v10 cached a
+f1de53fa result missing `maxLevelMethod`, from before the `>=` fix, so the bump
+also flushes a wrong cache). Stale-prefix keys
 are cleaned up on startup. `discovery/game/names.js` seeds the latest-known build so
 the hook works during the discovery fetch; discovery overrides it.
 
-**Verified on all 8 bundles in `../../../research/`:**
+**Verified on all 9 bundles in `../../../research/`:**
 
 | build | trap field | mountedItems | mounted | mountIndex |
 |---|---|---|---|---|
-| 1327298e (seed) | `vq0_1` | `vpz_1` | `tr3_1` | `ur3_1` |
+| f1de53fa (seed) | `aq1_1` | `ypz_1` | `yr3_1` | `zr3_1` |
+| 1327298e | `vq0_1` | `vpz_1` | `tr3_1` | `ur3_1` |
 | 009aa16b | `oq0_1` | `opz_1` | `lr3_1` | `mr3_1` |
 | c0feea5a | `gpz_1` | `gpy_1` | `dr2_1` | `er2_1` |
 | bcae4cb9 | `lpw_1` | `lpv_1` | `iqz_1` | `jqz_1` |
